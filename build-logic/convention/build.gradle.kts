@@ -30,5 +30,9 @@ gradlePlugin {
             id = "todakun.kotlin.library"
             implementationClass = "KotlinLibraryConventionPlugin"
         }
+        register("feature") {
+            id = "todakun.feature"
+            implementationClass = "FeatureConventionPlugin"
+        }
     }
 }
