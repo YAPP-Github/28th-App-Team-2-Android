@@ -27,7 +27,7 @@ reviews:
     - 이 프로젝트는 by-feature 멀티 모듈 구조이며, domain을 최상위 모듈로 둡니다.
     - feature 모듈끼리 직접 참조하는 코드는 금지입니다. 발견 시 P1으로 지적하세요.
     - 의존성 방향은 feature → domain, data → domain 방향만 허용됩니다. 역방향 참조는 P1입니다.
-    - DI는 Metro를 사용합니다. (Hilt에서 마이그레이션 중이므로 Hilt 잔재가 보이면 P3로 안내)
+    - DI는 Hilt를 사용합니다
 
   path_instructions:
     # ---------- Domain ----------
@@ -71,7 +71,7 @@ reviews:
         - Remote DataSource 함수는 REST API 엔드포인트와 1:1 대응해야 하며, 엔드포인트가 같고 METHOD가 다르면 함수를 분리합니다.
         - 함수 접두사는 동사이며 METHOD와 연관된 단어여야 합니다 (P2).
 
-    - path: "**/data/**/*Dto.kt"
+    - path: "**/data/**/*Request.kt", "**/data/**/*Response.kt"
       instructions: |
         DTO 규칙:
         - 도메인 로직과 무관하게 Raw한 서버 데이터 형태를 유지해야 합니다.
