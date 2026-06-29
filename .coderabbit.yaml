@@ -1,0 +1,120 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: "ko"
+early_access: false
+
+tone_instructions: "팀의 개발 가이드와 컨벤션을 기준으로, 핵심을 짚어 간결하게 리뷰하세요."
+
+reviews:
+  profile: chill          # 초반엔 chill 권장. 팀이 익숙해지면 assertive로
+  high_level_summary: true
+  poem: false
+  sequence_diagrams: false
+  auto_apply_labels: false
+  abort_on_close: true
+
+  # 모든 리뷰에 공통 적용되는 지침
+  instructions: |
+    리뷰는 아래 규칙을 반드시 따르세요.
+    1. 모든 리뷰 코멘트와 요약은 한국어로 작성합니다.
+    2. 각 리뷰 코멘트는 중요도에 따라 머리말에 [P1], [P2], [P3]을 붙여 분류합니다.
+       - P1: 버그, 동작 오류, 보안 문제, 아키텍처 레이어 위반 등 반드시 수정해야 하는 사항
+       - P2: 컨벤션 위반, 설계 개선 권장, 잠재적 문제 등 수정을 권장하는 사항
+       - P3: 네이밍 다듬기, 사소한 스타일 등 선택적으로 반영하면 좋은 사항
+    3. 단순 칭찬이나 의미 없는 코멘트는 생략하고, 실질적으로 도움이 되는 피드백만 남깁니다.
+
+    # 아키텍처 레이어 규칙 (전역)
+    - 이 프로젝트는 by-feature 멀티 모듈 구조이며, domain을 최상위 모듈로 둡니다.
+    - feature 모듈끼리 직접 참조하는 코드는 금지입니다. 발견 시 P1으로 지적하세요.
+    - 의존성 방향은 feature → domain, data → domain 방향만 허용됩니다. 역방향 참조는 P1입니다.
+    - DI는 Metro를 사용합니다. (Hilt에서 마이그레이션 중이므로 Hilt 잔재가 보이면 P3로 안내)
+
+  path_instructions:
+    # ---------- Domain ----------
+    - path: "**/domain/**/model/**/*.kt"
+      instructions: |
+        Domain Model 규칙:
+        - 모든 필드는 val 로 선언되어야 합니다 (불변성). var 발견 시 P1.
+        - data class 또는 sealed interface/class 형태여야 합니다.
+        - 상속 남발 금지. Composition Over Inheritance, IS-A/HAS-A를 고려했는지 점검하고, 불필요한 상속은 P2로 지적.
+        - DTO/Entity가 그대로 노출되면 안 됩니다. 비즈니스 로직에 맞게 정리된 형태인지 확인 (P1).
+
+    - path: "**/domain/**/*UseCase.kt"
+      instructions: |
+        UseCase 규칙:
+        - 이름은 반드시 동사로 시작해야 합니다 (예: GetHomeInfoUseCase). 위반 시 P2.
+        - "유저의 행동" 또는 "단일 기능 단위"로 구분되어야 합니다.
+        - 여러 UseCase를 합성하는 퍼사드 패턴은 허용됩니다.
+        - 서로 다른 관심사의 데이터 조합은 Repository가 아니라 UseCase에서 이루어져야 합니다.
+
+    - path: "**/domain/**/*Repository.kt"
+      instructions: |
+        Repository 인터페이스 규칙:
+        - 반환 타입은 Result<T>, Flow<Result<T>>, 또는 Paging 사용 시 Flow<PagingData<T>> 여야 합니다. 위반 시 P1.
+        - Domain Model을 반환해야 하며 DTO/Entity/Data 접미사 클래스를 노출하면 안 됩니다 (P1).
+        - "데이터의 관심사" 단위로 분리되었는지 확인 (예: UserRepository, StarRepository).
+
+    # ---------- Data ----------
+    - path: "**/data/**/*RepositoryImpl.kt"
+      instructions: |
+        RepositoryImpl 규칙:
+        - 성공/실패는 runCatching 으로 처리하고 Result 형태로 반환해야 합니다. try-catch 누락이나 예외 누수는 P1.
+        - DataSource가 반환한 Data 접미사 클래스를 Mapper 또는 확장 함수로 Domain Model로 변환해야 합니다.
+        - 같은 관심사라면 내부에서 다중 API 호출/합성 후 하나의 Domain Model 반환을 허용합니다.
+        - 캐싱 시 Domain으로 변환하기 전의 Raw한 Data 접미사 클래스를 DataSource에 전달해야 합니다 (P2).
+
+    - path: "**/data/**/*DataSource*.kt"
+      instructions: |
+        DataSource 규칙:
+        - 성공/실패를 try-catch 하지 않고 에러를 그대로 throw 해야 합니다. 여기서 예외를 삼키면 P1.
+        - Data 접미사 클래스(Raw 데이터)를 반환해야 합니다.
+        - Remote DataSource 함수는 REST API 엔드포인트와 1:1 대응해야 하며, 엔드포인트가 같고 METHOD가 다르면 함수를 분리합니다.
+        - 함수 접두사는 동사이며 METHOD와 연관된 단어여야 합니다 (P2).
+
+    - path: "**/data/**/*Dto.kt"
+      instructions: |
+        DTO 규칙:
+        - 도메인 로직과 무관하게 Raw한 서버 데이터 형태를 유지해야 합니다.
+        - 요청/응답 DTO 네이밍은 ~Request, ~Response 를 사용하고 재사용하지 않습니다. 위반 시 P2.
+
+    - path: "**/data/**/*Entity.kt"
+      instructions: |
+        Entity 규칙:
+        - 로컬 DB 저장/쿼리 속도를 위해 Flatten 형태로 작성합니다.
+        - 도메인 로직과 무관하게 Raw한 데이터를 유지해야 합니다.
+
+    # ---------- Presentation (MVI + Orbit) ----------
+    - path: "**/presentation/**/*.kt"
+      instructions: |
+        Presentation(MVI + Orbit) 규칙:
+        - 상태/인텐트/사이드이펙트 네이밍은 State / Intent / SideEffect 컨벤션을 따릅니다 (P2).
+        - Orbit 사용 시 ContainerHost 위임은 by(Delegate) 형태를 권장합니다.
+        - ViewModel 또는 상태 처리에서 직접 도메인 로직을 수행하지 말고 UseCase를 통하도록 합니다 (P2).
+
+    - path: "**/*ViewModel.kt"
+      instructions: |
+        ViewModel 규칙:
+        - 상태 보존이 필요한 값은 SavedStateHandle 사용을 검토하세요.
+        - 비즈니스 로직은 UseCase에 위임하고 ViewModel은 상태 관리에 집중해야 합니다.
+
+    # ---------- Compose UI ----------
+    - path: "**/*.kt"
+      instructions: |
+        Compose / 일반 Kotlin 규칙:
+        - ktlint 및 compose lint 컨벤션을 따르는지 확인합니다.
+        - Composable 함수의 불필요한 리컴포지션 유발 요소(불안정 파라미터, 람다 재생성 등)가 있으면 P2로 안내합니다.
+
+    # ---------- 리소스 네이밍 ----------
+    - path: "**/res/drawable/**"
+      instructions: |
+        리소스 네이밍 규칙:
+        - ic_ 접두사는 SVG(벡터) 파일에 사용합니다.
+        - img_ 접두사는 그 외(png 등) 파일에 사용합니다.
+        - 규칙을 벗어난 네이밍은 P3로 안내합니다.
+
+  # 자동 생성/불필요 파일은 리뷰에서 제외
+  path_filters:
+    - "!**/build/**"
+    - "!**/*.lock"
+    - "!**/generated/**"
+    - "!**/*.gradle.kts"

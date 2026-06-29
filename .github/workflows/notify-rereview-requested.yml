@@ -1,0 +1,83 @@
+name: Discord Notification (Re-review Requested)
+
+on:
+  pull_request:
+    types: [review_requested]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-discord-rereview
+  cancel-in-progress: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Build message
+        id: build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_REVIEWER: ${{ github.event.requested_reviewer.login }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          declare -A GITHUB_TO_DISCORD
+          GITHUB_TO_DISCORD["oungsi2000"]="566940333888241667"
+          GITHUB_TO_DISCORD["Moony-H"]="252029803195006977"
+
+          # 봇 생략
+          if [[ "$PR_REVIEWER" == *"[bot]" ]]; then
+            echo "Bot 계정 리뷰 요청은 생략"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # 이 리뷰어가 전에 이 PR을 리뷰한 적 있는지 조회
+          REVIEW_API_URL="https://api.github.com/repos/$REPOSITORY/pulls/$PR_NUMBER/reviews"
+          REVIEW_COUNT=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$REVIEW_API_URL" \
+            | jq -r --arg reviewer "$PR_REVIEWER" '[.[] | select(.user.login == $reviewer)] | length')
+
+          # 이력 없으면 최초 요청 → 여기선 생략 (opened 워크플로가 처리)
+          if [ "$REVIEW_COUNT" -eq 0 ]; then
+            echo "최초 리뷰 요청으로 간주, 생략"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # 리뷰어 매핑 없으면 생략
+          discord_id=${GITHUB_TO_DISCORD[$PR_REVIEWER]}
+          if [[ -z "$discord_id" ]]; then
+            echo "매핑 없는 사용자($PR_REVIEWER) 생략"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # 작성자 멘션
+          author_id=${GITHUB_TO_DISCORD[$PR_AUTHOR]}
+          if [[ -n "$author_id" ]]; then
+            AUTHOR_MENTION="<@$author_id>"
+          else
+            AUTHOR_MENTION="$PR_AUTHOR"
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "content=🏸Android 재리뷰 요청 알림 <@$discord_id>" >> "$GITHUB_OUTPUT"
+          echo "author=$AUTHOR_MENTION" >> "$GITHUB_OUTPUT"
+
+      - name: Send Discord notification
+        if: steps.build.outputs.skip == 'false'
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: ${{ steps.build.outputs.content }}
+          embed-title: "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}"
+          embed-url: ${{ github.event.pull_request.html_url }}
+          embed-description: "작성자: ${{ steps.build.outputs.author }}"
+          embed-color: "15844367"
