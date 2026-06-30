@@ -62,6 +62,7 @@ dependencies {
     implementation(projects.core.dataRemote)
     implementation(projects.core.dataLocal)
     implementation(projects.core.navigation)
+    implementation(projects.core.designsystem)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
