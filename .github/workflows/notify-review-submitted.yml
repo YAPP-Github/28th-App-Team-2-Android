@@ -1,0 +1,75 @@
+name: Discord Notification (Submitted)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions: {}
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-discord-submitted
+  cancel-in-progress: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build message
+        id: build
+        env:
+          REVIEW_STATE: ${{ github.event.review.state }}
+          PR_REVIEWER: ${{ github.event.review.user.login }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          # 단순 코멘트는 생략
+          if [[ "$REVIEW_STATE" == "commented" ]]; then
+            echo "단순 코멘트 리뷰는 알림 생략"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # 봇 리뷰는 생략
+          if [[ "$PR_REVIEWER" == *"[bot]" ]]; then
+            echo "Bot 계정 리뷰는 알림 생략"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          declare -A GITHUB_TO_DISCORD
+          GITHUB_TO_DISCORD["oungsi2000"]="566940333888241667"
+          GITHUB_TO_DISCORD["Moony-H"]="252029803195006977"
+
+          author_id=${GITHUB_TO_DISCORD[$PR_AUTHOR]}
+          if [[ -n "$author_id" ]]; then
+            AUTHOR_MENTION="<@$author_id>"
+          else
+            AUTHOR_MENTION="$PR_AUTHOR"
+          fi
+
+          # 상태별 아이콘 + 색
+          case "$REVIEW_STATE" in
+            approved)
+              ICON="✅"
+              COLOR="3066993" ;;     # 초록
+            changes_requested)
+              ICON="🔴"
+              COLOR="15158332" ;;    # 빨강
+            *)
+              ICON="💬"
+              COLOR="5814783" ;;     # 파랑 (혹시 모를 기타)
+          esac
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "content=$ICON (상태: $REVIEW_STATE) Android 리뷰 완료 알림 $AUTHOR_MENTION" >> "$GITHUB_OUTPUT"
+          echo "color=$COLOR" >> "$GITHUB_OUTPUT"
+
+      - name: Send Discord notification
+        if: steps.build.outputs.skip == 'false'
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: ${{ steps.build.outputs.content }}
+          embed-title: "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}"
+          embed-url: ${{ github.event.review.html_url }}
+          embed-description: "리뷰어: ${{ github.event.review.user.login }}"
+          embed-color: ${{ steps.build.outputs.color }}
