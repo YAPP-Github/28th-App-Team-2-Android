@@ -48,7 +48,7 @@ jobs:
 
           # 상태별 아이콘 + 색
           case "$REVIEW_STATE" in
-            approved
+            approved)
               ICON="✅"
               COLOR="3066993" ;;     # 초록
             changes_requested)
