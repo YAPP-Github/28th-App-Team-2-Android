@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,7 +70,7 @@ fun TodakunWheelPicker(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                Spacer(Modifier.weight(1f))
+                WheelPickerColumnSpacer(columns.size)
                 columns.forEachIndexed { columnIndex, columnState ->
                     WheelPickerColumn(
                         modifier = Modifier.weight(2f),
@@ -91,10 +92,20 @@ fun TodakunWheelPicker(
                             )
                         },
                     )
-                    Spacer(Modifier.weight(1f))
+                    WheelPickerColumnSpacer(columns.size)
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RowScope.WheelPickerColumnSpacer(
+    size: Int,
+    modifier: Modifier = Modifier
+) {
+    if (size > 1) {
+        Spacer(modifier =  modifier.weight(1f))
     }
 }
 
