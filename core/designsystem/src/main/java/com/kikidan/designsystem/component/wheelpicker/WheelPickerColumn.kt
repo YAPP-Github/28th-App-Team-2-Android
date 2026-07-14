@@ -38,7 +38,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -179,7 +178,6 @@ internal fun WheelPickerColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(itemHeight)
-                        .testTag("wheel_picker_item_$index")
                         .semantics { selected = isCenter }
                         .wheelPickerGraphics(listState, halfCount, index, itemHeight)
                         .clickable(

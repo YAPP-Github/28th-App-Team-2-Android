@@ -7,7 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunTheme
 import java.time.LocalTime
 
 @Composable
@@ -87,4 +89,17 @@ fun TimeWheelPicker(
 private object TimeWheelPickerDefault {
     val HourRange = 0..23
     val MinuteRange = 0..59
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TimeWheelPickerPreview() {
+    TodakunTheme {
+        TimeWheelPicker(
+            onHourChange = {},
+            onMinuteChange = {},
+            onSaveClick = {},
+            onDismissRequest = {},
+        )
+    }
 }

@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunTheme
 
 @Composable
 fun SajuBirthTimeWheelPicker(
@@ -30,6 +32,18 @@ fun SajuBirthTimeWheelPicker(
             ),
             onWheelPickerColumnSelected = { _, selectedIndex -> onSelectedIndexChange(selectedIndex) },
             directInputEnabled = false,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SajuBirthTimeWheelPickerPreview() {
+    TodakunTheme {
+        SajuBirthTimeWheelPicker(
+            onSaveClick = {},
+            onDismissRequest = {},
+            onSelectedIndexChange = {},
         )
     }
 }

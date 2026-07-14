@@ -9,8 +9,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunTheme
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -139,4 +141,18 @@ fun BirthDateWheelPicker(
 private object BirthDateWheelPickerDefaults {
     val MonthRange = 1..12
     val DayRange = 1..31
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun BirthDateWheelPickerPreview() {
+    TodakunTheme {
+        BirthDateWheelPicker(
+            onYearChange = {},
+            onMonthChange = {},
+            onDayChange = {},
+            onSaveClick = {},
+            onDismissRequest = {},
+        )
+    }
 }
