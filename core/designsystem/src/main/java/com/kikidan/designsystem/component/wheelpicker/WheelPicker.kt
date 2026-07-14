@@ -3,6 +3,7 @@ package com.kikidan.designsystem.component.wheelpicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,8 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
@@ -34,14 +32,6 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.LocalTodakunColor
 import com.kikidan.designsystem.theme.LocalTodakunTypography
 
-/**
- * [WheelPicker]의 컬럼 하나를 표현하는 stateless 데이터.
- *
- * @param items 이미 포맷된 표시용 라벨(예: "08", "자시").
- * @param selectedIndex 현재 선택된 항목의 인덱스.
- * @param width 컬럼 고정 너비. [Dp.Unspecified]면 컬럼끼리 균등 분배(weight)한다.
- * @param maxInputDigits 직접입력 활성화 시 이 컬럼이 허용하는 최대 입력 자리수(예: year=4, 나머지=2).
- */
 @Immutable
 data class WheelPickerColumnState(
     val items: List<String>,
@@ -66,6 +56,8 @@ internal fun WheelPicker(
     Column(
         modifier = modifier
             .pointerInput(Unit) {
+                //빈 공간 스크롤 시 바텀시트가 내려가는 것 방지
+                detectVerticalDragGestures { _, _ ->  }
                 detectTapGestures(onTap = { focusManager.clearFocus() })
             }
             .padding(top = 12.dp, bottom = 40.dp, start = 30.dp, end = 30.dp),
@@ -85,7 +77,7 @@ internal fun WheelPicker(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                Spacer(modifier.weight(1f))
+                Spacer(Modifier.weight(1f))
                 columns.forEachIndexed { columnIndex, columnState ->
                     WheelPickerColumn(
                         modifier = Modifier.weight(1f),
@@ -107,7 +99,7 @@ internal fun WheelPicker(
                             )
                         },
                     )
-                    Spacer(modifier.weight(1f))
+                    Spacer(Modifier.weight(1f))
                 }
             }
         }
@@ -162,6 +154,8 @@ internal object WheelPickerDefaults {
     val HighlightVerticalPadding = 24.dp
 
     val WheelPickerHighlightShape = RoundedCornerShape(8.dp)
+
+    const val CENTER_FULL_FACTOR = 0.1f
 }
 
 @Composable
