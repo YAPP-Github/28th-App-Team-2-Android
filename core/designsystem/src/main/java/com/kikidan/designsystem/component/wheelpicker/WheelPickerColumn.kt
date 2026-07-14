@@ -1,5 +1,6 @@
 package com.kikidan.designsystem.component.wheelpicker
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -73,7 +74,6 @@ internal fun WheelPickerColumn(
     val typography = LocalTodakunTypography.current
 
     val halfCount = visibleCount / 2
-    val density = LocalDensity.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
@@ -132,10 +132,10 @@ internal fun WheelPickerColumn(
         editing = true
     }
 
-    fun commitEdit() {
+    fun commitEdit(value:String) {
         if (!editing) return
         editing = false
-        if (editText.isNotEmpty()) onDirectInputCommitted(editText)
+        if (editText.isNotEmpty()) onDirectInputCommitted(value)
     }
 
     LaunchedEffect(editing) { if (editing) focusRequester.requestFocus() }
@@ -208,36 +208,40 @@ internal fun WheelPickerColumn(
 
             if (editing) {
                 EditTextField(
-                    editText = editText,
-                    onValueChange = { new ->
-                        editText = new.filter { it.isDigit() }.take(maxInputDigits)
-                    },
+                    maxInputDigits = maxInputDigits,
+                    placeHolder = editText,
                     focusRequester = focusRequester,
                     hasGainedFocus = hasGainedFocus,
                     onChangeGainedFocus = { hasGainedFocus = it },
-                    onCommitEdit = { commitEdit() }
+                    onCommitEdit = { commitEdit(it) }
                 )
             }
         }
     }
 }
 
+@SuppressLint("RememberReturnType")
 @Composable
 private fun EditTextField(
-    editText: String,
+    placeHolder:String,
+    maxInputDigits: Int,
     hasGainedFocus: Boolean,
     focusRequester: FocusRequester,
     onChangeGainedFocus:(Boolean)-> Unit,
-    onValueChange: (String) -> Unit,
-    onCommitEdit: () -> Unit,
+    onCommitEdit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val typography = LocalTodakunTypography.current
     val colors = LocalTodakunColor.current
+    var isEdited by remember { mutableStateOf(false) }
+    var value by remember { mutableStateOf("") }
 
     BasicTextField(
-        value = editText,
-        onValueChange = onValueChange,
+        value = value,
+        onValueChange = { new ->
+            isEdited = true
+            value = new.filter { it.isDigit() }.take(maxInputDigits)
+        },
         modifier = modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
@@ -245,7 +249,7 @@ private fun EditTextField(
                 if (focusState.isFocused) {
                     onChangeGainedFocus(true)
                 } else if (hasGainedFocus) {
-                    onCommitEdit()
+                    onCommitEdit(value)
                 }
             },
         textStyle = typography.body1Medium.copy(
@@ -257,7 +261,22 @@ private fun EditTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
         ),
-        keyboardActions = KeyboardActions(onDone = { onCommitEdit() }),
+        keyboardActions = KeyboardActions(onDone = { onCommitEdit(value) }),
+        decorationBox = { innerTextField ->
+            Box {
+                if (!isEdited) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = placeHolder,
+                        style = typography.body1Medium.copy(
+                            color = colors.primary600,
+                            textAlign = TextAlign.Center,
+                        ),
+                    )
+                }
+                innerTextField()
+            }
+        }
     )
 }
 
