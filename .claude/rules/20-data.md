@@ -13,7 +13,7 @@
 ## DataSource — `**/data/**/*DataSource*.kt`
 
 - 성공/실패를 try-catch 하지 않고 에러를 **그대로 throw**한다. 예외를 삼키면 **P1**.
-- Raw 데이터(`~Data` 접미사 클래스)를 반환한다.
+- Domain Model을 반환한다.
 - Remote DataSource 함수는 **REST 엔드포인트와 1:1 대응**. 엔드포인트가 같고 METHOD가 다르면 함수를 분리한다.
 - 함수 접두사는 동사이며 HTTP METHOD와 연관된 단어여야 한다(**P2**).
 

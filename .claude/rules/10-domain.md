@@ -7,7 +7,6 @@
 
 - 모든 필드는 `val`로 선언(불변성). `var` 발견 시 **P1**.
 - `data class` 또는 `sealed interface/class` 형태여야 한다.
-- 상속 남발 금지. **Composition Over Inheritance**, IS-A/HAS-A를 고려했는지 점검하고 불필요한 상속은 **P2**.
 - DTO/Entity를 그대로 노출 금지. 비즈니스 로직에 맞게 정리된 형태여야 한다(**P1**).
 
 ## UseCase — `**/domain/**/*UseCase.kt`

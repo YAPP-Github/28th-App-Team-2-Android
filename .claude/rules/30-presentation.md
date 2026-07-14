@@ -4,13 +4,10 @@
 > 심각도([P1]/[P2]/[P3]) 정의: `.claude/rules/50-review-convention.md` 참조.
 
 ## Presentation — `**/presentation/**/*.kt`
-
-- 상태/인텐트/사이드이펙트 네이밍은 `State` / `Intent` / `SideEffect` 컨벤션을 따른다(**P2**).
 - Orbit 사용 시 `ContainerHost` 위임은 `by(Delegate)` 형태를 권장한다.
 - ViewModel 또는 상태 처리에서 직접 도메인 로직을 수행하지 말고 **UseCase를 통한다**(**P2**).
 
 ## ViewModel — `**/*ViewModel.kt`
-
 - 상태 보존이 필요한 값은 `SavedStateHandle` 사용을 검토한다.
 - 비즈니스 로직은 UseCase에 위임하고 ViewModel은 **상태 관리에 집중**한다.
 
