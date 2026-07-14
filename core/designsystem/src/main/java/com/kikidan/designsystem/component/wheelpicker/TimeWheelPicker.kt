@@ -34,7 +34,7 @@ fun TimeWheelPicker(
         val minuteItems =
             remember { TimeWheelPickerDefault.MinuteRange.map { it.toString().padStart(2, '0') } }
 
-        WheelPicker(
+        TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_time_title),
             onSaveClick = onSaveClick,
             columns = listOf(

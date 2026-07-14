@@ -33,7 +33,7 @@ import com.kikidan.designsystem.theme.LocalTodakunTypography
 
 
 @Composable
-internal fun WheelPicker(
+fun TodakunWheelPicker(
     title: String,
     onSaveClick: () -> Unit,
     columns: List<WheelPickerColumnState>,

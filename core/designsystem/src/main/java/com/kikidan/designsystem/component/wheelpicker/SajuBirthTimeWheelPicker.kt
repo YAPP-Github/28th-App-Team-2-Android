@@ -21,7 +21,7 @@ fun SajuBirthTimeWheelPicker(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
     ) {
-        WheelPicker(
+        TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_saju_birth_time_title),
             onSaveClick = onSaveClick,
             columns = listOf(

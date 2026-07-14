@@ -51,7 +51,7 @@ fun BirthDateWheelPicker(
             }
         }
 
-        WheelPicker(
+        TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_birth_date_title),
             onSaveClick = {
                 val validDate = runCatching { LocalDate.of(year, month, day) }

@@ -40,7 +40,7 @@ class WheelPickerTest {
         val events = mutableListOf<Pair<Int, Int>>()
         composeTestRule.setContent {
             TodakunTheme {
-                WheelPicker(
+                TodakunWheelPicker(
                     title = "테스트",
                     onSaveClick = {},
                     columns = listOf(
@@ -76,7 +76,7 @@ class WheelPickerTest {
         var saved = false
         composeTestRule.setContent {
             TodakunTheme {
-                WheelPicker(
+                TodakunWheelPicker(
                     title = "테스트",
                     onSaveClick = { saved = true },
                     columns = listOf(numberColumn(0..23, 5)),
