@@ -2,8 +2,11 @@ package com.kikidan.designsystem.component.wheelpicker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,8 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.LocalTodakunColor
 
@@ -33,29 +40,49 @@ internal fun WheelPickerBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = WheelPickerBottomSheetDefaults.Shape,
-        containerColor = colors.white,
-        dragHandle = {
-            Box(
-                modifier = modifier
+        containerColor = Color.Transparent,
+        dragHandle = null,
+        modifier = modifier,
+        content = {
+            //상단 그림자 잘림 방지
+            Spacer(modifier = Modifier.height(12.dp))
+            Column(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-                    .testTag("wheel_picker_drag_handle"),
-                contentAlignment = Alignment.Center,
+                    .navigationBarsPadding()
+                    .padding(horizontal = WheelPickerBottomSheetDefaults.HorizontalMargin)
+                    .padding(bottom = bottomSpacing)
+                    .dropShadow(
+                        shape = WheelPickerBottomSheetDefaults.Shape,
+                        shadow = Shadow(
+                            radius = 20.dp,
+                            spread = 0.dp,
+                            offset = DpOffset(0.dp, 0.dp),
+                            color = colors.black.copy(alpha = 0.05f),
+                        )
+                    )
+                    .background(colors.white, WheelPickerBottomSheetDefaults.Shape)
+                    .clip(WheelPickerBottomSheetDefaults.Shape),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(width = 42.dp, height = 4.dp)
-                        .clip(WheelPickerBottomSheetDefaults.HandleShape)
-                        .background(colors.gray200),
-                )
+                DragHandle()
+                content()
             }
-        },
-        modifier = Modifier
-            .navigationBarsPadding()
-            .padding(horizontal = WheelPickerBottomSheetDefaults.HorizontalMargin)
-            .padding(bottom = bottomSpacing),
-        content = content
+        }
+    )
+}
+
+@Composable
+private fun DragHandle(
+    modifier: Modifier = Modifier
+) {
+    val colors = LocalTodakunColor.current
+    Box(
+        modifier = modifier
+            .padding(vertical = 16.dp)
+            .size(width = 42.dp, height = 4.dp)
+            .clip(RoundedCornerShape(2.dp))
+            .background(colors.gray200),
     )
 }
 

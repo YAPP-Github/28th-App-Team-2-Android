@@ -132,7 +132,7 @@ internal fun WheelPickerColumn(
         editing = true
     }
 
-    fun commitEdit(value:String) {
+    fun commitEdit(value: String) {
         if (!editing) return
         editing = false
         if (editText.isNotEmpty()) onDirectInputCommitted(value)
@@ -153,81 +153,79 @@ internal fun WheelPickerColumn(
             .clipToBounds(),
         contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier = Modifier.requiredHeight(fullHeight),
-            contentAlignment = Alignment.Center,
+        LazyColumn(
+            state = listState,
+            flingBehavior = flingBehavior,
+            contentPadding = PaddingValues(vertical = WheelPickerDefaults.CenterContainerHeight * halfCount),
+            userScrollEnabled = !editing,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .requiredHeight(fullHeight)
+                .fillMaxSize(),
         ) {
-            LazyColumn(
-                state = listState,
-                flingBehavior = flingBehavior,
-                contentPadding = PaddingValues(vertical = WheelPickerDefaults.CenterContainerHeight * halfCount),
-                userScrollEnabled = !editing,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                itemsIndexed(items, key = { index, _ -> index }) { index, item ->
-                    val isCenter = index == centeredIndex
-                    val distance = abs(index - centeredIndex)
-                    val textStyle = when (distance) {
-                        0 -> typography.body1Medium
-                        1 -> typography.body1Regular
-                        else -> typography.body1Regular
-                    }
-                    val textColor = when (distance) {
-                        0 -> colors.black
-                        1 -> colors.gray700
-                        else -> colors.gray400
-                    }
-                    val itemHeight = WheelPickerDefaults.CenterContainerHeight
+            itemsIndexed(items, key = { index, _ -> index }) { index, item ->
+                val isCenter = index == centeredIndex
+                val distance = abs(index - centeredIndex)
+                val textStyle = when (distance) {
+                    0 -> typography.body1Medium
+                    1 -> typography.body1Regular
+                    else -> typography.body1Regular
+                }
+                val textColor = when (distance) {
+                    0 -> colors.black
+                    1 -> colors.gray700
+                    else -> colors.gray400
+                }
+                val itemHeight = WheelPickerDefaults.CenterContainerHeight
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(itemHeight)
-                            .testTag("wheel_picker_item_$index")
-                            .semantics { selected = isCenter }
-                            .wheelPickerGraphics(listState, halfCount, index, itemHeight)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                            ) {
-                                if (isCenter) {
-                                    if (directInputEnabled) startEdit()
-                                } else {
-                                    selectIndex(index)
-                                }
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (!(editing && isCenter)) {
-                            Text(text = item, style = textStyle, color = textColor)
-                        }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(itemHeight)
+                        .testTag("wheel_picker_item_$index")
+                        .semantics { selected = isCenter }
+                        .wheelPickerGraphics(listState, halfCount, index, itemHeight)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                        ) {
+                            if (isCenter) {
+                                if (directInputEnabled) startEdit()
+                            } else {
+                                selectIndex(index)
+                            }
+                        },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (!(editing && isCenter)) {
+                        Text(text = item, style = textStyle, color = textColor)
                     }
                 }
             }
+        }
 
-            if (editing) {
-                EditTextField(
-                    maxInputDigits = maxInputDigits,
-                    placeHolder = editText,
-                    focusRequester = focusRequester,
-                    hasGainedFocus = hasGainedFocus,
-                    onChangeGainedFocus = { hasGainedFocus = it },
-                    onCommitEdit = { commitEdit(it) }
-                )
-            }
+        if (editing) {
+            EditTextField(
+                maxInputDigits = maxInputDigits,
+                placeHolder = editText,
+                focusRequester = focusRequester,
+                hasGainedFocus = hasGainedFocus,
+                onChangeGainedFocus = { hasGainedFocus = it },
+                onCommitEdit = { commitEdit(it) }
+            )
         }
     }
+
 }
 
 @SuppressLint("RememberReturnType")
 @Composable
 private fun EditTextField(
-    placeHolder:String,
+    placeHolder: String,
     maxInputDigits: Int,
     hasGainedFocus: Boolean,
     focusRequester: FocusRequester,
-    onChangeGainedFocus:(Boolean)-> Unit,
+    onChangeGainedFocus: (Boolean) -> Unit,
     onCommitEdit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -283,9 +281,9 @@ private fun EditTextField(
 private fun Modifier.wheelPickerGraphics(
     listState: LazyListState,
     halfCount: Int,
-    index:Int,
-    itemHeight:Dp
-):Modifier =
+    index: Int,
+    itemHeight: Dp
+): Modifier =
     graphicsLayer {
         val info = listState.layoutInfo
         val viewportCenter =
