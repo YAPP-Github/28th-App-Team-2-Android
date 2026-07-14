@@ -32,13 +32,6 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.LocalTodakunColor
 import com.kikidan.designsystem.theme.LocalTodakunTypography
 
-@Immutable
-data class WheelPickerColumnState(
-    val items: List<String>,
-    val selectedIndex: Int,
-    val width: Dp = Dp.Unspecified,
-    val maxInputDigits: Int = 2,
-)
 
 @Composable
 internal fun WheelPicker(
