@@ -80,7 +80,7 @@ internal fun WheelPicker(
                 Spacer(Modifier.weight(1f))
                 columns.forEachIndexed { columnIndex, columnState ->
                     WheelPickerColumn(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(2f),
                         items = columnState.items,
                         selectedIndex = columnState.selectedIndex,
                         onSelectedIndexChange = { idx ->

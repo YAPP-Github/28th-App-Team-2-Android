@@ -34,6 +34,9 @@ fun BirthDateWheelPicker(
 ) {
     val context = LocalContext.current
     val invalidDateMessage = stringResource(R.string.wheel_picker_birth_date_invalid)
+    val yearPostfix = stringResource(R.string.wheel_picker_year_postfix)
+    val monthPostfix = stringResource(R.string.wheel_picker_month_postfix)
+    val datePostfix = stringResource(R.string.wheel_picker_date_postfix)
 
     WheelPickerBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -43,10 +46,10 @@ fun BirthDateWheelPicker(
         var clampedMonth by remember { mutableIntStateOf(month.coerceIn(BirthDateWheelPickerDefaults.MonthRange)) }
         var clampedDay by remember { mutableIntStateOf(day.coerceIn(BirthDateWheelPickerDefaults.DayRange)) }
 
-        val yearItems = remember(yearRange) { yearRange.map { it.toString() } }
+        val yearItems = remember(yearRange) { yearRange.map { it.toString() + yearPostfix } }
         val monthItems = remember {
             BirthDateWheelPickerDefaults.MonthRange.map {
-                it.toString().padStart(2, '0')
+                it.toString().padStart(2, '0') + monthPostfix
             }
         }
 
@@ -75,7 +78,7 @@ fun BirthDateWheelPicker(
                 ),
                 WheelPickerColumnState(
                     items = (1..YearMonth.of(clampedYear, clampedMonth)
-                        .lengthOfMonth()).map { it.toString() },
+                        .lengthOfMonth()).map { it.toString() + datePostfix },
                     selectedIndex = clampedDay - BirthDateWheelPickerDefaults.DayRange.first,
                     width = 40.dp,
                     maxInputDigits = 2,
