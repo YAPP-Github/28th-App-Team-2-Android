@@ -1,0 +1,65 @@
+name: Discord Notification (Review Request)
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+permissions: {}
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-discord-review-request
+  cancel-in-progress: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Build mentions
+        id: build
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REVIEWERS_JSON: ${{ toJson(github.event.pull_request.requested_reviewers) }}
+        run: |
+          declare -A GITHUB_TO_DISCORD
+          GITHUB_TO_DISCORD["oungsi2000"]="566940333888241667"
+          GITHUB_TO_DISCORD["Moony-H"]="252029803195006977"
+
+          author_id=${GITHUB_TO_DISCORD[$PR_AUTHOR]}
+          if [[ -n "$author_id" ]]; then
+            AUTHOR_MENTION="<@$author_id>"
+          else
+            AUTHOR_MENTION="$PR_AUTHOR"
+          fi
+
+          REVIEWER_MENTIONS=""
+          for reviewer in $(echo "$REVIEWERS_JSON" | jq -r '.[].login'); do
+            [[ "$reviewer" == *"[bot]" ]] && continue
+            discord_id=${GITHUB_TO_DISCORD[$reviewer]}
+            [[ -z "$discord_id" ]] && continue
+            REVIEWER_MENTIONS+="<@$discord_id> "
+          done
+
+          # 리뷰어 없으면 알림 생략
+          if [ -z "$REVIEWER_MENTIONS" ]; then
+            echo "리뷰어가 없으므로 알림 생략"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "content=Android 리뷰 요청 알림 $REVIEWER_MENTIONS" >> "$GITHUB_OUTPUT"
+          echo "author=$AUTHOR_MENTION" >> "$GITHUB_OUTPUT"
+
+      - name: Send Discord notification
+        if: steps.build.outputs.skip == 'false'
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          content: ${{ steps.build.outputs.content }}
+          embed-title: "#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}"
+          embed-url: ${{ github.event.pull_request.html_url }}
+          embed-description: "작성자: ${{ steps.build.outputs.author }}"
+          embed-color: "5814783"
