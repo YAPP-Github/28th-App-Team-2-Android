@@ -101,7 +101,7 @@ class WheelPickerTest {
                 SajuBirthTimeWheelPicker(
                     onSaveClick = {},
                     onDismissRequest = {},
-                    onSelectedIndexChange = {},
+                    onSajuBirthTimeChange = {},
                 )
             }
         }
@@ -121,7 +121,7 @@ class WheelPickerTest {
                 SajuBirthTimeWheelPicker(
                     onSaveClick = {},
                     onDismissRequest = { dismissed = true },
-                    onSelectedIndexChange = {},
+                    onSajuBirthTimeChange = {},
                 )
             }
         }
@@ -145,7 +145,7 @@ class WheelPickerTest {
                 SajuBirthTimeWheelPicker(
                     onSaveClick = {},
                     onDismissRequest = { dismissed = true },
-                    onSelectedIndexChange = {},
+                    onSajuBirthTimeChange = {},
                 )
             }
         }

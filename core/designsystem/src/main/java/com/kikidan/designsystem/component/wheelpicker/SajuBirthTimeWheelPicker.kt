@@ -12,7 +12,7 @@ import com.kikidan.designsystem.theme.TodakunTheme
 fun SajuBirthTimeWheelPicker(
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
-    onSelectedIndexChange: (Int) -> Unit,
+    onSajuBirthTimeChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val items = stringArrayResource(R.array.wheel_picker_saju_birth_times)
@@ -30,7 +30,7 @@ fun SajuBirthTimeWheelPicker(
                     selectedIndex = 2,
                 )
             ),
-            onWheelPickerColumnSelected = { _, selectedIndex -> onSelectedIndexChange(selectedIndex) },
+            onWheelPickerColumnSelected = { _, selectedIndex -> onSajuBirthTimeChange(items[selectedIndex]) },
             directInputEnabled = false,
         )
     }
@@ -43,7 +43,7 @@ private fun SajuBirthTimeWheelPickerPreview() {
         SajuBirthTimeWheelPicker(
             onSaveClick = {},
             onDismissRequest = {},
-            onSelectedIndexChange = {},
+            onSajuBirthTimeChange = {},
         )
     }
 }
