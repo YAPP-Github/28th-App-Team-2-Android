@@ -5,9 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 
 @Composable
-fun TodakunTheme(
-    content: @Composable () -> Unit,
-) {
+fun TodakunTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalTodakunColor provides defaultTodakunColor,
         LocalTodakunTypography provides defaultTodakunTypography,
