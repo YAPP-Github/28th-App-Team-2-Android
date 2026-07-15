@@ -10,7 +10,6 @@ fun TodakunTheme(
 ) {
     CompositionLocalProvider(
         LocalTodakunColor provides defaultTodakunColor,
-        LocalTodakunTypography provides defaultTodakunTypography,
     ) {
         content()
     }
@@ -23,7 +22,5 @@ object TodakunTheme {
         get() = LocalTodakunColor.current
 
     val typography: TodakunTypography
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalTodakunTypography.current
+        get() = TodakunTypography
 }

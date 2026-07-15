@@ -45,7 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import com.kikidan.designsystem.theme.LocalTodakunColor
-import com.kikidan.designsystem.theme.LocalTodakunTypography
+import com.kikidan.designsystem.theme.TodakunTypography
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
@@ -67,7 +67,6 @@ internal fun WheelPickerColumn(
     require(visibleCount % 2 == 1) { "visibleCount 는 홀수여야 합니다." }
 
     val colors = LocalTodakunColor.current
-    val typography = LocalTodakunTypography.current
 
     val halfCount = visibleCount / 2
     val scope = rememberCoroutineScope()
@@ -163,9 +162,9 @@ internal fun WheelPickerColumn(
                 val isCenter = index == centeredIndex
                 val distance = abs(index - centeredIndex)
                 val textStyle = when (distance) {
-                    0 -> typography.body1Medium
-                    1 -> typography.body1Regular
-                    else -> typography.body1Regular
+                    0 -> TodakunTypography.body1Medium
+                    1 -> TodakunTypography.body1Regular
+                    else -> TodakunTypography.body1Regular
                 }
                 val textColor = when (distance) {
                     0 -> colors.black
@@ -224,7 +223,6 @@ private fun EditTextField(
     onCommitEdit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val typography = LocalTodakunTypography.current
     val colors = LocalTodakunColor.current
     var isEdited by remember { mutableStateOf(false) }
     var value by remember { mutableStateOf("") }
@@ -245,7 +243,7 @@ private fun EditTextField(
                     onCommitEdit(value)
                 }
             },
-        textStyle = typography.body1Medium.copy(
+        textStyle = TodakunTypography.body1Medium.copy(
             color = colors.primary600,
             textAlign = TextAlign.Center,
         ),
@@ -261,7 +259,7 @@ private fun EditTextField(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = placeHolder,
-                        style = typography.body1Medium.copy(
+                        style = TodakunTypography.body1Medium.copy(
                             color = colors.primary600,
                             textAlign = TextAlign.Center,
                         ),
