@@ -2,10 +2,13 @@
 
 language: "ko"
 early_access: false
-
 tone_instructions: "팀의 개발 가이드와 컨벤션을 기준으로, 핵심을 짚어 간결하게 리뷰하세요."
 
 reviews:
+  finishing_touches:
+    unit_tests:
+      enabled: false
+
   profile: chill          # 초반엔 chill 권장. 팀이 익숙해지면 assertive로
   high_level_summary: true
   poem: false
@@ -13,23 +16,23 @@ reviews:
   auto_apply_labels: false
   abort_on_close: true
 
-  # 모든 리뷰에 공통 적용되는 지침
-  instructions: |
-    리뷰는 아래 규칙을 반드시 따르세요.
-    1. 모든 리뷰 코멘트와 요약은 한국어로 작성합니다.
-    2. 각 리뷰 코멘트는 중요도에 따라 머리말에 [P1], [P2], [P3]을 붙여 분류합니다.
-       - P1: 버그, 동작 오류, 보안 문제, 아키텍처 레이어 위반 등 반드시 수정해야 하는 사항
-       - P2: 컨벤션 위반, 설계 개선 권장, 잠재적 문제 등 수정을 권장하는 사항
-       - P3: 네이밍 다듬기, 사소한 스타일 등 선택적으로 반영하면 좋은 사항
-    3. 단순 칭찬이나 의미 없는 코멘트는 생략하고, 실질적으로 도움이 되는 피드백만 남깁니다.
-
-    # 아키텍처 레이어 규칙 (전역)
-    - 이 프로젝트는 by-feature 멀티 모듈 구조이며, domain을 최상위 모듈로 둡니다.
-    - feature 모듈끼리 직접 참조하는 코드는 금지입니다. 발견 시 P1으로 지적하세요.
-    - 의존성 방향은 feature → domain, data → domain 방향만 허용됩니다. 역방향 참조는 P1입니다.
-    - DI는 Hilt를 사용합니다
-
   path_instructions:
+    - path: "**"
+      instructions: |
+        - 리뷰는 아래 규칙을 반드시 따르세요.
+        - 1. 모든 리뷰 코멘트와 요약은 한국어로 작성합니다.
+        - 2. 각 리뷰 코멘트는 중요도에 따라 머리말에 [P1], [P2], [P3]을 붙여 분류합니다.
+        - P1: 버그, 동작 오류, 보안 문제, 아키텍처 레이어 위반 등 반드시 수정해야 하는 사항
+        - P2: 컨벤션 위반, 설계 개선 권장, 잠재적 문제 등 수정을 권장하는 사항
+        - P3: 네이밍 다듬기, 사소한 스타일 등 선택적으로 반영하면 좋은 사항
+        - 3. 단순 칭찬이나 의미 없는 코멘트는 생략하고, 실질적으로 도움이 되는 피드백만 남깁니다.
+    
+        - # 아키텍처 레이어 규칙 (전역)
+        - 이 프로젝트는 by-feature 멀티 모듈 구조이며, domain을 최상위 모듈로 둡니다.
+        - feature 모듈끼리 직접 참조하는 코드는 금지입니다. 발견 시 P1으로 지적하세요.
+        - 의존성 방향은 feature → domain, data → domain 방향만 허용됩니다. 역방향 참조는 P1입니다.
+        - DI는 Hilt를 사용합니다
+
     # ---------- Domain ----------
     - path: "**/domain/**/model/**/*.kt"
       instructions: |
@@ -71,7 +74,7 @@ reviews:
         - Remote DataSource 함수는 REST API 엔드포인트와 1:1 대응해야 하며, 엔드포인트가 같고 METHOD가 다르면 함수를 분리합니다.
         - 함수 접두사는 동사이며 METHOD와 연관된 단어여야 합니다 (P2).
 
-    - path: "**/data/**/*Request.kt", "**/data/**/*Response.kt"
+    - path: "**/data/**/*{Request,Response}.kt"
       instructions: |
         DTO 규칙:
         - 도메인 로직과 무관하게 Raw한 서버 데이터 형태를 유지해야 합니다.
