@@ -19,7 +19,7 @@ subprojects {
 }
 
 allprojects {
-    val versionCatalog = the<VersionCatalogsExtension>().named("libs")
+    val versionCatalog = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
     val ktlintVersion = versionCatalog.findVersion("ktlint").get()
 
     plugins.withId("org.jlleitschuh.gradle.ktlint") {
