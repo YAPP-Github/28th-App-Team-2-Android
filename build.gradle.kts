@@ -25,9 +25,6 @@ allprojects {
     plugins.withId("org.jlleitschuh.gradle.ktlint") {
         configure<KtlintExtension> {
             version.set(ktlintVersion.requiredVersion)
-            reporters {
-                reporter(ReporterType.PLAIN)
-            }
         }
         dependencies {
             add("ktlintRuleset", versionCatalog.findLibrary("nlopez-compose-rules-ktlint").get().get())
