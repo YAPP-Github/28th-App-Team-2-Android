@@ -27,7 +27,6 @@ allprojects {
             version.set(ktlintVersion.requiredVersion)
             reporters {
                 reporter(ReporterType.PLAIN)
-                reporter(ReporterType.SARIF)
             }
         }
         dependencies {

@@ -29,24 +29,4 @@ jobs:
 
       - name: Run lint and tests
         id: build
-        continue-on-error: true
         run: ./gradlew ktlintCheck test --continue
-
-      - name: Merge SARIF reports
-        if: always()
-        run: |
-          mkdir -p sarif-output
-          find . -path "*/build/reports/ktlint/*" -name "*.sarif" | while read -r f; do
-            id=$(echo "$f" | sed -e 's#^\./##' -e 's#/build/reports/ktlint/#/#' -e 's#/#-#g' -e 's#\.sarif$##')
-            jq --arg id "$id" '.runs[].automationDetails.id = ($id + "/")' "$f" > "sarif-output/${id}.sarif"
-          done
-
-      - name: Upload SARIF reports
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: sarif-output
-
-      - name: Fail job on lint or test violations
-        if: steps.build.outcome == 'failure'
-        run: exit 1
