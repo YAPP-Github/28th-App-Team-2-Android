@@ -99,7 +99,8 @@
 ```bash
 ./gradlew assembleDebug                 # 전체 빌드
 ./gradlew test                          # 전체 유닛 테스트
-//TODO 린트 명령어 추가
+./gradlew ktlintCheck                   # 코드 포맷/Compose lint 검사
+./gradlew ktlintFormat                  # 코드 자동 포맷
 ```
 ---
 
