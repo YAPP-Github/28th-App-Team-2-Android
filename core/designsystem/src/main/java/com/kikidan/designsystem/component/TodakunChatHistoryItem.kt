@@ -29,7 +29,7 @@ import com.kikidan.designsystem.theme.LocalTodakunTypography
 import com.kikidan.designsystem.theme.TodakunTheme
 
 @Composable
-fun TodakChatHistoryItem(
+fun TodakunChatHistoryItem(
     title: String,
     relativeTime: String,
     isUnread: Boolean,
@@ -118,9 +118,9 @@ private fun ColumnScope.TodakChatHistoryContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun TodakChatHistoryItemUnreadPreview() {
+private fun TodakunChatHistoryItemUnreadPreview() {
     TodakunTheme {
-        TodakChatHistoryItem(
+        TodakunChatHistoryItem(
             title = "오늘의 운세",
             relativeTime = "30분 전",
             isUnread = true,
@@ -132,9 +132,9 @@ private fun TodakChatHistoryItemUnreadPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun TodakChatHistoryItemReadPreview() {
+private fun TodakunChatHistoryItemReadPreview() {
     TodakunTheme {
-        TodakChatHistoryItem(
+        TodakunChatHistoryItem(
             title = "오늘의 운세",
             relativeTime = "30분 전",
             isUnread = false,
