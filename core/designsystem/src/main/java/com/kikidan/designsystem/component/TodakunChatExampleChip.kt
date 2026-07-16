@@ -1,15 +1,14 @@
 package com.kikidan.designsystem.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +21,7 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunTheme
 
 @Composable
-fun TodakExampleChip(
+fun TodakunChatExampleChip(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -41,15 +40,18 @@ fun TodakExampleChip(
             modifier = Modifier.size(24.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Box(
-            modifier = Modifier
-                .border(width = 1.dp, color = colors.gray400, shape = RoundedCornerShape(8.dp))
-                .padding(2.dp),
+        Column(
+            modifier = Modifier.width(IntrinsicSize.Max)
         ) {
             Text(
+                modifier = Modifier.padding(all = 2.dp),
                 text = text,
                 style = typography.body2Regular,
                 color = colors.gray800,
+            )
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = colors.gray400
             )
         }
     }
@@ -57,9 +59,9 @@ fun TodakExampleChip(
 
 @Preview(showBackground = true)
 @Composable
-private fun TodakExampleChipPreview() {
+private fun TodakunChatExampleChipPreview() {
     TodakunTheme {
-        TodakExampleChip(
+        TodakunChatExampleChip(
             text = "💼 직장 · 커리어",
             onClick = {},
         )
