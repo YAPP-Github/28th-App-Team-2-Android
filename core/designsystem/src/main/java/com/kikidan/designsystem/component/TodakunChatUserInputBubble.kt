@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.TodakunTheme
 
 @Composable
-fun UserChatBubble(
+fun TodakunChatUserInputBubble(
     text: String,
     modifier: Modifier = Modifier,
 ) {
@@ -22,7 +22,11 @@ fun UserChatBubble(
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(
+                RoundedCornerShape(
+                    topStart = 12.dp, bottomEnd = 12.dp, bottomStart = 12.dp
+                )
+            )
             .background(colors.gray50)
             .padding(horizontal = 18.dp, vertical = 12.dp),
     ) {
@@ -36,8 +40,8 @@ fun UserChatBubble(
 
 @Preview(showBackground = true)
 @Composable
-private fun UserChatBubblePreview() {
+private fun TodakunChatUserInputBubblePreview() {
     TodakunTheme {
-        UserChatBubble(text = "오늘 하루 운세는 어떤가요?")
+        TodakunChatUserInputBubble(text = "오늘 하루 운세는 어떤가요?")
     }
 }
