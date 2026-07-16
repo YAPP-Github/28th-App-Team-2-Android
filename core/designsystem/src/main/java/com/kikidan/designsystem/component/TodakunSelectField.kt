@@ -1,4 +1,4 @@
-package com.kikidan.designsystem.component.selectfield
+package com.kikidan.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,19 +24,18 @@ import com.kikidan.designsystem.theme.TodakunTheme
 
 @Composable
 fun TodakunSelectField(
-    value: String?,
+    value: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "",
     expanded: Boolean = false,
-    onClear: (() -> Unit)? = null,
+    onClear: () -> Unit = {},
 ) {
     val colors = TodakunTheme.colors
     val typography = TodakunTheme.typography
 
-    val hasValue = value != null
-    val isFilled = hasValue || expanded
-    val showClearButton = !expanded && hasValue && onClear != null
+    val isFilled = value.isNotEmpty() || expanded
+    val showClearButton = !expanded && value.isNotEmpty()
 
     Row(
         modifier = modifier
@@ -57,10 +56,11 @@ fun TodakunSelectField(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
-            text = value ?: placeholder,
+            text = value.ifEmpty { if (expanded) "" else placeholder },
             style = if (isFilled) typography.body2Medium else typography.body2Regular,
             color = if (isFilled) colors.gray975 else colors.gray600,
             modifier = Modifier.weight(1f),
+            maxLines = 1
         )
         if (showClearButton) {
             Icon(
@@ -69,7 +69,7 @@ fun TodakunSelectField(
                 tint = colors.gray300,
                 modifier = Modifier
                     .size(20.dp)
-                    .clickable { onClear?.invoke() },
+                    .clickable(onClick = onClear),
             )
         }
         Icon(
