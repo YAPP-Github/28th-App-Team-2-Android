@@ -18,9 +18,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunTheme
@@ -31,7 +34,8 @@ fun TodakunChatInputField(
     onValueChange: (String) -> Unit,
     onSendClick: () -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "토닥이에게 운세 물어보기",
+    maxLines:Int = 5,
+    placeholder: String = stringResource(R.string.place_holder_chat_input),
 ) {
     val colors = TodakunTheme.colors
     val typography = TodakunTheme.typography
@@ -40,9 +44,21 @@ fun TodakunChatInputField(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .border(width = 1.dp, color = colors.gray50, shape = RoundedCornerShape(100))
-            .background(color = colors.white, shape = RoundedCornerShape(100))
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+            .dropShadow(
+                shape = TodakunChatInputFieldDefaults.InputFieldRound,
+                shadow = Shadow(
+                    radius = 20.dp,
+                    offset = DpOffset(x = 0.dp, y = 4.dp),
+                    color = colors.black.copy(alpha = 0.06f)
+                )
+            )
+            .border(
+                width = 1.dp,
+                color = colors.gray50,
+                shape = TodakunChatInputFieldDefaults.InputFieldRound
+            )
+            .background(color = colors.white, shape = TodakunChatInputFieldDefaults.InputFieldRound)
+            .padding(horizontal = 20.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier.weight(1f)) {
@@ -56,14 +72,9 @@ fun TodakunChatInputField(
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = TextStyle(
-                    color = colors.black,
-                    fontSize = typography.body2Regular.fontSize,
-                    fontWeight = typography.body2Regular.fontWeight,
-                    fontFamily = typography.body2Regular.fontFamily,
-                    lineHeight = typography.body2Regular.lineHeight,
-                ),
+                textStyle = typography.body2Regular,
                 modifier = Modifier.fillMaxWidth(),
+                maxLines = maxLines
             )
         }
 
@@ -86,6 +97,10 @@ fun TodakunChatInputField(
             )
         }
     }
+}
+
+private object TodakunChatInputFieldDefaults {
+    val InputFieldRound = RoundedCornerShape(100.dp)
 }
 
 @Preview(showBackground = true)
