@@ -76,7 +76,7 @@ internal fun WheelPickerColumn(
     var hasGainedFocus by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
-    val clampedSelectedIndex = selectedIndex.coerceIn(0, items.lastIndex)
+    val clampedSelectedIndex = if (items.isEmpty()) 0 else selectedIndex.coerceIn(0, items.lastIndex)
     val latestSelectedIndex by rememberUpdatedState(selectedIndex)
     val latestOnSelectedIndexChange by rememberUpdatedState(onSelectedIndexChange)
 
@@ -128,7 +128,7 @@ internal fun WheelPickerColumn(
     fun commitEdit(value: String) {
         if (!editing) return
         editing = false
-        if (editText.isNotEmpty()) onDirectInputCommitted(value)
+        if (value.isNotEmpty()) onDirectInputCommitted(value)
     }
 
     LaunchedEffect(editing) { if (editing) focusRequester.requestFocus() }
