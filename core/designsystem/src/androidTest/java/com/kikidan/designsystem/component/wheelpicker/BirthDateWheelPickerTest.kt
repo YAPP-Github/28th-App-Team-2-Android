@@ -1,6 +1,9 @@
 package com.kikidan.designsystem.component.wheelpicker
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -26,12 +29,8 @@ class BirthDateWheelPickerTest {
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
-                    year = 2000,
-                    month = 1,
-                    day = 1,
-                    onYearChange = {},
-                    onMonthChange = {},
-                    onDayChange = {},
+                    birthDateState = BirthDateState(year = 2000, month = 1, day = 1),
+                    onBirthDateChange = {},
                     onSaveClick = {},
                     onDismissRequest = {},
                 )
@@ -54,12 +53,8 @@ class BirthDateWheelPickerTest {
             TodakunTheme {
                 // 2000-02-29 는 윤년이라 실존하는 날짜다.
                 BirthDateWheelPicker(
-                    year = 2000,
-                    month = 2,
-                    day = 29,
-                    onYearChange = {},
-                    onMonthChange = {},
-                    onDayChange = {},
+                    birthDateState = BirthDateState(year = 2000, month = 2, day = 29),
+                    onBirthDateChange = {},
                     onSaveClick = { saved = true },
                     onDismissRequest = {},
                 )
@@ -78,16 +73,12 @@ class BirthDateWheelPickerTest {
     @Test
     fun `표시_범위보다_큰_연도를_입력하면_최대_연도로_보정된다`() {
         // given
-        var year = 2000
+        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 1, day = 1))
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
-                    year = year,
-                    month = 1,
-                    day = 1,
-                    onYearChange = { year = it },
-                    onMonthChange = {},
-                    onDayChange = {},
+                    birthDateState = birthDateState,
+                    onBirthDateChange = { birthDateState = it },
                     onSaveClick = {},
                     onDismissRequest = {},
                 )
@@ -106,22 +97,18 @@ class BirthDateWheelPickerTest {
 
         // then
         // yearRange 기본값(1900..LocalDate.now().year)의 상한으로 보정된다.
-        assertEquals(LocalDate.now().year, year)
+        assertEquals(LocalDate.now().year, birthDateState.year)
     }
 
     @Test
     fun `표시_범위보다_큰_월을_입력하면_12월로_보정된다`() {
         // given
-        var month = 1
+        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 1, day = 1))
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
-                    year = 2000,
-                    month = month,
-                    day = 1,
-                    onYearChange = {},
-                    onMonthChange = { month = it },
-                    onDayChange = {},
+                    birthDateState = birthDateState,
+                    onBirthDateChange = { birthDateState = it },
                     onSaveClick = {},
                     onDismissRequest = {},
                 )
@@ -139,22 +126,18 @@ class BirthDateWheelPickerTest {
         composeTestRule.waitForIdle()
 
         // then
-        assertEquals(12, month)
+        assertEquals(12, birthDateState.month)
     }
 
     @Test
     fun `표시_범위보다_큰_일을_입력하면_31일로_보정된다`() {
         // given
-        var day = 1
+        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 1, day = 1))
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
-                    year = 2000,
-                    month = 1,
-                    day = day,
-                    onYearChange = {},
-                    onMonthChange = {},
-                    onDayChange = { day = it },
+                    birthDateState = birthDateState,
+                    onBirthDateChange = { birthDateState = it },
                     onSaveClick = {},
                     onDismissRequest = {},
                 )
@@ -172,22 +155,18 @@ class BirthDateWheelPickerTest {
         composeTestRule.waitForIdle()
 
         // then
-        assertEquals(31, day)
+        assertEquals(31, birthDateState.day)
     }
 
     @Test
     fun `월_컬럼을_스크롤_선택하면_다른_컬럼과_무관하게_월_값만_보고된다`() {
         // given
-        var month = 6
+        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 6, day = 15))
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
-                    year = 2000,
-                    month = month,
-                    day = 15,
-                    onYearChange = {},
-                    onMonthChange = { month = it },
-                    onDayChange = {},
+                    birthDateState = birthDateState,
+                    onBirthDateChange = { birthDateState = it },
                     onSaveClick = {},
                     onDismissRequest = {},
                 )
@@ -201,6 +180,36 @@ class BirthDateWheelPickerTest {
         composeTestRule.waitForIdle()
 
         // then
-        assertEquals(7, month)
+        assertEquals(7, birthDateState.month)
+    }
+
+    @Test
+    fun `월이_바뀌어_일이_유효범위를_벗어나면_일이_자동으로_재보정된다`() {
+        // given
+        // 1월 31일 상태에서 월을 2월로 바꾸면 2월에는 31일이 없다.
+        var birthDateState by mutableStateOf(BirthDateState(year = 2001, month = 1, day = 31))
+        composeTestRule.setContent {
+            TodakunTheme {
+                BirthDateWheelPicker(
+                    birthDateState = birthDateState,
+                    onBirthDateChange = { birthDateState = it },
+                    onSaveClick = {},
+                    onDismissRequest = {},
+                )
+            }
+        }
+        composeTestRule.waitForIdle()
+
+        // when
+        composeTestRule.onNodeWithText("01월").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNode(hasSetTextAction()).performTextReplacement("2")
+        composeTestRule.onNode(hasSetTextAction()).performImeAction()
+        composeTestRule.waitForIdle()
+
+        // then
+        // 2001년은 평년이라 2월은 28일까지다.
+        assertEquals(2, birthDateState.month)
+        assertEquals(28, birthDateState.day)
     }
 }

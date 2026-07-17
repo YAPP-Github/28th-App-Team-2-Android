@@ -29,7 +29,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
-import com.kikidan.designsystem.theme.LocalTodakunColor
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 
 
@@ -115,18 +115,16 @@ private fun WheelPickerHeader(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalTodakunColor.current
-
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = title, style = TodakunTypography.heading4Bold, color = colors.black)
+        Text(text = title, style = TodakunTypography.heading4Bold, color = TodakunColor.black)
         Text(
             text = stringResource(R.string.wheel_picker_save),
             style = TodakunTypography.body2SemiBold,
-            color = colors.primary600,
+            color = TodakunColor.primary600,
             modifier = Modifier.clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -144,7 +142,7 @@ private fun WheelPickerHighlight(
             .fillMaxWidth()
             .height(WheelPickerDefaults.CenterContainerHeight)
             .clip(WheelPickerDefaults.WheelPickerHighlightShape)
-            .background(LocalTodakunColor.current.primary50),
+            .background(TodakunColor.primary50),
     )
 }
 

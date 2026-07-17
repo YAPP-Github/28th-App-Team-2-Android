@@ -2,10 +2,7 @@ package com.kikidan.designsystem.component.wheelpicker
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -16,19 +13,14 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import java.time.LocalDate
 import java.time.YearMonth
 
-
 @Composable
 fun BirthDateWheelPicker(
-    onYearChange: (Int) -> Unit,
-    onMonthChange: (Int) -> Unit,
-    onDayChange: (Int) -> Unit,
+    birthDateState: BirthDateState,
+    onBirthDateChange: (BirthDateState) -> Unit,
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     yearRange: IntRange = 1900..LocalDate.now().year,
-    year: Int = LocalDate.now().year,
-    month: Int = LocalDate.now().monthValue,
-    day: Int = LocalDate.now().dayOfMonth,
 ) {
     val context = LocalContext.current
     val invalidDateMessage = stringResource(R.string.wheel_picker_birth_date_invalid)
@@ -40,21 +32,23 @@ fun BirthDateWheelPicker(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
     ) {
-        var clampedYear by remember { mutableIntStateOf(year.coerceIn(yearRange)) }
-        var clampedMonth by remember { mutableIntStateOf(month.coerceIn(BirthDateWheelPickerDefaults.MonthRange)) }
-        var clampedDay by remember { mutableIntStateOf(day.coerceIn(BirthDateWheelPickerDefaults.DayRange)) }
-
         val yearItems = remember(yearRange) { yearRange.map { it.toString() + yearPostfix } }
         val monthItems = remember {
             BirthDateWheelPickerDefaults.MonthRange.map {
                 it.toString().padStart(2, '0') + monthPostfix
             }
         }
+        val dayItems = remember(birthDateState.year, birthDateState.month) {
+            (1..YearMonth.of(birthDateState.year, birthDateState.month).lengthOfMonth())
+                .map { it.toString() + datePostfix }
+        }
 
         TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_birth_date_title),
             onSaveClick = {
-                val validDate = runCatching { LocalDate.of(year, month, day) }
+                val validDate = runCatching {
+                    LocalDate.of(birthDateState.year, birthDateState.month, birthDateState.day)
+                }
                 if (validDate.isSuccess) {
                     onSaveClick()
                 } else {
@@ -64,73 +58,51 @@ fun BirthDateWheelPicker(
             columns = listOf(
                 WheelPickerColumnState(
                     items = yearItems,
-                    selectedIndex = clampedYear - yearRange.first,
+                    selectedIndex = birthDateState.year - yearRange.first,
                     width = 60.dp,
                     maxInputDigits = 4,
                 ),
                 WheelPickerColumnState(
                     items = monthItems,
-                    selectedIndex = clampedMonth - BirthDateWheelPickerDefaults.MonthRange.first,
+                    selectedIndex = birthDateState.month - BirthDateWheelPickerDefaults.MonthRange.first,
                     width = 40.dp,
                     maxInputDigits = 2,
                 ),
                 WheelPickerColumnState(
-                    items = (1..YearMonth.of(clampedYear, clampedMonth)
-                        .lengthOfMonth()).map { it.toString() + datePostfix },
-                    selectedIndex = clampedDay - BirthDateWheelPickerDefaults.DayRange.first,
+                    items = dayItems,
+                    selectedIndex = birthDateState.day - 1,
                     width = 40.dp,
                     maxInputDigits = 2,
                 ),
             ),
             onWheelPickerColumnSelected = { columnIndex, selectedIndex ->
                 when (columnIndex) {
-                    0 -> {
-                        val newYear = yearRange.first + selectedIndex
-                        clampedYear = newYear
-                        onYearChange(newYear)
-                    }
+                    0 -> onBirthDateChange(
+                        birthDateState.withYear(yearRange.first + selectedIndex, yearRange)
+                    )
 
-                    1 -> {
-                        val newMonth = BirthDateWheelPickerDefaults.MonthRange.first + selectedIndex
-                        clampedMonth = newMonth
-                        onMonthChange(newMonth)
-                    }
+                    1 -> onBirthDateChange(
+                        birthDateState.withMonth(
+                            BirthDateWheelPickerDefaults.MonthRange.first + selectedIndex
+                        )
+                    )
 
-                    2 -> {
-                        val newDay = BirthDateWheelPickerDefaults.DayRange.first + selectedIndex
-                        clampedDay = newDay
-                        onDayChange(newDay)
-                    }
+                    2 -> onBirthDateChange(birthDateState.withDay(selectedIndex + 1))
                 }
             },
             directInputEnabled = true,
             onColumnDirectInputCommitted = { columnIndex, rawDigits ->
                 when (columnIndex) {
-                    0 -> {
-                        val typed = rawDigits.take(4).toIntOrNull()
-                        if (typed != null) {
-                            val newYear = typed.coerceIn(yearRange)
-                            clampedYear = newYear
-                            onYearChange(newYear)
-                        }
+                    0 -> rawDigits.take(4).toIntOrNull()?.let {
+                        onBirthDateChange(birthDateState.withYear(it, yearRange))
                     }
 
-                    1 -> {
-                        val typed = rawDigits.take(2).toIntOrNull()
-                        if (typed != null) {
-                            val newMonth = typed.coerceIn(BirthDateWheelPickerDefaults.MonthRange)
-                            clampedMonth = newMonth
-                            onMonthChange(typed.coerceIn(BirthDateWheelPickerDefaults.MonthRange))
-                        }
+                    1 -> rawDigits.take(2).toIntOrNull()?.let {
+                        onBirthDateChange(birthDateState.withMonth(it))
                     }
 
-                    2 -> {
-                        val typed = rawDigits.take(2).toIntOrNull()
-                        if (typed != null) {
-                            val newDay = typed.coerceIn(BirthDateWheelPickerDefaults.DayRange)
-                            clampedDay = newDay
-                            onDayChange(newDay)
-                        }
+                    2 -> rawDigits.take(2).toIntOrNull()?.let {
+                        onBirthDateChange(birthDateState.withDay(it))
                     }
                 }
             },
@@ -140,7 +112,6 @@ fun BirthDateWheelPicker(
 
 private object BirthDateWheelPickerDefaults {
     val MonthRange = 1..12
-    val DayRange = 1..31
 }
 
 @Preview(showBackground = true)
@@ -148,9 +119,8 @@ private object BirthDateWheelPickerDefaults {
 private fun BirthDateWheelPickerPreview() {
     TodakunTheme {
         BirthDateWheelPicker(
-            onYearChange = {},
-            onMonthChange = {},
-            onDayChange = {},
+            birthDateState = BirthDateState.of(LocalDate.now()),
+            onBirthDateChange = {},
             onSaveClick = {},
             onDismissRequest = {},
         )

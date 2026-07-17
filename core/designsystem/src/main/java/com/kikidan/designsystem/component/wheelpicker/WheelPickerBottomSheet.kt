@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.kikidan.designsystem.theme.LocalTodakunColor
+import com.kikidan.designsystem.theme.TodakunColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,8 +34,6 @@ internal fun WheelPickerBottomSheet(
     bottomSpacing: Dp = WheelPickerBottomSheetDefaults.BottomSpacing,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val colors = LocalTodakunColor.current
-
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -57,10 +55,10 @@ internal fun WheelPickerBottomSheet(
                             radius = 20.dp,
                             spread = 0.dp,
                             offset = DpOffset(0.dp, 0.dp),
-                            color = colors.black.copy(alpha = 0.05f),
+                            color = TodakunColor.black.copy(alpha = 0.05f),
                         )
                     )
-                    .background(colors.white, WheelPickerBottomSheetDefaults.Shape)
+                    .background(TodakunColor.white, WheelPickerBottomSheetDefaults.Shape)
                     .clip(WheelPickerBottomSheetDefaults.Shape),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -75,13 +73,12 @@ internal fun WheelPickerBottomSheet(
 private fun DragHandle(
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalTodakunColor.current
     Box(
         modifier = modifier
             .padding(vertical = 16.dp)
             .size(width = 42.dp, height = 4.dp)
             .clip(RoundedCornerShape(2.dp))
-            .background(colors.gray200),
+            .background(TodakunColor.gray200),
     )
 }
 
@@ -90,6 +87,5 @@ private object WheelPickerBottomSheetDefaults {
 
     val BottomSpacing: Dp = 16.dp
     val Shape = RoundedCornerShape(12.dp)
-    val HandleShape = RoundedCornerShape(2.dp)
 }
 

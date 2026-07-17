@@ -44,7 +44,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import com.kikidan.designsystem.theme.LocalTodakunColor
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -65,8 +65,6 @@ internal fun WheelPickerColumn(
     onDirectInputCommitted: (rawDigits: String) -> Unit = {},
 ) {
     require(visibleCount % 2 == 1) { "visibleCount 는 홀수여야 합니다." }
-
-    val colors = LocalTodakunColor.current
 
     val halfCount = visibleCount / 2
     val scope = rememberCoroutineScope()
@@ -167,9 +165,9 @@ internal fun WheelPickerColumn(
                     else -> TodakunTypography.body1Regular
                 }
                 val textColor = when (distance) {
-                    0 -> colors.black
-                    1 -> colors.gray700
-                    else -> colors.gray400
+                    0 -> TodakunColor.black
+                    1 -> TodakunColor.gray700
+                    else -> TodakunColor.gray400
                 }
                 val itemHeight = WheelPickerDefaults.CenterContainerHeight
 
@@ -223,7 +221,6 @@ private fun EditTextField(
     onCommitEdit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalTodakunColor.current
     var isEdited by remember { mutableStateOf(false) }
     var value by remember { mutableStateOf("") }
 
@@ -244,11 +241,11 @@ private fun EditTextField(
                 }
             },
         textStyle = TodakunTypography.body1Medium.copy(
-            color = colors.primary600,
+            color = TodakunColor.primary600,
             textAlign = TextAlign.Center,
         ),
         singleLine = true,
-        cursorBrush = SolidColor(colors.primary600),
+        cursorBrush = SolidColor(TodakunColor.primary600),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
         ),
@@ -260,7 +257,7 @@ private fun EditTextField(
                         modifier = Modifier.fillMaxWidth(),
                         text = placeHolder,
                         style = TodakunTypography.body1Medium.copy(
-                            color = colors.primary600,
+                            color = TodakunColor.primary600,
                             textAlign = TextAlign.Center,
                         ),
                     )
