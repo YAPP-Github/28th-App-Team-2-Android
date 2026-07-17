@@ -50,7 +50,9 @@ fun TodakunWheelPicker(
         modifier = modifier
             .pointerInput(Unit) {
                 //빈 공간 스크롤 시 바텀시트가 내려가는 것 방지
-                detectVerticalDragGestures { _, _ ->  }
+                detectVerticalDragGestures { _, _ -> }
+            }
+            .pointerInput(Unit) {
                 detectTapGestures(onTap = { focusManager.clearFocus() })
             }
             .padding(top = 12.dp, bottom = 40.dp, start = 30.dp, end = 30.dp),
