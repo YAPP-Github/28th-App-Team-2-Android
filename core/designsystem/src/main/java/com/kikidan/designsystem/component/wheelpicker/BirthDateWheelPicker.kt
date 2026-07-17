@@ -1,13 +1,11 @@
 package com.kikidan.designsystem.component.wheelpicker
 
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunTheme
 import java.time.LocalDate
@@ -45,16 +43,7 @@ fun BirthDateWheelPicker(
 
         TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_birth_date_title),
-            onSaveClick = {
-                val validDate = runCatching {
-                    LocalDate.of(birthDateState.year, birthDateState.month, birthDateState.day)
-                }
-                if (validDate.isSuccess) {
-                    onSaveClick()
-                } else {
-                    Toast.makeText(context, invalidDateMessage, Toast.LENGTH_SHORT).show()
-                }
-            },
+            onSaveClick = onSaveClick,
             columns = listOf(
                 WheelPickerColumnState(
                     items = yearItems,
