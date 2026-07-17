@@ -1,0 +1,21 @@
+root = true
+
+[*.{kt,kts}]
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+ktlint_code_style = ktlint_official
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+# core/data-local, core/data-remote: Android namespace(빌드 스크립트의 module 이름 유래, 대시 미허용)가
+# 밑줄을 포함하므로 해당 패키지명은 표준 package-name 규칙에서 예외로 둔다.
+[core/data-local/**/*.kt]
+ktlint_standard_package-name = disabled
+
+[core/data-remote/**/*.kt]
+ktlint_standard_package-name = disabled
+
+# core/designsystem: 테마 토큰 제공을 위한 의도된 CompositionLocal이므로 allowlist에 등록한다.
+[core/designsystem/**/*.kt]
+compose_allowed_composition_locals = LocalTodakunColor,LocalTodakunTypography
