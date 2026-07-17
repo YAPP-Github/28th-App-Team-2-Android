@@ -295,13 +295,4 @@ private fun Modifier.wheelPickerGraphics(
     }
 
 
-@Immutable
-data class WheelPickerColumnState(
-    val items: List<String>,
-    val selectedIndex: Int,
-    val width: Dp = Dp.Unspecified,
-    val maxInputDigits: Int = 2,
-)
-
-
 

@@ -59,19 +59,16 @@ fun BirthDateWheelPicker(
                 WheelPickerColumnState(
                     items = yearItems,
                     selectedIndex = birthDateState.year - yearRange.first,
-                    width = 60.dp,
                     maxInputDigits = 4,
                 ),
                 WheelPickerColumnState(
                     items = monthItems,
                     selectedIndex = birthDateState.month - BirthDateWheelPickerDefaults.MonthRange.first,
-                    width = 40.dp,
                     maxInputDigits = 2,
                 ),
                 WheelPickerColumnState(
                     items = dayItems,
                     selectedIndex = birthDateState.day - 1,
-                    width = 40.dp,
                     maxInputDigits = 2,
                 ),
             ),
