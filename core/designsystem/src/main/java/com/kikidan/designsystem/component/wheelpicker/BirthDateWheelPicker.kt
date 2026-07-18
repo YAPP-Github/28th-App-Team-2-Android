@@ -3,7 +3,6 @@ package com.kikidan.designsystem.component.wheelpicker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kikidan.designsystem.R
@@ -18,10 +17,8 @@ fun BirthDateWheelPicker(
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    yearRange: IntRange = 1900..LocalDate.now().year,
+    yearRange: IntRange
 ) {
-    val context = LocalContext.current
-    val invalidDateMessage = stringResource(R.string.wheel_picker_birth_date_invalid)
     val yearPostfix = stringResource(R.string.wheel_picker_year_postfix)
     val monthPostfix = stringResource(R.string.wheel_picker_month_postfix)
     val datePostfix = stringResource(R.string.wheel_picker_date_postfix)
@@ -109,6 +106,7 @@ private fun BirthDateWheelPickerPreview() {
             onBirthDateChange = {},
             onSaveClick = {},
             onDismissRequest = {},
+            yearRange = 1900..2025
         )
     }
 }
