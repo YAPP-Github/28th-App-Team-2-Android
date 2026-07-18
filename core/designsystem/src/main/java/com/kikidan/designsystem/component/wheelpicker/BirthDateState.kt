@@ -9,8 +9,9 @@ data class BirthDateState(
     val year: Int,
     val month: Int,
     val day: Int,
+    val yearRange: IntRange,
 ) {
-    fun withYear(year: Int, yearRange: IntRange): BirthDateState =
+    fun withYear(year: Int): BirthDateState =
         copy(year = year.coerceIn(yearRange)).clampDay()
 
     fun withMonth(month: Int): BirthDateState =
@@ -27,7 +28,7 @@ data class BirthDateState(
     }
 
     companion object {
-        fun of(date: LocalDate): BirthDateState =
-            BirthDateState(date.year, date.monthValue, date.dayOfMonth)
+        fun of(date: LocalDate, yearRange: IntRange): BirthDateState =
+            BirthDateState(date.year, date.monthValue, date.dayOfMonth, yearRange)
     }
 }

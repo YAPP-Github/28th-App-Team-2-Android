@@ -17,8 +17,8 @@ fun BirthDateWheelPicker(
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    yearRange: IntRange
 ) {
+    val yearRange = birthDateState.yearRange
     val yearPostfix = stringResource(R.string.wheel_picker_year_postfix)
     val monthPostfix = stringResource(R.string.wheel_picker_month_postfix)
     val datePostfix = stringResource(R.string.wheel_picker_date_postfix)
@@ -61,7 +61,7 @@ fun BirthDateWheelPicker(
             onWheelPickerColumnSelected = { columnIndex, selectedIndex ->
                 when (columnIndex) {
                     0 -> onBirthDateChange(
-                        birthDateState.withYear(yearRange.first + selectedIndex, yearRange)
+                        birthDateState.withYear(yearRange.first + selectedIndex)
                     )
 
                     1 -> onBirthDateChange(
@@ -77,7 +77,7 @@ fun BirthDateWheelPicker(
             onColumnDirectInputCommitted = { columnIndex, rawDigits ->
                 when (columnIndex) {
                     0 -> rawDigits.take(4).toIntOrNull()?.let {
-                        onBirthDateChange(birthDateState.withYear(it, yearRange))
+                        onBirthDateChange(birthDateState.withYear(it))
                     }
 
                     1 -> rawDigits.take(2).toIntOrNull()?.let {
@@ -102,11 +102,10 @@ private object BirthDateWheelPickerDefaults {
 private fun BirthDateWheelPickerPreview() {
     TodakunTheme {
         BirthDateWheelPicker(
-            birthDateState = BirthDateState.of(LocalDate.now()),
+            birthDateState = BirthDateState.of(LocalDate.now(), 1900..LocalDate.now().year),
             onBirthDateChange = {},
             onSaveClick = {},
             onDismissRequest = {},
-            yearRange = 1900..2025
         )
     }
 }
