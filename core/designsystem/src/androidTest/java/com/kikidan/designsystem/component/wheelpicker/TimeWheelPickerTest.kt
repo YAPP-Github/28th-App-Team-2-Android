@@ -107,7 +107,6 @@ class TimeWheelPickerTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNode(hasSetTextAction()).performTextReplacement("60")
-        composeTestRule.onNode(hasSetTextAction()).performImeAction()
         composeTestRule.waitForIdle()
 
         // then
@@ -147,13 +146,12 @@ class TimeWheelPickerTest {
     }
 
     @Test
-    fun `편집_중_바깥을_클릭하면_값이_커밋되지_않고_다이얼로그가_닫힌다`() {
+    fun `maxInputDigits까지_입력하면_바깥을_클릭하기_전에_이미_값이_커밋된다`() {
         // given
-        // onDismissRequest는 순수 콜백일 뿐 다이얼로그를 자동으로 언마운트하지 않는다(호출부가
-        // 상태를 바꿔야 실제로 컴포지션에서 제거됨). 이 테스트는 호출부 상태 변경 없이 콜백만
-        // 관찰하므로, 다이얼로그/텍스트필드는 여전히 포커스를 유지한 채 남아있고 커밋 경로(IME
-        // Done/포커스 아웃)를 타지 않았음을 확인한다 -- 즉 "바깥 탭"이라는 행위 자체가 편집 중인
-        // 값을 커밋시키는 부수효과를 만들지 않아야 한다.
+        // 자동 이동(auto-advance): 컬럼의 maxInputDigits(시=2자리)까지 채우는 순간, IME Done/포커스
+        // 아웃 없이도 값이 즉시 커밋되고 다음 컬럼으로 포커스가 넘어간다. 따라서 그 뒤에 바깥(scrim)을
+        // 탭해 시트를 닫아도, 커밋된 값은 그대로 유지된다. (커밋의 원인은 "바깥 탭"이 아니라
+        // maxInputDigits 도달이다.)
         var hour = 9
         var dismissed = false
         composeTestRule.setContent {
@@ -171,18 +169,18 @@ class TimeWheelPickerTest {
         composeTestRule.waitForIdle()
 
         // when
-        // 시(hour) 컬럼 중심 항목 탭 -> 직접입력 전환. 아직 IME Done/포커스 아웃으로 커밋하지 않은 채
-        // 값만 입력해 둔다.
+        // 시(hour) 컬럼 중심 항목 탭 -> 직접입력 전환 후 2자리("15")를 채우면 자동 커밋된다.
         composeTestRule.wheelColumn(0).onChildren().filterToOne(hasText("09")).performClick()
         composeTestRule.waitForIdle()
         composeTestRule.onNode(hasSetTextAction()).performTextReplacement("15")
+        composeTestRule.waitForIdle()
 
-        // 커밋되기 전에 바깥(scrim)을 탭해 시트를 닫는다.
+        // 이미 커밋된 뒤 바깥(scrim)을 탭해 시트를 닫는다.
         composeTestRule.onNode(isDialog()).performTouchInput { click(Offset(10f, 10f)) }
         composeTestRule.waitForIdle()
 
         // then
         assertTrue(dismissed)
-        assertEquals(9, hour) // 편집 중이던 "15"는 커밋되지 않고 폐기된다.
+        assertEquals(15, hour) // "15"는 maxInputDigits 도달 시 이미 커밋되었다.
     }
 }

@@ -6,10 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import com.kikidan.designsystem.theme.TodakunTheme
 import org.junit.Assert.assertEquals
@@ -43,6 +45,39 @@ class BirthDateWheelPickerTest {
         composeTestRule.onNodeWithText("2000년").assertIsDisplayed()
         composeTestRule.onNodeWithText("01월").assertIsDisplayed()
         composeTestRule.onNodeWithText("1일").assertIsDisplayed()
+    }
+
+    @Test
+    fun `커밋_후_같은_컬럼을_다시_편집하면_타이핑이_반영된다`() {
+        // given
+        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 6, day = 1))
+        composeTestRule.setContent {
+            TodakunTheme {
+                BirthDateWheelPicker(
+                    birthDateState = birthDateState,
+                    onBirthDateChange = { birthDateState = it },
+                    onSaveClick = {},
+                    onDismissRequest = {},
+                )
+            }
+        }
+        composeTestRule.waitForIdle()
+
+        // 월 편집 -> "08" (자동 이동/커밋)
+        composeTestRule.onNodeWithText("06월").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNode(hasSetTextAction() and isFocused()).performTextInput("08")
+        composeTestRule.waitForIdle()
+        assertEquals(8, birthDateState.month)
+
+        // 같은 월 컬럼 재탭
+        composeTestRule.onNodeWithText("08월").performClick()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNode(hasSetTextAction()).assertExists() // 편집 진입?
+        composeTestRule.onNode(hasSetTextAction() and isFocused()).performTextInput("03")
+        composeTestRule.waitForIdle()
+
+        assertEquals(3, birthDateState.month)
     }
 
     @Test
@@ -151,7 +186,6 @@ class BirthDateWheelPickerTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNode(hasSetTextAction()).performTextReplacement("35")
-        composeTestRule.onNode(hasSetTextAction()).performImeAction()
         composeTestRule.waitForIdle()
 
         // then

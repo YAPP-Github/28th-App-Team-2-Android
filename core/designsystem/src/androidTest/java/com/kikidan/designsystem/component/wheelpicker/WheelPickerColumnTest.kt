@@ -73,41 +73,6 @@ class WheelPickerColumnTest {
     }
 
     @Test
-    fun `직접입력은_최대_자리수로_제한되고_완료_시_원본_숫자_문자열을_그대로_전달한다`() {
-        // given
-        var committed: String? = null
-        composeTestRule.setContent {
-            TodakunTheme {
-                WheelPickerColumn(
-                    items = hours,
-                    selectedIndex = 5,
-                    onSelectedIndexChange = {},
-                    directInputEnabled = true,
-                    maxInputDigits = 2,
-                    onDirectInputCommitted = { committed = it },
-                )
-            }
-        }
-        composeTestRule.waitForIdle()
-
-        // when
-        // 가운데 항목(선택된 항목) 탭 -> TextField 전환
-        composeTestRule.onNodeWithText("05").performClick()
-        composeTestRule.waitForIdle()
-
-        // 3자리 이상 입력 시 maxInputDigits(2) 자리로 길이만 제한된다.
-        composeTestRule.onNode(hasSetTextAction()).performTextReplacement("999")
-        composeTestRule.onNode(hasSetTextAction()).assertTextEquals("99")
-
-        // 커밋 시(IME Done) raw 숫자 문자열을 그대로 콜백으로 전달한다(값 해석/클램프 없음).
-        composeTestRule.onNode(hasSetTextAction()).performImeAction()
-        composeTestRule.waitForIdle()
-
-        // then
-        assertEquals("99", committed)
-    }
-
-    @Test
     fun `visibleCount가_짝수이면_예외가_발생한다`() {
         // given & when & then
         assertThrows(IllegalArgumentException::class.java) {

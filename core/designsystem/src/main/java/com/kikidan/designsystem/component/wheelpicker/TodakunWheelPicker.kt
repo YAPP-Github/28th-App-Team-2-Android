@@ -17,7 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +48,7 @@ fun TodakunWheelPicker(
     onColumnDirectInputCommitted: (columnIndex: Int, rawDigits: String) -> Unit = { _, _ -> },
 ) {
     val focusManager = LocalFocusManager.current
+    var editingColumnIndex by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = modifier
@@ -87,6 +91,14 @@ fun TodakunWheelPicker(
                         visibleCount = visibleCount,
                         directInputEnabled = directInputEnabled,
                         maxInputDigits = columnState.maxInputDigits,
+                        editing = editingColumnIndex == columnIndex,
+                        onEditStart = { editingColumnIndex = columnIndex },
+                        onEditFinish = {
+                            if (editingColumnIndex == columnIndex) editingColumnIndex = null
+                        },
+                        onAdvance = {
+                            editingColumnIndex = (columnIndex + 1).takeIf { it <= columns.lastIndex }
+                        },
                         onDirectInputCommitted = { raw ->
                             onColumnDirectInputCommitted(
                                 columnIndex,

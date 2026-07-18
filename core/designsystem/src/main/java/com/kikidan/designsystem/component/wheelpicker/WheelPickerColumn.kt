@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -62,6 +61,10 @@ internal fun WheelPickerColumn(
     visibleCount: Int = 5,
     directInputEnabled: Boolean = false,
     maxInputDigits: Int = 2,
+    editing: Boolean = false,
+    onEditStart: () -> Unit = {},
+    onEditFinish: () -> Unit = {},
+    onAdvance: () -> Unit = {},
     onDirectInputCommitted: (rawDigits: String) -> Unit = {},
 ) {
     require(visibleCount % 2 == 1) { "visibleCount 는 홀수여야 합니다." }
@@ -71,9 +74,6 @@ internal fun WheelPickerColumn(
     val listState = rememberLazyListState()
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 
-    var editing by remember { mutableStateOf(false) }
-    var editText by remember { mutableStateOf("") }
-    var hasGainedFocus by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
 
     val clampedSelectedIndex = if (items.isEmpty()) 0 else selectedIndex.coerceIn(0, items.lastIndex)
@@ -113,25 +113,14 @@ internal fun WheelPickerColumn(
             }
     }
 
+    LaunchedEffect(editing) {
+        if (editing) focusRequester.requestFocus()
+    }
 
     fun selectIndex(index: Int) {
         if (index !in items.indices || index == selectedIndex) return
         scope.launch { listState.animateScrollToItem(index) }
     }
-
-    fun startEdit() {
-        editText = items.getOrElse(clampedSelectedIndex) { "" }
-        hasGainedFocus = false
-        editing = true
-    }
-
-    fun commitEdit(value: String) {
-        if (!editing) return
-        editing = false
-        if (value.isNotEmpty()) onDirectInputCommitted(value)
-    }
-
-    LaunchedEffect(editing) { if (editing) focusRequester.requestFocus() }
 
     // translationY로 밀려 들어간 만큼(위+아래) 바깥 레이아웃 높이에서 빼서, 시각적으로 안 쓰는
     // 여백을 없앤다. 단, LazyColumn 자체는 fullHeight로 그대로 측정해야 뷰포트 기반의
@@ -182,7 +171,7 @@ internal fun WheelPickerColumn(
                             indication = null,
                         ) {
                             if (isCenter) {
-                                if (directInputEnabled) startEdit()
+                                if (directInputEnabled) onEditStart()
                             } else {
                                 selectIndex(index)
                             }
@@ -199,11 +188,11 @@ internal fun WheelPickerColumn(
         if (editing) {
             EditTextField(
                 maxInputDigits = maxInputDigits,
-                placeHolder = editText,
+                placeHolder = items.getOrElse(clampedSelectedIndex) { "" },
                 focusRequester = focusRequester,
-                hasGainedFocus = hasGainedFocus,
-                onChangeGainedFocus = { hasGainedFocus = it },
-                onCommitEdit = { commitEdit(it) }
+                onCommit = onDirectInputCommitted,
+                onFinish = onEditFinish,
+                onAdvance = onAdvance,
             )
         }
     }
@@ -215,29 +204,53 @@ internal fun WheelPickerColumn(
 private fun EditTextField(
     placeHolder: String,
     maxInputDigits: Int,
-    hasGainedFocus: Boolean,
     focusRequester: FocusRequester,
-    onChangeGainedFocus: (Boolean) -> Unit,
-    onCommitEdit: (String) -> Unit,
+    onCommit: (String) -> Unit,
+    onFinish: () -> Unit,
+    onAdvance: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isEdited by remember { mutableStateOf(false) }
     var value by remember { mutableStateOf("") }
+    var consumed by remember { mutableStateOf(false) }
+    // 이 편집 세션 안에서 한 번이라도 포커스를 얻었는지. 반드시 EditTextField 인스턴스 로컬이어야
+    // 한다. 컬럼 레벨로 두면 이전 세션의 true 가 남아, 재편집으로 새로 생성된 필드의 최초
+    // onFocusChanged(false) 가 곧바로 consumeFinish 를 호출해 편집이 즉시 종료된다.
+    var hasGainedFocus by remember { mutableStateOf(false) }
+
+    fun commitCurrent() {
+        if (value.isNotEmpty()) onCommit(value)
+    }
+
+    fun consumeAdvance() {
+        if (consumed) return
+        consumed = true
+        commitCurrent()
+        onAdvance()
+    }
+
+    fun consumeFinish() {
+        if (consumed) return
+        consumed = true
+        commitCurrent()
+        onFinish()
+    }
 
     BasicTextField(
         value = value,
         onValueChange = { new ->
             isEdited = true
             value = new.filter { it.isDigit() }.take(maxInputDigits)
+            if (value.length == maxInputDigits) consumeAdvance()
         },
         modifier = modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
             .onFocusChanged { focusState ->
                 if (focusState.isFocused) {
-                    onChangeGainedFocus(true)
+                    hasGainedFocus = true
                 } else if (hasGainedFocus) {
-                    onCommitEdit(value)
+                    consumeFinish()
                 }
             },
         textStyle = TodakunTypography.body1Medium.copy(
@@ -249,7 +262,7 @@ private fun EditTextField(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
         ),
-        keyboardActions = KeyboardActions(onDone = { onCommitEdit(value) }),
+        keyboardActions = KeyboardActions(onDone = { consumeFinish() }),
         decorationBox = { innerTextField ->
             Box {
                 if (!isEdited) {
@@ -293,6 +306,3 @@ private fun Modifier.wheelPickerGraphics(
             -fraction * itemPx * WheelPickerDefaults.CENTER_FULL_FACTOR
         cameraDistance = 14f * this.density
     }
-
-
-
