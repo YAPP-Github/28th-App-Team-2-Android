@@ -170,6 +170,8 @@ internal object WheelPickerDefaults {
     val WheelPickerHighlightShape = RoundedCornerShape(8.dp)
 
     const val CENTER_FULL_FACTOR = 0.1f
+
+    const val ANIMATION_JUMP_THRESHOLD = 10
 }
 
 @Composable

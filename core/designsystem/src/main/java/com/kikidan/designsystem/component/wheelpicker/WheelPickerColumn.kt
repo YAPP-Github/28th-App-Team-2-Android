@@ -76,7 +76,8 @@ internal fun WheelPickerColumn(
 
     val focusRequester = remember { FocusRequester() }
 
-    val clampedSelectedIndex = if (items.isEmpty()) 0 else selectedIndex.coerceIn(0, items.lastIndex)
+    val clampedSelectedIndex =
+        if (items.isEmpty()) 0 else selectedIndex.coerceIn(0, items.lastIndex)
     val latestSelectedIndex by rememberUpdatedState(selectedIndex)
     val latestOnSelectedIndexChange by rememberUpdatedState(onSelectedIndexChange)
 
@@ -95,12 +96,16 @@ internal fun WheelPickerColumn(
 
     LaunchedEffect(Unit) { listState.scrollToItem(clampedSelectedIndex) }
 
-    LaunchedEffect(selectedIndex, items) {
-        if (!listState.isScrollInProgress) {
-            if (centeredIndex != clampedSelectedIndex) listState.animateScrollToItem(
-                clampedSelectedIndex
-            )
+    LaunchedEffect(clampedSelectedIndex) {
+        if (centeredIndex == clampedSelectedIndex) return@LaunchedEffect
+        val distance = abs(centeredIndex - clampedSelectedIndex)
+        if (distance > WheelPickerDefaults.ANIMATION_JUMP_THRESHOLD) {
+            val direction = if (centeredIndex > clampedSelectedIndex) -1 else 1
+            val preIndex = (clampedSelectedIndex + direction * WheelPickerDefaults.ANIMATION_JUMP_THRESHOLD)
+                .coerceIn(0, items.lastIndex)
+            listState.scrollToItem(preIndex)
         }
+        listState.animateScrollToItem(clampedSelectedIndex)
     }
 
     LaunchedEffect(listState, editing) {
