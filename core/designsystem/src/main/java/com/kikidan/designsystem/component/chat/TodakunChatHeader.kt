@@ -1,4 +1,4 @@
-package com.kikidan.designsystem.component
+package com.kikidan.designsystem.component.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
