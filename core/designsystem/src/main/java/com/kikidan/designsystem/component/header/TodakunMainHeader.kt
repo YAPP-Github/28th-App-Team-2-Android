@@ -14,20 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunTheme
 
-/**
- * 공통 메인 헤더.
- *
- * 좌측에 타이틀(+선택적 서브텍스트), 우측에 알림(Bell) 아이콘을 배치하는 Stateless 컴포넌트.
- *
- * @param title 타이틀 텍스트.
- * @param subtext 선택적 서브텍스트. null이면 표시하지 않는다.
- * @param onBellClick 알림 아이콘 클릭 콜백.
- */
 @Composable
 fun TodakunMainHeader(
     title: String,
@@ -64,7 +56,7 @@ fun TodakunMainHeader(
 
         Icon(
             painter = painterResource(id = R.drawable.ic_bell),
-            contentDescription = "알림",
+            contentDescription = stringResource(R.string.main_header_notice_content_description),
             tint = TodakunTheme.colors.gray975,
             modifier = Modifier
                 .size(24.dp)
