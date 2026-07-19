@@ -1,0 +1,95 @@
+package com.kikidan.designsystem.component.header
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunTheme
+
+/**
+ * 공통 메인 헤더.
+ *
+ * 좌측에 타이틀(+선택적 서브텍스트), 우측에 알림(Bell) 아이콘을 배치하는 Stateless 컴포넌트.
+ *
+ * @param title 타이틀 텍스트.
+ * @param subtext 선택적 서브텍스트. null이면 표시하지 않는다.
+ * @param onBellClick 알림 아이콘 클릭 콜백.
+ */
+@Composable
+fun TodakunMainHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    subtext: String? = null,
+    onBellClick: () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .background(TodakunTheme.colors.white)
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = title,
+                style = TodakunTheme.typography.heading4Bold,
+                color = TodakunTheme.colors.black,
+            )
+            if (subtext != null) {
+                Text(
+                    text = subtext,
+                    style = TodakunTheme.typography.body3Regular,
+                    color = TodakunTheme.colors.gray500,
+                )
+            }
+        }
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_bell),
+            contentDescription = "알림",
+            tint = TodakunTheme.colors.gray975,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable(onClick = onBellClick),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TodakunMainHeaderPreview() {
+    TodakunTheme {
+        TodakunMainHeader(
+            title = "타이틀",
+            subtext = "서브텍스트",
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TodakunMainHeaderNoSubtextPreview() {
+    TodakunTheme {
+        TodakunMainHeader(
+            title = "타이틀",
+        )
+    }
+}
