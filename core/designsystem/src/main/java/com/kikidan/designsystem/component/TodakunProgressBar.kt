@@ -1,7 +1,5 @@
 package com.kikidan.designsystem.component
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,10 +30,6 @@ fun TodakunProgressBar(
     showBackButton: Boolean = true,
     onBackClick: () -> Unit = {},
 ) {
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = tween(300),
-    )
     val colors = TodakunTheme.colors
 
     Row(
@@ -66,7 +59,7 @@ fun TodakunProgressBar(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(animatedProgress)
+                    .fillMaxWidth(progress.coerceIn(0f, 1f))
                     .height(6.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(
