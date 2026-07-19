@@ -29,4 +29,10 @@
     <string name="wheel_picker_date_postfix">일</string>
     <string name="wheel_picker_birth_date_title">생년월일 입력</string>
     <string name="wheel_picker_birth_date_invalid">올바른 날짜를 입력해 주세요.</string>
+
+    <!-- BottomNavigation -->
+    <string name="bottom_nav_fortune">운세</string>
+    <string name="bottom_nav_todak">토닥이</string>
+    <string name="bottom_nav_lucky_action">행운 액션</string>
+    <string name="bottom_nav_my">마이</string>
 </resources>
