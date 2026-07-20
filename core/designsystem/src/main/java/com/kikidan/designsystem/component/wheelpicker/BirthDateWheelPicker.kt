@@ -28,64 +28,79 @@ fun BirthDateWheelPicker(
         modifier = modifier,
     ) {
         val yearItems = remember(yearRange) { yearRange.map { it.toString() + yearPostfix } }
-        val monthItems = remember {
-            BirthDateWheelPickerDefaults.MonthRange.map {
-                it.toString().padStart(2, '0') + monthPostfix
+        val monthItems =
+            remember {
+                BirthDateWheelPickerDefaults.MonthRange.map {
+                    it.toString().padStart(2, '0') + monthPostfix
+                }
             }
-        }
-        val dayItems = remember(birthDateState.year, birthDateState.month) {
-            (1..YearMonth.of(birthDateState.year, birthDateState.month).lengthOfMonth())
-                .map { it.toString() + datePostfix }
-        }
+        val dayItems =
+            remember(birthDateState.year, birthDateState.month) {
+                (1..YearMonth.of(birthDateState.year, birthDateState.month).lengthOfMonth())
+                    .map { it.toString() + datePostfix }
+            }
 
         TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_birth_date_title),
             onSaveClick = onSaveClick,
-            columns = listOf(
-                WheelPickerColumnState(
-                    items = yearItems,
-                    selectedIndex = birthDateState.year - yearRange.first,
-                    maxInputDigits = 4,
+            columns =
+                listOf(
+                    WheelPickerColumnState(
+                        items = yearItems,
+                        selectedIndex = birthDateState.year - yearRange.first,
+                        maxInputDigits = 4,
+                    ),
+                    WheelPickerColumnState(
+                        items = monthItems,
+                        selectedIndex = birthDateState.month - BirthDateWheelPickerDefaults.MonthRange.first,
+                        maxInputDigits = 2,
+                    ),
+                    WheelPickerColumnState(
+                        items = dayItems,
+                        selectedIndex = birthDateState.day - 1,
+                        maxInputDigits = 2,
+                    ),
                 ),
-                WheelPickerColumnState(
-                    items = monthItems,
-                    selectedIndex = birthDateState.month - BirthDateWheelPickerDefaults.MonthRange.first,
-                    maxInputDigits = 2,
-                ),
-                WheelPickerColumnState(
-                    items = dayItems,
-                    selectedIndex = birthDateState.day - 1,
-                    maxInputDigits = 2,
-                ),
-            ),
-            onWheelPickerColumnSelected = { columnIndex, selectedIndex ->
+            onWheelPickerColumnSelect = { columnIndex, selectedIndex ->
                 when (columnIndex) {
-                    0 -> onBirthDateChange(
-                        birthDateState.withYear(yearRange.first + selectedIndex)
-                    )
-
-                    1 -> onBirthDateChange(
-                        birthDateState.withMonth(
-                            BirthDateWheelPickerDefaults.MonthRange.first + selectedIndex
+                    0 -> {
+                        onBirthDateChange(
+                            birthDateState.withYear(yearRange.first + selectedIndex),
                         )
-                    )
+                    }
 
-                    2 -> onBirthDateChange(birthDateState.withDay(selectedIndex + 1))
+                    1 -> {
+                        onBirthDateChange(
+                            birthDateState.withMonth(
+                                BirthDateWheelPickerDefaults.MonthRange.first + selectedIndex,
+                            ),
+                        )
+                    }
+
+                    2 -> {
+                        onBirthDateChange(birthDateState.withDay(selectedIndex + 1))
+                    }
                 }
             },
             directInputEnabled = true,
-            onColumnDirectInputCommitted = { columnIndex, rawDigits ->
+            onColumnDirectInputCommit = { columnIndex, rawDigits ->
                 when (columnIndex) {
-                    0 -> rawDigits.take(4).toIntOrNull()?.let {
-                        onBirthDateChange(birthDateState.withYear(it))
+                    0 -> {
+                        rawDigits.take(4).toIntOrNull()?.let {
+                            onBirthDateChange(birthDateState.withYear(it))
+                        }
                     }
 
-                    1 -> rawDigits.take(2).toIntOrNull()?.let {
-                        onBirthDateChange(birthDateState.withMonth(it))
+                    1 -> {
+                        rawDigits.take(2).toIntOrNull()?.let {
+                            onBirthDateChange(birthDateState.withMonth(it))
+                        }
                     }
 
-                    2 -> rawDigits.take(2).toIntOrNull()?.let {
-                        onBirthDateChange(birthDateState.withDay(it))
+                    2 -> {
+                        rawDigits.take(2).toIntOrNull()?.let {
+                            onBirthDateChange(birthDateState.withDay(it))
+                        }
                     }
                 }
             },
@@ -93,7 +108,7 @@ fun BirthDateWheelPicker(
     }
 }
 
-private object BirthDateWheelPickerDefaults {
+object BirthDateWheelPickerDefaults {
     val MonthRange = 1..12
 }
 

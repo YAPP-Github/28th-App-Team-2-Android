@@ -21,18 +21,19 @@ import org.junit.Rule
 import org.junit.Test
 
 class WheelPickerTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private fun numberColumn(range: IntRange, selected: Int) = WheelPickerColumnState(
+    private fun numberColumn(
+        range: IntRange,
+        selected: Int,
+    ) = WheelPickerColumnState(
         items = range.map { it.toString().padStart(2, '0') },
         selectedIndex = selected - range.first,
     )
 
     // 컬럼마다 testTag가 없으므로, 스크롤 가능한(LazyColumn) 노드를 등장 순서(컬럼 인덱스)로 찾는다.
-    private fun SemanticsNodeInteractionsProvider.wheelColumn(index: Int) =
-        onAllNodes(hasScrollAction())[index]
+    private fun SemanticsNodeInteractionsProvider.wheelColumn(index: Int) = onAllNodes(hasScrollAction())[index]
 
     @Test
     fun `컬럼별_선택은_다른_컬럼과_혼동되지_않고_올바른_컬럼_인덱스와_선택_인덱스를_보고한다`() {
@@ -43,12 +44,13 @@ class WheelPickerTest {
                 TodakunWheelPicker(
                     title = "테스트",
                     onSaveClick = {},
-                    columns = listOf(
-                        numberColumn(0..23, 5),
-                        numberColumn(0..59, 10),
-                        numberColumn(1..31, 15),
-                    ),
-                    onWheelPickerColumnSelected = { columnIndex, selectedIndex ->
+                    columns =
+                        listOf(
+                            numberColumn(0..23, 5),
+                            numberColumn(0..59, 10),
+                            numberColumn(1..31, 15),
+                        ),
+                    onWheelPickerColumnSelect = { columnIndex, selectedIndex ->
                         events += columnIndex to selectedIndex
                     },
                 )
@@ -58,12 +60,20 @@ class WheelPickerTest {
 
         // when
         // 컬럼1(분)의 인덱스 9 항목("09") 탭. 컬럼은 testTag 대신 등장 순서로 범위를 좁힌다.
-        composeTestRule.wheelColumn(1).onChildren().filterToOne(hasText("09")).performClick()
+        composeTestRule
+            .wheelColumn(1)
+            .onChildren()
+            .filterToOne(hasText("09"))
+            .performClick()
         composeTestRule.waitForIdle()
 
         // 컬럼0(시)의 인덱스 4 항목("04", 중심 5에서 1칸 거리 -- 뷰포트 내 보장) 탭.
         // 다른 컬럼과 혼동되지 않아야 한다.
-        composeTestRule.wheelColumn(0).onChildren().filterToOne(hasText("04")).performClick()
+        composeTestRule
+            .wheelColumn(0)
+            .onChildren()
+            .filterToOne(hasText("04"))
+            .performClick()
         composeTestRule.waitForIdle()
 
         // then
@@ -80,7 +90,7 @@ class WheelPickerTest {
                     title = "테스트",
                     onSaveClick = { saved = true },
                     columns = listOf(numberColumn(0..23, 5)),
-                    onWheelPickerColumnSelected = { _, _ -> },
+                    onWheelPickerColumnSelect = { _, _ -> },
                 )
             }
         }

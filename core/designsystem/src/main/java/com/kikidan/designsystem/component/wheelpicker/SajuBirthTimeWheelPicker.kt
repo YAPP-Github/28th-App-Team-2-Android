@@ -24,13 +24,14 @@ fun SajuBirthTimeWheelPicker(
         TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_saju_birth_time_title),
             onSaveClick = onSaveClick,
-            columns = listOf(
-                WheelPickerColumnState(
-                    items = items.toList(),
-                    selectedIndex = 2,
-                )
-            ),
-            onWheelPickerColumnSelected = { _, selectedIndex -> onSajuBirthTimeChange(items[selectedIndex]) },
+            columns =
+                listOf(
+                    WheelPickerColumnState(
+                        items = items.toList(),
+                        selectedIndex = 2,
+                    ),
+                ),
+            onWheelPickerColumnSelect = { _, selectedIndex -> onSajuBirthTimeChange(items[selectedIndex]) },
             directInputEnabled = false,
         )
     }

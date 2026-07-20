@@ -16,7 +16,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class WheelPickerColumnTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 

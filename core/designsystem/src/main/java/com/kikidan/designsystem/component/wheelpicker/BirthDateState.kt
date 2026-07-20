@@ -11,11 +11,9 @@ data class BirthDateState(
     val day: Int,
     val yearRange: IntRange,
 ) {
-    fun withYear(year: Int): BirthDateState =
-        copy(year = year.coerceIn(yearRange)).clampDay()
+    fun withYear(year: Int): BirthDateState = copy(year = year.coerceIn(yearRange)).clampDay()
 
-    fun withMonth(month: Int): BirthDateState =
-        copy(month = month.coerceIn(1, 12)).clampDay()
+    fun withMonth(month: Int): BirthDateState = copy(month = month.coerceIn(1, 12)).clampDay()
 
     fun withDay(day: Int): BirthDateState {
         val maxDay = YearMonth.of(year, month).lengthOfMonth()
@@ -28,7 +26,9 @@ data class BirthDateState(
     }
 
     companion object {
-        fun of(date: LocalDate, yearRange: IntRange): BirthDateState =
-            BirthDateState(date.year, date.monthValue, date.dayOfMonth, yearRange)
+        fun of(
+            date: LocalDate,
+            yearRange: IntRange,
+        ): BirthDateState = BirthDateState(date.year, date.monthValue, date.dayOfMonth, yearRange)
     }
 }

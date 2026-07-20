@@ -65,7 +65,7 @@ internal fun WheelPickerColumn(
     onEditStart: () -> Unit = {},
     onEditFinish: () -> Unit = {},
     onAdvance: () -> Unit = {},
-    onDirectInputCommitted: (rawDigits: String) -> Unit = {},
+    onDirectInputCommit: (rawDigits: String) -> Unit = {},
 ) {
     require(visibleCount % 2 == 1) { "visibleCount 는 홀수여야 합니다." }
 
@@ -101,20 +101,26 @@ internal fun WheelPickerColumn(
         val distance = abs(centeredIndex - clampedSelectedIndex)
         if (distance > WheelPickerDefaults.ANIMATION_JUMP_THRESHOLD) {
             val direction = if (centeredIndex > clampedSelectedIndex) -1 else 1
-            val preIndex = (clampedSelectedIndex + direction * WheelPickerDefaults.ANIMATION_JUMP_THRESHOLD)
-                .coerceIn(0, items.lastIndex)
+            val preIndex =
+                (clampedSelectedIndex + direction * WheelPickerDefaults.ANIMATION_JUMP_THRESHOLD)
+                    .coerceIn(0, items.lastIndex)
             listState.scrollToItem(preIndex)
         }
         listState.animateScrollToItem(clampedSelectedIndex)
     }
 
     LaunchedEffect(listState, editing) {
-        snapshotFlow { listState.isScrollInProgress }.drop(1).distinctUntilChanged()
-            .filter { inProgress -> !inProgress && !editing }.collect {
+        snapshotFlow { listState.isScrollInProgress }
+            .drop(1)
+            .distinctUntilChanged()
+            .filter { inProgress -> !inProgress && !editing }
+            .collect {
                 val idx = centeredIndex
-                if (idx in items.indices && idx != latestSelectedIndex) latestOnSelectedIndexChange(
-                    idx
-                )
+                if (idx in items.indices && idx != latestSelectedIndex) {
+                    latestOnSelectedIndexChange(
+                        idx,
+                    )
+                }
             }
     }
 
@@ -131,13 +137,15 @@ internal fun WheelPickerColumn(
     // 여백을 없앤다. 단, LazyColumn 자체는 fullHeight로 그대로 측정해야 뷰포트 기반의
     // fraction/scale/translationY 계산(listState.layoutInfo)이 안 틀어진다.
     val fullHeight = WheelPickerDefaults.CenterContainerHeight * visibleCount
-    val adjustedHeight = fullHeight -
+    val adjustedHeight =
+        fullHeight -
             WheelPickerDefaults.CenterContainerHeight * (halfCount * WheelPickerDefaults.CENTER_FULL_FACTOR * 2)
 
     Box(
-        modifier = modifier
-            .height(adjustedHeight)
-            .clipToBounds(),
+        modifier =
+            modifier
+                .height(adjustedHeight)
+                .clipToBounds(),
         contentAlignment = Alignment.Center,
     ) {
         LazyColumn(
@@ -146,41 +154,45 @@ internal fun WheelPickerColumn(
             contentPadding = PaddingValues(vertical = WheelPickerDefaults.CenterContainerHeight * halfCount),
             userScrollEnabled = !editing,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .requiredHeight(fullHeight)
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .requiredHeight(fullHeight)
+                    .fillMaxSize(),
         ) {
             itemsIndexed(items, key = { index, _ -> index }) { index, item ->
                 val isCenter = index == centeredIndex
                 val distance = abs(index - centeredIndex)
-                val textStyle = when (distance) {
-                    0 -> TodakunTypography.body1Medium
-                    1 -> TodakunTypography.body1Regular
-                    else -> TodakunTypography.body1Regular
-                }
-                val textColor = when (distance) {
-                    0 -> TodakunColor.black
-                    1 -> TodakunColor.gray700
-                    else -> TodakunColor.gray400
-                }
+                val textStyle =
+                    when (distance) {
+                        0 -> TodakunTypography.body1Medium
+                        1 -> TodakunTypography.body1Regular
+                        else -> TodakunTypography.body1Regular
+                    }
+                val textColor =
+                    when (distance) {
+                        0 -> TodakunColor.black
+                        1 -> TodakunColor.gray700
+                        else -> TodakunColor.gray400
+                    }
                 val itemHeight = WheelPickerDefaults.CenterContainerHeight
 
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(itemHeight)
-                        .semantics { selected = isCenter }
-                        .wheelPickerGraphics(listState, halfCount, index, itemHeight)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                        ) {
-                            if (isCenter) {
-                                if (directInputEnabled) onEditStart()
-                            } else {
-                                selectIndex(index)
-                            }
-                        },
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(itemHeight)
+                            .semantics { selected = isCenter }
+                            .wheelPickerGraphics(listState, halfCount, index, itemHeight)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                            ) {
+                                if (isCenter) {
+                                    if (directInputEnabled) onEditStart()
+                                } else {
+                                    selectIndex(index)
+                                }
+                            },
                     contentAlignment = Alignment.Center,
                 ) {
                     if (!(editing && isCenter)) {
@@ -195,13 +207,12 @@ internal fun WheelPickerColumn(
                 maxInputDigits = maxInputDigits,
                 placeHolder = items.getOrElse(clampedSelectedIndex) { "" },
                 focusRequester = focusRequester,
-                onCommit = onDirectInputCommitted,
+                onCommit = onDirectInputCommit,
                 onFinish = onEditFinish,
                 onAdvance = onAdvance,
             )
         }
     }
-
 }
 
 @SuppressLint("RememberReturnType")
@@ -213,7 +224,7 @@ private fun EditTextField(
     onCommit: (String) -> Unit,
     onFinish: () -> Unit,
     onAdvance: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var isEdited by remember { mutableStateOf(false) }
     var value by remember { mutableStateOf("") }
@@ -248,25 +259,29 @@ private fun EditTextField(
             value = new.filter { it.isDigit() }.take(maxInputDigits)
             if (value.length == maxInputDigits) consumeAdvance()
         },
-        modifier = modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester)
-            .onFocusChanged { focusState ->
-                if (focusState.isFocused) {
-                    hasGainedFocus = true
-                } else if (hasGainedFocus) {
-                    consumeFinish()
-                }
-            },
-        textStyle = TodakunTypography.body1Medium.copy(
-            color = TodakunColor.primary600,
-            textAlign = TextAlign.Center,
-        ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasGainedFocus = true
+                    } else if (hasGainedFocus) {
+                        consumeFinish()
+                    }
+                },
+        textStyle =
+            TodakunTypography.body1Medium.copy(
+                color = TodakunColor.primary600,
+                textAlign = TextAlign.Center,
+            ),
         singleLine = true,
         cursorBrush = SolidColor(TodakunColor.primary600),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done,
+            ),
         keyboardActions = KeyboardActions(onDone = { consumeFinish() }),
         decorationBox = { innerTextField ->
             Box {
@@ -274,15 +289,16 @@ private fun EditTextField(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = placeHolder,
-                        style = TodakunTypography.body1Medium.copy(
-                            color = TodakunColor.primary600,
-                            textAlign = TextAlign.Center,
-                        ),
+                        style =
+                            TodakunTypography.body1Medium.copy(
+                                color = TodakunColor.primary600,
+                                textAlign = TextAlign.Center,
+                            ),
                     )
                 }
                 innerTextField()
             }
-        }
+        },
     )
 }
 
@@ -290,7 +306,7 @@ private fun Modifier.wheelPickerGraphics(
     listState: LazyListState,
     halfCount: Int,
     index: Int,
-    itemHeight: Dp
+    itemHeight: Dp,
 ): Modifier =
     graphicsLayer {
         val info = listState.layoutInfo
@@ -301,9 +317,11 @@ private fun Modifier.wheelPickerGraphics(
         val itemPx = with(density) { itemHeight.toPx() }
         val itemCenter =
             itemInfo?.let { it.offset + it.size / 2f } ?: viewportCenter
-        val fraction = ((itemCenter - viewportCenter) / itemPx).coerceIn(
-            -halfCount.toFloat(), halfCount.toFloat()
-        )
+        val fraction =
+            ((itemCenter - viewportCenter) / itemPx).coerceIn(
+                -halfCount.toFloat(),
+                halfCount.toFloat(),
+            )
         val s = (1f - abs(fraction) * 0.08f).coerceIn(0.8f, 1f)
         scaleX = s
         scaleY = s

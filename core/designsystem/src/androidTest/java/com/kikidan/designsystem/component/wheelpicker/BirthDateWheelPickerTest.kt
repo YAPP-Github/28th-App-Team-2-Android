@@ -21,7 +21,6 @@ import org.junit.Test
 import java.time.LocalDate
 
 class BirthDateWheelPickerTest {
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
@@ -31,7 +30,14 @@ class BirthDateWheelPickerTest {
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
-                    birthDateState = BirthDateState(year = 2000, month = 1, day = 1, yearRange = 1900..LocalDate.now().year),
+                    birthDateState =
+                        BirthDateState(
+                            year = 2000,
+                            month = 1,
+                            day = 1,
+                            yearRange =
+                                1900..LocalDate.now().year,
+                        ),
                     onBirthDateChange = {},
                     onSaveClick = {},
                     onDismissRequest = {},
@@ -50,7 +56,15 @@ class BirthDateWheelPickerTest {
     @Test
     fun `커밋_후_같은_컬럼을_다시_편집하면_타이핑이_반영된다`() {
         // given
-        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 6, day = 1, yearRange = 1900..LocalDate.now().year))
+        var birthDateState by mutableStateOf(
+            BirthDateState(
+                year = 2000,
+                month = 6,
+                day = 1,
+                yearRange =
+                    1900..LocalDate.now().year,
+            ),
+        )
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
@@ -88,7 +102,14 @@ class BirthDateWheelPickerTest {
             TodakunTheme {
                 // 2000-02-29 는 윤년이라 실존하는 날짜다.
                 BirthDateWheelPicker(
-                    birthDateState = BirthDateState(year = 2000, month = 2, day = 29, yearRange = 1900..LocalDate.now().year),
+                    birthDateState =
+                        BirthDateState(
+                            year = 2000,
+                            month = 2,
+                            day = 29,
+                            yearRange =
+                                1900..LocalDate.now().year,
+                        ),
                     onBirthDateChange = {},
                     onSaveClick = { saved = true },
                     onDismissRequest = {},
@@ -108,7 +129,15 @@ class BirthDateWheelPickerTest {
     @Test
     fun `표시_범위보다_큰_연도를_입력하면_최대_연도로_보정된다`() {
         // given
-        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 1, day = 1, yearRange = 1900..LocalDate.now().year))
+        var birthDateState by mutableStateOf(
+            BirthDateState(
+                year = 2000,
+                month = 1,
+                day = 1,
+                yearRange =
+                    1900..LocalDate.now().year,
+            ),
+        )
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
@@ -138,7 +167,15 @@ class BirthDateWheelPickerTest {
     @Test
     fun `표시_범위보다_큰_월을_입력하면_12월로_보정된다`() {
         // given
-        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 1, day = 1, yearRange = 1900..LocalDate.now().year))
+        var birthDateState by mutableStateOf(
+            BirthDateState(
+                year = 2000,
+                month = 1,
+                day = 1,
+                yearRange =
+                    1900..LocalDate.now().year,
+            ),
+        )
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
@@ -167,7 +204,15 @@ class BirthDateWheelPickerTest {
     @Test
     fun `표시_범위보다_큰_일을_입력하면_31일로_보정된다`() {
         // given
-        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 1, day = 1, yearRange = 1900..LocalDate.now().year))
+        var birthDateState by mutableStateOf(
+            BirthDateState(
+                year = 2000,
+                month = 1,
+                day = 1,
+                yearRange =
+                    1900..LocalDate.now().year,
+            ),
+        )
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
@@ -195,7 +240,15 @@ class BirthDateWheelPickerTest {
     @Test
     fun `월_컬럼을_스크롤_선택하면_다른_컬럼과_무관하게_월_값만_보고된다`() {
         // given
-        var birthDateState by mutableStateOf(BirthDateState(year = 2000, month = 6, day = 15, yearRange = 1900..LocalDate.now().year))
+        var birthDateState by mutableStateOf(
+            BirthDateState(
+                year = 2000,
+                month = 6,
+                day = 15,
+                yearRange =
+                    1900..LocalDate.now().year,
+            ),
+        )
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
@@ -221,7 +274,15 @@ class BirthDateWheelPickerTest {
     fun `월이_바뀌어_일이_유효범위를_벗어나면_일이_자동으로_재보정된다`() {
         // given
         // 1월 31일 상태에서 월을 2월로 바꾸면 2월에는 31일이 없다.
-        var birthDateState by mutableStateOf(BirthDateState(year = 2001, month = 1, day = 31, yearRange = 1900..LocalDate.now().year))
+        var birthDateState by mutableStateOf(
+            BirthDateState(
+                year = 2001,
+                month = 1,
+                day = 31,
+                yearRange =
+                    1900..LocalDate.now().year,
+            ),
+        )
         composeTestRule.setContent {
             TodakunTheme {
                 BirthDateWheelPicker(
