@@ -18,9 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
-import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunColor
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunSelectField(
@@ -31,54 +33,87 @@ fun TodakunSelectField(
     expanded: Boolean = false,
     onClear: () -> Unit = {},
 ) {
-    val colors = TodakunTheme.colors
-    val typography = TodakunTheme.typography
-
     val isFilled = value.isNotEmpty() || expanded
     val showClearButton = !expanded && value.isNotEmpty()
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(colors.gray25)
-            .then(
-                if (expanded) {
-                    Modifier.border(1.dp, colors.gray975, RoundedCornerShape(12.dp))
-                } else {
-                    Modifier
-                },
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(TodakunColor.gray25)
+                .then(
+                    if (expanded) {
+                        Modifier.border(1.dp, TodakunColor.gray975, RoundedCornerShape(12.dp))
+                    } else {
+                        Modifier
+                    },
+                ).clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(
             text = value.ifEmpty { if (expanded) "" else placeholder },
-            style = if (isFilled) typography.body2Medium else typography.body2Regular,
-            color = if (isFilled) colors.gray975 else colors.gray600,
+            style = if (isFilled) TodakunTypography.body2Medium else TodakunTypography.body2Regular,
+            color = if (isFilled) TodakunColor.gray975 else TodakunColor.gray600,
             modifier = Modifier.weight(1f),
-            maxLines = 1
+            maxLines = 1,
         )
         if (showClearButton) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_circle_x_fill),
                 contentDescription = null,
-                tint = colors.gray300,
-                modifier = Modifier
-                    .size(20.dp)
-                    .clickable(onClick = onClear),
+                tint = TodakunColor.gray300,
+                modifier =
+                    Modifier
+                        .size(20.dp)
+                        .clickable(onClick = onClear),
             )
         }
         Icon(
             painter = painterResource(id = R.drawable.ic_chevron_small_bottom),
             contentDescription = null,
-            tint = colors.gray600,
-            modifier = Modifier
-                .size(20.dp)
-                .rotate(if (expanded) 180f else 0f),
+            tint = TodakunColor.gray600,
+            modifier =
+                Modifier
+                    .size(20.dp)
+                    .rotate(if (expanded) 180f else 0f),
         )
     }
+}
+
+@Preview(name = "SelectField - Placeholder", showBackground = true, widthDp = 320)
+@Composable
+private fun TodakunSelectFieldPlaceholderPreview() {
+    TodakunSelectField(
+        value = "",
+        onClick = {},
+        placeholder = "성별을 선택해주세요",
+        modifier = Modifier.padding(16.dp),
+    )
+}
+
+@Preview(name = "SelectField - Selected", showBackground = true, widthDp = 320)
+@Composable
+private fun TodakunSelectFieldSelectedPreview() {
+    TodakunSelectField(
+        value = "여성",
+        onClick = {},
+        placeholder = "성별을 선택해주세요",
+        modifier = Modifier.padding(16.dp),
+    )
+}
+
+@Preview(name = "SelectField - Expanded", showBackground = true, widthDp = 320)
+@Composable
+private fun TodakunSelectFieldExpandedPreview() {
+    TodakunSelectField(
+        value = "여성",
+        onClick = {},
+        placeholder = "성별을 선택해주세요",
+        expanded = true,
+        modifier = Modifier.padding(16.dp),
+    )
 }

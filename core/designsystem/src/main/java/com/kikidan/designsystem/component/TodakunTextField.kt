@@ -30,9 +30,11 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
-import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunColor
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunTextField(
@@ -43,9 +45,6 @@ fun TodakunTextField(
     isError: Boolean = false,
     errorMessage: String = "",
 ) {
-    val colors = TodakunTheme.colors
-    val typography = TodakunTheme.typography
-
     var isFocused by remember { mutableStateOf(false) }
     val hasValue = value.isNotEmpty()
     val showClearButton = isFocused && hasValue
@@ -55,35 +54,36 @@ fun TodakunTextField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged { isFocused = it.isFocused },
-            textStyle = typography.body2Medium.copy(color = colors.gray975),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { isFocused = it.isFocused },
+            textStyle = TodakunTypography.body2Medium.copy(color = TodakunColor.gray975),
             singleLine = true,
             cursorBrush = SolidColor(TodakunTextFieldDefaults.CursorColor),
             decorationBox = { innerTextField ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(if (isError) colors.red50 else colors.gray25)
-                        .then(
-                            if (showBorder) {
-                                Modifier.border(1.dp, colors.gray975, RoundedCornerShape(12.dp))
-                            } else {
-                                Modifier
-                            },
-                        )
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (isError) TodakunColor.red50 else TodakunColor.gray25)
+                            .then(
+                                if (showBorder) {
+                                    Modifier.border(1.dp, TodakunColor.gray975, RoundedCornerShape(12.dp))
+                                } else {
+                                    Modifier
+                                },
+                            ).padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
                         if (!hasValue) {
                             Text(
                                 text = placeholder,
-                                style = typography.body2Regular,
-                                color = colors.gray600,
+                                style = TodakunTypography.body2Regular,
+                                color = TodakunColor.gray600,
                             )
                         }
                         innerTextField()
@@ -93,12 +93,13 @@ fun TodakunTextField(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_circle_x_fill),
                             contentDescription = "입력 지우기",
-                            tint = colors.gray300,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .clickable { onValueChange("") }
-                                .padding(6.dp)
-                                .size(20.dp),
+                            tint = TodakunColor.gray300,
+                            modifier =
+                                Modifier
+                                    .clip(CircleShape)
+                                    .clickable { onValueChange("") }
+                                    .padding(6.dp)
+                                    .size(20.dp),
                         )
                     }
                 }
@@ -109,13 +110,51 @@ fun TodakunTextField(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = errorMessage,
-                style = typography.caption1Regular,
-                color = colors.red500,
+                style = TodakunTypography.caption1Regular,
+                color = TodakunColor.red500,
             )
         }
     }
 }
 
-private object TodakunTextFieldDefaults {
+object TodakunTextFieldDefaults {
     val CursorColor = Color(0xFF0040FF)
+}
+
+@Preview(name = "TextField - Empty", showBackground = true, widthDp = 320)
+@Composable
+private fun TodakunTextFieldEmptyPreview() {
+    var value by remember { mutableStateOf("") }
+    TodakunTextField(
+        value = value,
+        onValueChange = { value = it },
+        placeholder = "이름을 입력해주세요",
+        modifier = Modifier.padding(16.dp),
+    )
+}
+
+@Preview(name = "TextField - Filled", showBackground = true, widthDp = 320)
+@Composable
+private fun TodakunTextFieldFilledPreview() {
+    var value by remember { mutableStateOf("토닥운") }
+    TodakunTextField(
+        value = value,
+        onValueChange = { value = it },
+        placeholder = "이름을 입력해주세요",
+        modifier = Modifier.padding(16.dp),
+    )
+}
+
+@Preview(name = "TextField - Error", showBackground = true, widthDp = 320)
+@Composable
+private fun TodakunTextFieldErrorPreview() {
+    var value by remember { mutableStateOf("잘못된 값") }
+    TodakunTextField(
+        value = value,
+        onValueChange = { value = it },
+        placeholder = "이름을 입력해주세요",
+        isError = true,
+        errorMessage = "올바른 형식이 아니에요",
+        modifier = Modifier.padding(16.dp),
+    )
 }
