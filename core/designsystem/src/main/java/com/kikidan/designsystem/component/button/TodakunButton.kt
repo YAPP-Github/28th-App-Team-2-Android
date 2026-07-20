@@ -14,22 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 
-@Composable
-fun SecondaryButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
-) {
-    TodakunButton(
-        text = text,
-        textColor = TodakunColor.primary700,
-        backgroundColor = TodakunColor.primary50,
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled
-    )
-}
 
 @Composable
 fun PrimaryButton(
@@ -42,6 +26,23 @@ fun PrimaryButton(
         text = text,
         textColor = TodakunColor.white,
         backgroundColor = TodakunColor.primary600,
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled
+    )
+}
+
+@Composable
+fun SecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    TodakunButton(
+        text = text,
+        textColor = TodakunColor.primary700,
+        backgroundColor = TodakunColor.primary50,
         onClick = onClick,
         modifier = modifier,
         enabled = enabled
