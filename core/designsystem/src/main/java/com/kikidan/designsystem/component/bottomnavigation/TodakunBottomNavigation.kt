@@ -50,8 +50,7 @@ fun TodakunBottomNavigation(
                             color = TodakunColor.black.copy(alpha = TodakunBottomNavigationDefaults.SHADOW_ALPHA),
                             offset = DpOffset(0.dp, TodakunBottomNavigationDefaults.ShadowOffsetY),
                         ),
-                )
-                .clip(TodakunBottomNavigationDefaults.ContainerShape)
+                ).clip(TodakunBottomNavigationDefaults.ContainerShape)
                 .background(color = TodakunColor.white, shape = TodakunBottomNavigationDefaults.ContainerShape)
                 .padding(horizontal = TodakunBottomNavigationDefaults.ContainerHorizontalPadding)
                 .padding(top = TodakunBottomNavigationDefaults.ContentTopPadding),
