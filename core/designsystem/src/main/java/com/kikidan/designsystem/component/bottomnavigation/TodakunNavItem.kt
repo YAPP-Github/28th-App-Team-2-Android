@@ -8,7 +8,7 @@ enum class TodakunNavItem(
     @param:StringRes val labelRes: Int,
     @param:DrawableRes val selectedIconRes: Int,
     @param:DrawableRes val unselectedIconRes: Int,
-    //TODO Navigation Route 클래스를 프로퍼티에 추가
+    // TODO Navigation Route 클래스를 프로퍼티에 추가
 ) {
     LUCKY(
         labelRes = R.string.bottom_nav_fortune,

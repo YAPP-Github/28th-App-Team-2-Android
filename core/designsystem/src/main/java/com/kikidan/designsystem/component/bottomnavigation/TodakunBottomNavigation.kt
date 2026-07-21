@@ -26,41 +26,41 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.kikidan.designsystem.theme.LocalTodakunColor
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
-
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunBottomNavigation(
     selectedItem: TodakunNavItem,
-    onItemSelected: (TodakunNavItem) -> Unit,
+    onItemSelect: (TodakunNavItem) -> Unit,
     modifier: Modifier = Modifier,
     items: List<TodakunNavItem> = TodakunNavItem.entries,
 ) {
-    val colors = LocalTodakunColor.current
-
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(TodakunBottomNavigationDefaults.ContainerHeight)
-            .dropShadow(
-                shape = TodakunBottomNavigationDefaults.ContainerShape, shadow = Shadow(
-                    radius = TodakunBottomNavigationDefaults.ShadowRadius,
-                    color = colors.black.copy(alpha = TodakunBottomNavigationDefaults.SHADOW_ALPHA),
-                    offset = DpOffset(0.dp, TodakunBottomNavigationDefaults.ShadowOffsetY),
-                )
-            )
-            .clip(TodakunBottomNavigationDefaults.ContainerShape)
-            .background(color = TodakunTheme.colors.white, shape = TodakunBottomNavigationDefaults.ContainerShape)
-            .padding(horizontal = TodakunBottomNavigationDefaults.ContainerHorizontalPadding)
-            .padding(top = TodakunBottomNavigationDefaults.ContentTopPadding),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(TodakunBottomNavigationDefaults.ContainerHeight)
+                .dropShadow(
+                    shape = TodakunBottomNavigationDefaults.ContainerShape,
+                    shadow =
+                        Shadow(
+                            radius = TodakunBottomNavigationDefaults.ShadowRadius,
+                            color = TodakunColor.black.copy(alpha = TodakunBottomNavigationDefaults.SHADOW_ALPHA),
+                            offset = DpOffset(0.dp, TodakunBottomNavigationDefaults.ShadowOffsetY),
+                        ),
+                ).clip(TodakunBottomNavigationDefaults.ContainerShape)
+                .background(color = TodakunColor.white, shape = TodakunBottomNavigationDefaults.ContainerShape)
+                .padding(horizontal = TodakunBottomNavigationDefaults.ContainerHorizontalPadding)
+                .padding(top = TodakunBottomNavigationDefaults.ContentTopPadding),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         items.forEach { item ->
             TodakunBottomNavigationTab(
                 item = item,
                 selected = item == selectedItem,
-                onClick = onItemSelected,
+                onClick = onItemSelect,
             )
         }
     }
@@ -73,13 +73,14 @@ private fun RowScope.TodakunBottomNavigationTab(
     onClick: (TodakunNavItem) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .weight(1f)
-            .clickable(
-                onClick = { onClick(item) },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
+        modifier =
+            Modifier
+                .weight(1f)
+                .clickable(
+                    onClick = { onClick(item) },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(TodakunBottomNavigationDefaults.LabelSpacing),
     ) {
@@ -90,8 +91,8 @@ private fun RowScope.TodakunBottomNavigationTab(
         )
         Text(
             text = stringResource(id = item.labelRes),
-            style = if (selected) TodakunTheme.typography.caption3SemiBold else TodakunTheme.typography.caption3Medium,
-            color = if (selected) TodakunTheme.colors.gray975 else TodakunTheme.colors.gray500,
+            style = if (selected) TodakunTypography.caption3SemiBold else TodakunTypography.caption3Medium,
+            color = if (selected) TodakunColor.gray975 else TodakunColor.gray500,
         )
     }
 }
@@ -102,19 +103,20 @@ private fun TodakunBottomNavigationPreview() {
     TodakunTheme {
         TodakunBottomNavigation(
             selectedItem = TodakunNavItem.LUCKY,
-            onItemSelected = {},
+            onItemSelect = {},
         )
     }
 }
 
-private object TodakunBottomNavigationDefaults {
+object TodakunBottomNavigationDefaults {
     val ContainerHeight = 56.dp
     val ContainerCornerRadius = 24.dp
 
-    val ContainerShape = RoundedCornerShape(
-        topStart = ContainerCornerRadius,
-        topEnd = ContainerCornerRadius,
-    )
+    val ContainerShape =
+        RoundedCornerShape(
+            topStart = ContainerCornerRadius,
+            topEnd = ContainerCornerRadius,
+        )
     val ContainerHorizontalPadding = 12.dp
     val ContentTopPadding = 4.dp
     val IconSize = 24.dp
