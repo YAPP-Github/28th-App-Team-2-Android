@@ -10,30 +10,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunChatUserInputBubble(
     text: String,
     modifier: Modifier = Modifier,
 ) {
-    val colors = TodakunTheme.colors
-    val typography = TodakunTheme.typography
-
     Box(
-        modifier = modifier
-            .clip(
-                RoundedCornerShape(
-                    topStart = 12.dp, bottomEnd = 12.dp, bottomStart = 12.dp
-                )
-            )
-            .background(colors.gray50)
-            .padding(horizontal = 18.dp, vertical = 12.dp),
+        modifier =
+            modifier
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 12.dp,
+                        bottomEnd = 12.dp,
+                        bottomStart = 12.dp,
+                    ),
+                ).background(TodakunColor.gray50)
+                .padding(horizontal = 18.dp, vertical = 12.dp),
     ) {
         Text(
             text = text,
-            style = typography.body2Medium,
-            color = colors.black,
+            style = TodakunTypography.body2Medium,
+            color = TodakunColor.black,
         )
     }
 }

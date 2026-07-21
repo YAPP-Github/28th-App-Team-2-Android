@@ -5,11 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -26,7 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunChatInputField(
@@ -34,73 +36,71 @@ fun TodakunChatInputField(
     onValueChange: (String) -> Unit,
     onSendClick: () -> Unit,
     modifier: Modifier = Modifier,
-    maxLines:Int = 5,
-    placeholder: String = stringResource(R.string.place_holder_chat_input),
+    maxLines: Int = 3,
+    placeholder: String = stringResource(R.string.todak_chat_place_holder_chat_input),
 ) {
-    val colors = TodakunTheme.colors
-    val typography = TodakunTheme.typography
     val isFilled = value.isNotBlank()
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .dropShadow(
-                shape = TodakunChatInputFieldDefaults.InputFieldRound,
-                shadow = Shadow(
-                    radius = 20.dp,
-                    offset = DpOffset(x = 0.dp, y = 4.dp),
-                    color = colors.black.copy(alpha = 0.06f)
-                )
-            )
-            .border(
-                width = 1.dp,
-                color = colors.gray50,
-                shape = TodakunChatInputFieldDefaults.InputFieldRound
-            )
-            .background(color = colors.white, shape = TodakunChatInputFieldDefaults.InputFieldRound)
-            .padding(horizontal = 20.dp, vertical = 20.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .dropShadow(
+                    shape = TodakunChatInputFieldDefaults.InputFieldShape,
+                    shadow =
+                        Shadow(
+                            radius = 20.dp,
+                            offset = DpOffset(x = 0.dp, y = 4.dp),
+                            color = TodakunColor.black.copy(alpha = 0.06f),
+                        ),
+                ).border(
+                    width = 1.dp,
+                    color = TodakunColor.gray50,
+                    shape = TodakunChatInputFieldDefaults.InputFieldShape,
+                ).background(color = TodakunColor.white, shape = TodakunChatInputFieldDefaults.InputFieldShape)
+                .padding(horizontal = 20.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier.weight(1f)) {
             if (value.isEmpty()) {
                 Text(
                     text = placeholder,
-                    style = typography.body2Regular,
-                    color = colors.gray400,
+                    style = TodakunTypography.body2Regular,
+                    color = TodakunColor.gray400,
                 )
             }
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = typography.body2Regular,
+                textStyle = TodakunTypography.body2Regular,
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = maxLines
+                maxLines = maxLines,
             )
         }
 
         Spacer(modifier = Modifier.width(12.dp))
 
         Box(
-            modifier = Modifier
-                .size(32.dp)
-                .background(
-                    color = if (isFilled) colors.primary600 else colors.gray50,
-                    shape = CircleShape,
-                )
-                .clickable(enabled = isFilled, onClick = onSendClick),
+            modifier =
+                Modifier
+                    .size(32.dp)
+                    .background(
+                        color = if (isFilled) TodakunColor.primary600 else TodakunColor.gray50,
+                        shape = CircleShape,
+                    ).clickable(enabled = isFilled, onClick = onSendClick),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_upward),
                 contentDescription = null,
-                tint = if (isFilled) colors.white else colors.gray300,
+                tint = if (isFilled) TodakunColor.white else TodakunColor.gray300,
             )
         }
     }
 }
 
-private object TodakunChatInputFieldDefaults {
-    val InputFieldRound = RoundedCornerShape(100.dp)
+object TodakunChatInputFieldDefaults {
+    val InputFieldShape = RoundedCornerShape(24.dp)
 }
 
 @Preview(showBackground = true)

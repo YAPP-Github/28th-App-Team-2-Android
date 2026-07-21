@@ -24,9 +24,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
-import com.kikidan.designsystem.theme.LocalTodakunColor
-import com.kikidan.designsystem.theme.LocalTodakunTypography
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunChatHistoryItem(
@@ -37,31 +37,31 @@ fun TodakunChatHistoryItem(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = TodakunTheme.colors
-
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(
-                top = 20.dp
-            ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(
+                    top = 20.dp,
+                ),
     ) {
         Column(
-            modifier = Modifier.padding(
-                horizontal = 20.dp,
-            )
+            modifier =
+                Modifier.padding(
+                    horizontal = 20.dp,
+                ),
         ) {
             TodakChatHistoryContent(
                 title = title,
                 relativeTime = relativeTime,
                 isUnread = isUnread,
-                onDeleteClick = onDeleteClick
+                onDeleteClick = onDeleteClick,
             )
         }
         HorizontalDivider(
             thickness = 1.dp,
-            color = colors.gray100
+            color = TodakunColor.gray100,
         )
     }
 }
@@ -71,37 +71,37 @@ private fun ColumnScope.TodakChatHistoryContent(
     title: String,
     relativeTime: String,
     isUnread: Boolean,
-    onDeleteClick:()-> Unit,
-    modifier:Modifier = Modifier
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val typography = LocalTodakunTypography.current
-    val colors = LocalTodakunColor.current
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.Top,
     ) {
         Text(
             text = title,
-            style = typography.body1Medium,
-            color = colors.black,
+            style = TodakunTypography.body1Medium,
+            color = TodakunColor.black,
         )
         if (isUnread) {
             Spacer(modifier = Modifier.width(6.dp))
             Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(colors.red400),
+                modifier =
+                    Modifier
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(TodakunColor.red400),
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Icon(
             painter = painterResource(id = R.drawable.ic_delete),
             contentDescription = null,
-            tint = colors.gray500,
-            modifier = Modifier
-                .size(23.dp)
-                .clickable(onClick = onDeleteClick),
+            tint = TodakunColor.gray500,
+            modifier =
+                Modifier
+                    .size(23.dp)
+                    .clickable(onClick = onDeleteClick),
         )
     }
 
@@ -109,8 +109,8 @@ private fun ColumnScope.TodakChatHistoryContent(
 
     Text(
         text = relativeTime,
-        style = typography.body3Regular,
-        color = colors.gray600,
+        style = TodakunTypography.body3Regular,
+        color = TodakunColor.gray600,
     )
 
     Spacer(modifier = Modifier.height(20.dp))

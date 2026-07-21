@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunChatExampleChip(
@@ -21,22 +23,20 @@ fun TodakunChatExampleChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = TodakunTheme.colors
-    val typography = TodakunTheme.typography
-
     Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(colors.primary50)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 18.dp, vertical = 12.dp),
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(TodakunColor.primary50)
+                .clickable(onClick = onClick)
+                .padding(horizontal = 18.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = text,
-            style = typography.body2Regular,
-            color = colors.coolGray800,
+            style = TodakunTypography.body2Regular,
+            color = TodakunColor.coolGray800,
         )
     }
 }

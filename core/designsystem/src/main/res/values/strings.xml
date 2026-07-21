@@ -31,6 +31,6 @@
     <string name="wheel_picker_birth_date_invalid">올바른 날짜를 입력해 주세요.</string>
 
     <!-- TodakChat -->
-    <string name="char_title_today_free_chat">"오늘 무료 채팅 "</string>
-    <string name="place_holder_chat_input">토닥이에게 운세 물어보기</string>
+    <string name="todak_chat_today_free_amount">"오늘 무료 채팅 "</string>
+    <string name="todak_chat_place_holder_chat_input">토닥이에게 운세 물어보기</string>
 </resources>
