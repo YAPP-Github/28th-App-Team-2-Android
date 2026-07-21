@@ -20,10 +20,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kikidan.designsystem.theme.LocalTodakunColor
-import com.kikidan.designsystem.theme.LocalTodakunTypography
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
-
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunSelectBox(
@@ -32,27 +31,25 @@ fun TodakunSelectBox(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = LocalTodakunColor.current
-    val typography = LocalTodakunTypography.current
+    val colors = TodakunColor
+    val typography = TodakunTypography
 
     Box(
-        modifier = modifier
-            .height(48.dp)
-            .clip(TodakunSelectBoxDefaults.Shape)
-            .background(
-                color = if (selected) colors.primary50 else colors.white,
-            )
-            .border(
-                width = 1.dp,
-                color = if (selected) colors.primary600 else colors.coolGray300,
-                shape = TodakunSelectBoxDefaults.Shape
-            )
-            .selectable(
-                selected = selected,
-                role = Role.Tab,
-                onClick = onClick,
-            )
-            .padding(horizontal = 16.dp),
+        modifier =
+            modifier
+                .height(48.dp)
+                .clip(TodakunSelectBoxDefaults.Shape)
+                .background(
+                    color = if (selected) colors.primary50 else colors.white,
+                ).border(
+                    width = 1.dp,
+                    color = if (selected) colors.primary600 else colors.coolGray300,
+                    shape = TodakunSelectBoxDefaults.Shape,
+                ).selectable(
+                    selected = selected,
+                    role = Role.Tab,
+                    onClick = onClick,
+                ).padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -62,15 +59,14 @@ fun TodakunSelectBox(
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.width(136.dp)
+            modifier = Modifier.width(136.dp),
         )
     }
 }
 
-private object TodakunSelectBoxDefaults {
+object TodakunSelectBoxDefaults {
     val Shape = RoundedCornerShape(12.dp)
 }
-
 
 @Preview(showBackground = true)
 @Composable

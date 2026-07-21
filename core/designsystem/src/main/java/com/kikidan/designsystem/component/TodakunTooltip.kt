@@ -18,8 +18,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
-
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,27 +32,29 @@ fun TodakunTooltip(
     anchor: @Composable () -> Unit,
 ) {
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            positioning = TooltipAnchorPosition.Above,
-        ),
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(
+                positioning = TooltipAnchorPosition.Above,
+            ),
         tooltip = {
             PlainTooltip(
                 caretShape = TooltipDefaults.caretShape(TodakunTooltipDefaults.CaretSize),
                 maxWidth = maxWidth,
                 shape = RoundedCornerShape(99.dp),
-                containerColor = TodakunTheme.colors.blackOpacity80,
-                contentColor = TodakunTheme.colors.white,
+                containerColor = TodakunColor.blackOpacity80,
+                contentColor = TodakunColor.white,
             ) {
                 Text(
                     text = text,
-                    style = TodakunTheme.typography.body3Medium,
+                    style = TodakunTypography.body3Medium,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(
-                        horizontal = TodakunTooltipDefaults.ExtraHorizontalPadding,
-                        vertical = TodakunTooltipDefaults.ExtraVerticalPadding
-                    )
+                    modifier =
+                        Modifier.padding(
+                            horizontal = TodakunTooltipDefaults.ExtraHorizontalPadding,
+                            vertical = TodakunTooltipDefaults.ExtraVerticalPadding,
+                        ),
                 )
             }
         },
@@ -61,7 +64,7 @@ fun TodakunTooltip(
     )
 }
 
-private object TodakunTooltipDefaults {
+object TodakunTooltipDefaults {
     val CaretSize = DpSize(width = 8.dp, height = 8.dp)
 
     /**
@@ -89,7 +92,7 @@ private fun TodakunTooltipShortPreview() {
             Text(
                 text = "앵커",
                 modifier = Modifier.padding(48.dp),
-                style = TodakunTheme.typography.body3Medium,
+                style = TodakunTypography.body3Medium,
             )
         }
     }
@@ -108,10 +111,8 @@ private fun TodakunTooltipLongPreview() {
             Text(
                 text = "앵커",
                 modifier = Modifier.padding(48.dp),
-                style = TodakunTheme.typography.body3Medium,
+                style = TodakunTypography.body3Medium,
             )
         }
     }
 }
-
-

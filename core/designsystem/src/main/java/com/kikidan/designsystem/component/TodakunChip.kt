@@ -15,9 +15,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kikidan.designsystem.theme.LocalTodakunColor
-import com.kikidan.designsystem.theme.LocalTodakunTypography
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunChip(
@@ -26,21 +26,20 @@ fun TodakunChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = LocalTodakunColor.current
-    val typography = LocalTodakunTypography.current
+    val colors = TodakunColor
+    val typography = TodakunTypography
 
     Box(
-        modifier = modifier
-            .clip(TodakunChipDefaults.Shape)
-            .background(
-                color = if (selected) colors.primary500 else colors.gray25
-            )
-            .selectable(
-                selected = selected,
-                role = Role.Checkbox,
-                onClick = onClick,
-            )
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+        modifier =
+            modifier
+                .clip(TodakunChipDefaults.Shape)
+                .background(
+                    color = if (selected) colors.primary500 else colors.gray25,
+                ).selectable(
+                    selected = selected,
+                    role = Role.Checkbox,
+                    onClick = onClick,
+                ).padding(horizontal = 20.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -54,7 +53,7 @@ fun TodakunChip(
     }
 }
 
-private object TodakunChipDefaults {
+object TodakunChipDefaults {
     val Shape = RoundedCornerShape(100.dp)
 }
 

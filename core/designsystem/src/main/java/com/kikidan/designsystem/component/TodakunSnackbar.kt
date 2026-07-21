@@ -28,8 +28,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
-
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunSnackbar(
@@ -37,15 +38,16 @@ fun TodakunSnackbar(
     modifier: Modifier = Modifier,
     onDismissClick: (() -> Unit)? = null,
 ) {
-    val colors = TodakunTheme.colors
-    val typography = TodakunTheme.typography
+    val colors = TodakunColor
+    val typography = TodakunTypography
 
     Row(
-        modifier = modifier
-            .height(36.dp)
-            .clip(SnackbarShadowDefaults.SnackbarShape)
-            .background(color = colors.blackOpacity80)
-            .padding(all = 8.dp),
+        modifier =
+            modifier
+                .height(36.dp)
+                .clip(SnackbarShadowDefaults.SnackbarShape)
+                .background(color = colors.blackOpacity80)
+                .padding(all = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -71,28 +73,29 @@ fun TodakunLuckySnackbar(
     modifier: Modifier = Modifier,
     onDismissClick: (() -> Unit)? = null,
 ) {
-    val colors = TodakunTheme.colors
-    val typography = TodakunTheme.typography
+    val colors = TodakunColor
+    val typography = TodakunTypography
 
     Row(
-        modifier = modifier
-            .dropShadow(
-                shape = SnackbarShadowDefaults.SnackbarShape,
-                shadow = Shadow(
-                    radius = 20.dp,
-                    color = SnackbarShadowDefaults.ShadowColor
-                )
-            )
-            .height(44.dp)
-            .clip(SnackbarShadowDefaults.SnackbarShape)
-            .background(
-                brush = Brush.horizontalGradient(
-                    0.0f to colors.primary600,
-                    0.5f to colors.primary800,
-                    1.0f to colors.sky600,
-                ),
-            )
-            .padding(start = 18.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
+        modifier =
+            modifier
+                .dropShadow(
+                    shape = SnackbarShadowDefaults.SnackbarShape,
+                    shadow =
+                        Shadow(
+                            radius = 20.dp,
+                            color = SnackbarShadowDefaults.ShadowColor,
+                        ),
+                ).height(44.dp)
+                .clip(SnackbarShadowDefaults.SnackbarShape)
+                .background(
+                    brush =
+                        Brush.horizontalGradient(
+                            0.0f to colors.primary600,
+                            0.5f to colors.primary800,
+                            1.0f to colors.sky600,
+                        ),
+                ).padding(start = 18.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -133,7 +136,6 @@ private fun SnackbarDismissButton(
 }
 
 private object SnackbarShadowDefaults {
-
     /** `box-shadow: 0 0 20px rgba(156, 138, 246, 0.5)` */
     val ShadowColor = Color(0x809C8AF6)
 
@@ -145,7 +147,6 @@ private object SnackbarShadowDefaults {
 
     val DismissIconSize = 16.dp
 }
-
 
 @Preview(showBackground = true)
 @Composable

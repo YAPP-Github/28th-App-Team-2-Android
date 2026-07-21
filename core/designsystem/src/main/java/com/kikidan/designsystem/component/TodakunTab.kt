@@ -20,9 +20,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kikidan.designsystem.theme.LocalTodakunColor
-import com.kikidan.designsystem.theme.LocalTodakunTypography
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunTab(
@@ -31,25 +31,24 @@ fun TodakunTab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = LocalTodakunColor.current
-    val typography = LocalTodakunTypography.current
+    val colors = TodakunColor
+    val typography = TodakunTypography
 
     Box(
-        modifier = modifier
-            .defaultMinSize(minWidth = 60.dp)
-            .clip(TodakunTabDefaults.Shape)
-            .background(
-                color = if (selected) colors.gray975 else colors.coolGray100,
-            )
-            .selectable(
-                selected = selected,
-                role = Role.Tab,
-                onClick = onClick,
-            )
-            .padding(
-                vertical = 6.dp,
-                horizontal = 16.dp
-            ),
+        modifier =
+            modifier
+                .defaultMinSize(minWidth = 60.dp)
+                .clip(TodakunTabDefaults.Shape)
+                .background(
+                    color = if (selected) colors.gray975 else colors.coolGray100,
+                ).selectable(
+                    selected = selected,
+                    role = Role.Tab,
+                    onClick = onClick,
+                ).padding(
+                    vertical = 6.dp,
+                    horizontal = 16.dp,
+                ),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -63,7 +62,7 @@ fun TodakunTab(
     }
 }
 
-private object TodakunTabDefaults {
+object TodakunTabDefaults {
     val Shape = RoundedCornerShape(99.dp)
 }
 

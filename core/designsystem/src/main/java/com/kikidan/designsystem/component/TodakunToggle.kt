@@ -17,8 +17,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kikidan.designsystem.theme.LocalTodakunColor
-import com.kikidan.designsystem.theme.LocalTodakunTypography
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 
 @Composable
@@ -28,40 +27,44 @@ fun TodakunToggle(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    val colors = LocalTodakunColor.current
+    val colors = TodakunColor
 
-    val trackColor = when {
-        !enabled -> colors.gray200
-        checked -> colors.primary700
-        else -> colors.gray200
-    }
-    val thumbColor = when {
-        !enabled -> colors.gray100
-        else -> colors.white
-    }
+    val trackColor =
+        when {
+            !enabled -> colors.gray200
+            checked -> colors.primary700
+            else -> colors.gray200
+        }
+    val thumbColor =
+        when {
+            !enabled -> colors.gray100
+            else -> colors.white
+        }
     val thumbOffsetX: Dp by animateDpAsState(
         targetValue = if (checked) 25.dp else 4.dp,
     )
 
     Box(
-        modifier = modifier
-            .size(width = 53.dp, height = 30.dp)
-            .clip(RoundedCornerShape(100.dp))
-            .background(trackColor)
-            .toggleable(
-                value = checked,
-                enabled = enabled,
-                role = Role.Switch,
-                onValueChange = onCheckedChange,
-            ),
-        contentAlignment = Alignment.CenterStart
+        modifier =
+            modifier
+                .size(width = 53.dp, height = 30.dp)
+                .clip(RoundedCornerShape(100.dp))
+                .background(trackColor)
+                .toggleable(
+                    value = checked,
+                    enabled = enabled,
+                    role = Role.Switch,
+                    onValueChange = onCheckedChange,
+                ),
+        contentAlignment = Alignment.CenterStart,
     ) {
         Box(
-            modifier = Modifier
-                .size(24.dp)
-                .offset(x = thumbOffsetX)
-                .clip(CircleShape)
-                .background(thumbColor),
+            modifier =
+                Modifier
+                    .size(24.dp)
+                    .offset(x = thumbOffsetX)
+                    .clip(CircleShape)
+                    .background(thumbColor),
         )
     }
 }
