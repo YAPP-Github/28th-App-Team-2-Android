@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunChip(
@@ -19,33 +21,31 @@ fun TodakunChip(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    val colors = TodakunTheme.colors
-
     Box(
-        modifier = modifier
-            .clip(TodakunChipDefaults.Shape)
-            .background(colors.primary700)
-            .then(
-                if (onClick != null) {
-                    Modifier.clickable(onClick = onClick)
-                } else {
-                    Modifier
-                },
-            )
-            .padding(
-                horizontal = TodakunChipDefaults.HorizontalPadding,
-                vertical = TodakunChipDefaults.VerticalPadding,
-            ),
+        modifier =
+            modifier
+                .clip(TodakunChipDefaults.Shape)
+                .background(TodakunColor.primary700)
+                .then(
+                    if (onClick != null) {
+                        Modifier.clickable(onClick = onClick)
+                    } else {
+                        Modifier
+                    },
+                ).padding(
+                    horizontal = TodakunChipDefaults.HorizontalPadding,
+                    vertical = TodakunChipDefaults.VerticalPadding,
+                ),
     ) {
         Text(
             text = text,
-            style = TodakunTheme.typography.body3Medium,
-            color = colors.white,
+            style = TodakunTypography.body3Medium,
+            color = TodakunColor.white,
         )
     }
 }
 
-private object TodakunChipDefaults {
+object TodakunChipDefaults {
     val Shape = RoundedCornerShape(100.dp)
     val HorizontalPadding = 10.dp
     val VerticalPadding = 5.dp

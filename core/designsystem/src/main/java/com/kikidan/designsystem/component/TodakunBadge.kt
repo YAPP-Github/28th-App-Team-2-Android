@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 enum class TodakunBadgeType {
     Green,
@@ -29,36 +30,37 @@ fun TodakunBadge(
     modifier: Modifier = Modifier,
     type: TodakunBadgeType = TodakunBadgeType.Gray,
 ) {
-    val colors = TodakunTheme.colors
-    val (backgroundColor, textColor) = type.toColors(colors)
+    val (backgroundColor, textColor) = type.toColors()
 
     Row(
-        modifier = modifier
-            .clip(TodakunBadgeDefaults.Shape)
-            .background(backgroundColor)
-            .padding(
-                horizontal = TodakunBadgeDefaults.HorizontalPadding,
-                vertical = TodakunBadgeDefaults.VerticalPadding,
-            ),
+        modifier =
+            modifier
+                .clip(TodakunBadgeDefaults.Shape)
+                .background(backgroundColor)
+                .padding(
+                    horizontal = TodakunBadgeDefaults.HorizontalPadding,
+                    vertical = TodakunBadgeDefaults.VerticalPadding,
+                ),
     ) {
         Text(
             text = text,
-            style = TodakunTheme.typography.caption2SemiBold,
+            style = TodakunTypography.caption2SemiBold,
             color = textColor,
         )
     }
 }
 
-private fun TodakunBadgeType.toColors(colors: TodakunColor): Pair<Color, Color> = when (this) {
-    TodakunBadgeType.Green -> colors.teal100 to colors.teal800
-    TodakunBadgeType.Yellow -> colors.orange100 to colors.orange800
-    TodakunBadgeType.Pink -> colors.pink100 to colors.pink800
-    TodakunBadgeType.Purple -> colors.primary100 to colors.primary800
-    TodakunBadgeType.Blue -> colors.sky100 to colors.sky800
-    TodakunBadgeType.Gray -> colors.coolGray100 to colors.coolGray500
-}
+private fun TodakunBadgeType.toColors(): Pair<Color, Color> =
+    when (this) {
+        TodakunBadgeType.Green -> TodakunColor.teal100 to TodakunColor.teal800
+        TodakunBadgeType.Yellow -> TodakunColor.orange100 to TodakunColor.orange800
+        TodakunBadgeType.Pink -> TodakunColor.pink100 to TodakunColor.pink800
+        TodakunBadgeType.Purple -> TodakunColor.primary100 to TodakunColor.primary800
+        TodakunBadgeType.Blue -> TodakunColor.sky100 to TodakunColor.sky800
+        TodakunBadgeType.Gray -> TodakunColor.coolGray100 to TodakunColor.coolGray500
+    }
 
-private object TodakunBadgeDefaults {
+object TodakunBadgeDefaults {
     val Shape = RoundedCornerShape(6.dp)
     val HorizontalPadding = 6.dp
     val VerticalPadding = 3.dp

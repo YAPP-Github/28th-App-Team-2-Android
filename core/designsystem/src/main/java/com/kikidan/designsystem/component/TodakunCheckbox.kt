@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 
 @Composable
@@ -32,39 +33,37 @@ fun TodakunCheckbox(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    val colors = TodakunTheme.colors
-
     Box(
-        modifier = modifier
-            .size(TodakunCheckboxDefaults.Size)
-            .clip(TodakunCheckboxDefaults.Shape)
-            .background(if (checked) colors.primary600 else colors.white)
-            .then(
-                if (!checked) {
-                    Modifier.border(1.dp, colors.gray300, TodakunCheckboxDefaults.Shape)
-                } else {
-                    Modifier
-                },
-            )
-            .toggleable(
-                value = checked,
-                onValueChange = onCheckedChange,
-                enabled = enabled,
-                role = Role.Checkbox,
-            ),
+        modifier =
+            modifier
+                .size(TodakunCheckboxDefaults.Size)
+                .clip(TodakunCheckboxDefaults.Shape)
+                .background(if (checked) TodakunColor.primary600 else TodakunColor.white)
+                .then(
+                    if (!checked) {
+                        Modifier.border(1.dp, TodakunColor.gray300, TodakunCheckboxDefaults.Shape)
+                    } else {
+                        Modifier
+                    },
+                ).toggleable(
+                    value = checked,
+                    onValueChange = onCheckedChange,
+                    enabled = enabled,
+                    role = Role.Checkbox,
+                ),
         contentAlignment = Alignment.Center,
     ) {
         if (checked) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_check_line),
                 contentDescription = null,
-                tint = colors.white,
+                tint = TodakunColor.white,
             )
         }
     }
 }
 
-private object TodakunCheckboxDefaults {
+object TodakunCheckboxDefaults {
     val Size = 20.dp
     val Shape = RoundedCornerShape(6.dp)
 }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 
 enum class TodakunDividerType {
@@ -21,12 +22,11 @@ fun TodakunDivider(
     modifier: Modifier = Modifier,
     type: TodakunDividerType = TodakunDividerType.Line,
 ) {
-    val colors = TodakunTheme.colors
-
-    val (thickness, color) = when (type) {
-        TodakunDividerType.Line -> TodakunDividerDefaults.LineThickness to colors.gray100
-        TodakunDividerType.Section -> TodakunDividerDefaults.SectionThickness to colors.gray25
-    }
+    val (thickness, color) =
+        when (type) {
+            TodakunDividerType.Line -> TodakunDividerDefaults.LineThickness to TodakunColor.gray100
+            TodakunDividerType.Section -> TodakunDividerDefaults.SectionThickness to TodakunColor.gray25
+        }
 
     HorizontalDivider(
         modifier = modifier.fillMaxWidth(),
@@ -35,7 +35,7 @@ fun TodakunDivider(
     )
 }
 
-private object TodakunDividerDefaults {
+object TodakunDividerDefaults {
     val LineThickness = 1.dp
     val SectionThickness = 10.dp
 }

@@ -16,43 +16,46 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunPopover(
     contents: List<String>,
+    expanded: Boolean,
     onContentClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    expanded: Boolean,
 ) {
-    val colors = TodakunTheme.colors
     if (expanded) {
         Popup {
             Column(
-                modifier = modifier
-                    .dropShadow(
-                        shape = TodakunPopoverDefaults.Shape,
-                        shadow = Shadow(
-                            radius = 10.dp,
-                            spread = 1.dp,
-                            color = colors.black.copy(alpha = 0.08f)
-                        )
-                    )
-                    .clip(TodakunPopoverDefaults.Shape)
-                    .background(colors.white)
-                    .width(TodakunPopoverDefaults.Width)
-                    .padding(TodakunPopoverDefaults.OuterContentPadding),
+                modifier =
+                    modifier
+                        .dropShadow(
+                            shape = TodakunPopoverDefaults.Shape,
+                            shadow =
+                                Shadow(
+                                    radius = 10.dp,
+                                    spread = 1.dp,
+                                    color = TodakunColor.black.copy(alpha = 0.08f),
+                                ),
+                        ).clip(TodakunPopoverDefaults.Shape)
+                        .background(TodakunColor.white)
+                        .width(TodakunPopoverDefaults.Width)
+                        .padding(TodakunPopoverDefaults.OuterContentPadding),
             ) {
                 contents.forEach { content ->
                     Text(
-                        modifier = Modifier
-                            .clickable { onContentClick(content) }
-                            .padding(
-                                all = TodakunPopoverDefaults.InnerContentPadding
-                            ),
+                        modifier =
+                            Modifier
+                                .clickable { onContentClick(content) }
+                                .padding(
+                                    all = TodakunPopoverDefaults.InnerContentPadding,
+                                ),
                         text = content,
-                        style = TodakunTheme.typography.body3Medium,
-                        color = TodakunTheme.colors.gray975,
+                        style = TodakunTypography.body3Medium,
+                        color = TodakunColor.gray975,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -62,7 +65,7 @@ fun TodakunPopover(
     }
 }
 
-private object TodakunPopoverDefaults {
+object TodakunPopoverDefaults {
     val Shape = RoundedCornerShape(12.dp)
     val OuterContentPadding = 8.dp
 
