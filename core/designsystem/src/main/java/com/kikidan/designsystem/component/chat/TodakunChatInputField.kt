@@ -68,7 +68,7 @@ fun TodakunChatInputField(
                 ).background(color = TodakunColor.white, shape = TodakunChatInputFieldDefaults.InputFieldShape)
                 .padding(
                     start = 22.dp,
-                    end = 20.dp
+                    end = 20.dp,
                 ),
         verticalAlignment = Alignment.Bottom,
     ) {
