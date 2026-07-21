@@ -18,7 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunMainHeader(
@@ -28,11 +30,12 @@ fun TodakunMainHeader(
     onBellClick: () -> Unit = {},
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(TodakunTheme.colors.white)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(TodakunColor.white)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -42,25 +45,26 @@ fun TodakunMainHeader(
         ) {
             Text(
                 text = title,
-                style = TodakunTheme.typography.heading4Bold,
-                color = TodakunTheme.colors.black,
+                style = TodakunTypography.heading4Bold,
+                color = TodakunColor.black,
             )
             if (subtext != null) {
                 Text(
                     text = subtext,
-                    style = TodakunTheme.typography.body3Regular,
-                    color = TodakunTheme.colors.gray500,
+                    style = TodakunTypography.body3Regular,
+                    color = TodakunColor.gray500,
                 )
             }
         }
 
         Icon(
             painter = painterResource(id = R.drawable.ic_bell),
-            contentDescription = stringResource(R.string.main_header_notice_content_description),
-            tint = TodakunTheme.colors.gray975,
-            modifier = Modifier
-                .size(24.dp)
-                .clickable(onClick = onBellClick),
+            contentDescription = stringResource(R.string.header_notice_content_description),
+            tint = TodakunColor.gray975,
+            modifier =
+                Modifier
+                    .size(24.dp)
+                    .clickable(onClick = onBellClick),
         )
     }
 }

@@ -19,7 +19,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
 fun TodakunSubHeader(
@@ -29,26 +31,28 @@ fun TodakunSubHeader(
     onCloseClick: (() -> Unit)? = null,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .background(TodakunTheme.colors.white)
-            .padding(horizontal = 20.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .background(TodakunColor.white)
+                .padding(horizontal = 20.dp),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_chevron_left),
-            contentDescription = stringResource(R.string.sub_header_back_content_description),
-            tint = TodakunTheme.colors.gray925,
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .size(20.dp)
-                .clickable(onClick = onBackClick),
+            contentDescription = stringResource(R.string.header_back_content_description),
+            tint = TodakunColor.gray925,
+            modifier =
+                Modifier
+                    .align(Alignment.CenterStart)
+                    .size(20.dp)
+                    .clickable(onClick = onBackClick),
         )
 
         Text(
             text = title,
-            style = TodakunTheme.typography.body2SemiBold,
-            color = TodakunTheme.colors.black,
+            style = TodakunTypography.body2SemiBold,
+            color = TodakunColor.black,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -58,12 +62,13 @@ fun TodakunSubHeader(
         if (onCloseClick != null) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_close),
-                contentDescription = stringResource(R.string.sub_header_close_content_description),
-                tint = TodakunTheme.colors.gray925,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .size(20.dp)
-                    .clickable(onClick = onCloseClick),
+                contentDescription = stringResource(R.string.header_close_content_description),
+                tint = TodakunColor.gray925,
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(20.dp)
+                        .clickable(onClick = onCloseClick),
             )
         }
     }
