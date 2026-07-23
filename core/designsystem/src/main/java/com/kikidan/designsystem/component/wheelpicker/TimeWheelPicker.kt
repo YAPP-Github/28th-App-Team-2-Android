@@ -37,25 +37,27 @@ fun TimeWheelPicker(
         TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_time_title),
             onSaveClick = onSaveClick,
-            columns = listOf(
-                WheelPickerColumnState(
-                    items = hourItems,
-                    selectedIndex = clampedHour - TimeWheelPickerDefault.HourRange.first,
-                    maxInputDigits = 2,
+            columns =
+                listOf(
+                    WheelPickerColumnState(
+                        items = hourItems,
+                        selectedIndex = clampedHour - TimeWheelPickerDefault.HourRange.first,
+                        maxInputDigits = 2,
+                    ),
+                    WheelPickerColumnState(
+                        items = minuteItems,
+                        selectedIndex = clampedMinute - TimeWheelPickerDefault.MinuteRange.first,
+                        maxInputDigits = 2,
+                    ),
                 ),
-                WheelPickerColumnState(
-                    items = minuteItems,
-                    selectedIndex = clampedMinute - TimeWheelPickerDefault.MinuteRange.first,
-                    maxInputDigits = 2,
-                ),
-            ),
-            onWheelPickerColumnSelected = { columnIndex, selectedIndex ->
+            onWheelPickerColumnSelect = { columnIndex, selectedIndex ->
                 when (columnIndex) {
                     0 -> {
                         val newHour = TimeWheelPickerDefault.HourRange.first + selectedIndex
                         clampedHour = newHour
                         onHourChange(TimeWheelPickerDefault.HourRange.first + selectedIndex)
                     }
+
                     1 -> {
                         val newMinute = TimeWheelPickerDefault.MinuteRange.first + selectedIndex
                         clampedMinute = newMinute
@@ -64,7 +66,7 @@ fun TimeWheelPicker(
                 }
             },
             directInputEnabled = true,
-            onColumnDirectInputCommitted = { columnIndex, rawDigits ->
+            onColumnDirectInputCommit = { columnIndex, rawDigits ->
                 val typed = rawDigits.take(2).toIntOrNull()
                 if (typed != null) {
                     when (columnIndex) {

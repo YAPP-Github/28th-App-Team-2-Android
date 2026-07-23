@@ -22,14 +22,12 @@ import org.junit.Rule
 import org.junit.Test
 
 class TimeWheelPickerTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
     // 시/분 컬럼은 둘 다 "00".."59" 형태라 텍스트만으로는 값이 겹칠 수 있다. testTag 없이는
     // 스크롤 가능한(LazyColumn) 노드를 등장 순서(컬럼 인덱스: 0=시, 1=분)로 좁혀서 식별한다.
-    private fun SemanticsNodeInteractionsProvider.wheelColumn(index: Int) =
-        onAllNodes(hasScrollAction())[index]
+    private fun SemanticsNodeInteractionsProvider.wheelColumn(index: Int) = onAllNodes(hasScrollAction())[index]
 
     @Test
     fun `시와_분_컬럼이_렌더링된다`() {
@@ -72,7 +70,11 @@ class TimeWheelPickerTest {
 
         // when
         // 시(컬럼 0)의 중심 항목("09") 탭 -> 직접입력 전환
-        composeTestRule.wheelColumn(0).onChildren().filterToOne(hasText("09")).performClick()
+        composeTestRule
+            .wheelColumn(0)
+            .onChildren()
+            .filterToOne(hasText("09"))
+            .performClick()
         composeTestRule.waitForIdle()
 
         composeTestRule.onNode(hasSetTextAction()).performTextReplacement("24")
@@ -103,7 +105,11 @@ class TimeWheelPickerTest {
 
         // when
         // 분(컬럼 1)의 중심 항목("30") 탭 -> 직접입력 전환
-        composeTestRule.wheelColumn(1).onChildren().filterToOne(hasText("30")).performClick()
+        composeTestRule
+            .wheelColumn(1)
+            .onChildren()
+            .filterToOne(hasText("30"))
+            .performClick()
         composeTestRule.waitForIdle()
 
         composeTestRule.onNode(hasSetTextAction()).performTextReplacement("60")
@@ -134,7 +140,11 @@ class TimeWheelPickerTest {
         composeTestRule.waitForIdle()
 
         // when
-        composeTestRule.wheelColumn(0).onChildren().filterToOne(hasText("09")).performClick()
+        composeTestRule
+            .wheelColumn(0)
+            .onChildren()
+            .filterToOne(hasText("09"))
+            .performClick()
         composeTestRule.waitForIdle()
 
         composeTestRule.onNode(hasSetTextAction()).performTextReplacement("9999")
@@ -170,7 +180,11 @@ class TimeWheelPickerTest {
 
         // when
         // 시(hour) 컬럼 중심 항목 탭 -> 직접입력 전환 후 2자리("15")를 채우면 자동 커밋된다.
-        composeTestRule.wheelColumn(0).onChildren().filterToOne(hasText("09")).performClick()
+        composeTestRule
+            .wheelColumn(0)
+            .onChildren()
+            .filterToOne(hasText("09"))
+            .performClick()
         composeTestRule.waitForIdle()
         composeTestRule.onNode(hasSetTextAction()).performTextReplacement("15")
         composeTestRule.waitForIdle()

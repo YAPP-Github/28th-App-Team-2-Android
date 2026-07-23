@@ -41,51 +41,50 @@ internal fun WheelPickerBottomSheet(
         dragHandle = null,
         modifier = modifier,
         content = {
-            //상단 그림자 잘림 방지
+            // 상단 그림자 잘림 방지
             Spacer(modifier = Modifier.height(12.dp))
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(horizontal = WheelPickerBottomSheetDefaults.HorizontalMargin)
-                    .padding(bottom = bottomSpacing)
-                    .dropShadow(
-                        shape = WheelPickerBottomSheetDefaults.Shape,
-                        shadow = Shadow(
-                            radius = 20.dp,
-                            spread = 0.dp,
-                            offset = DpOffset(0.dp, 0.dp),
-                            color = TodakunColor.black.copy(alpha = 0.05f),
-                        )
-                    )
-                    .background(TodakunColor.white, WheelPickerBottomSheetDefaults.Shape)
-                    .clip(WheelPickerBottomSheetDefaults.Shape),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = WheelPickerBottomSheetDefaults.HorizontalMargin)
+                        .padding(bottom = bottomSpacing)
+                        .dropShadow(
+                            shape = WheelPickerBottomSheetDefaults.Shape,
+                            shadow =
+                                Shadow(
+                                    radius = 20.dp,
+                                    spread = 0.dp,
+                                    offset = DpOffset(0.dp, 0.dp),
+                                    color = TodakunColor.black.copy(alpha = 0.05f),
+                                ),
+                        ).background(TodakunColor.white, WheelPickerBottomSheetDefaults.Shape)
+                        .clip(WheelPickerBottomSheetDefaults.Shape),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 DragHandle()
                 content()
             }
-        }
+        },
     )
 }
 
 @Composable
-private fun DragHandle(
-    modifier: Modifier = Modifier
-) {
+private fun DragHandle(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .padding(vertical = 16.dp)
-            .size(width = 42.dp, height = 4.dp)
-            .clip(RoundedCornerShape(2.dp))
-            .background(TodakunColor.gray200),
+        modifier =
+            modifier
+                .padding(vertical = 16.dp)
+                .size(width = 42.dp, height = 4.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(TodakunColor.gray200),
     )
 }
 
-private object WheelPickerBottomSheetDefaults {
+internal object WheelPickerBottomSheetDefaults {
     val HorizontalMargin: Dp = 20.dp
 
     val BottomSpacing: Dp = 16.dp
     val Shape = RoundedCornerShape(12.dp)
 }
-

@@ -35,31 +35,29 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 
-
 @Composable
 fun TodakunWheelPicker(
     title: String,
     onSaveClick: () -> Unit,
     columns: List<WheelPickerColumnState>,
-    onWheelPickerColumnSelected: (columnIndex: Int, selectedIndex: Int) -> Unit,
+    onWheelPickerColumnSelect: (columnIndex: Int, selectedIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
     visibleCount: Int = 5,
     directInputEnabled: Boolean = false,
-    onColumnDirectInputCommitted: (columnIndex: Int, rawDigits: String) -> Unit = { _, _ -> },
+    onColumnDirectInputCommit: (columnIndex: Int, rawDigits: String) -> Unit = { _, _ -> },
 ) {
     val focusManager = LocalFocusManager.current
     var editingColumnIndex by remember { mutableStateOf<Int?>(null) }
 
     Column(
-        modifier = modifier
-            .pointerInput(Unit) {
-                //빈 공간 스크롤 시 바텀시트가 내려가는 것 방지
-                detectVerticalDragGestures { _, _ -> }
-            }
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = { focusManager.clearFocus() })
-            }
-            .padding(top = 12.dp, bottom = 40.dp, start = 30.dp, end = 30.dp),
+        modifier =
+            modifier
+                .pointerInput(Unit) {
+                    // 빈 공간 스크롤 시 바텀시트가 내려가는 것 방지
+                    detectVerticalDragGestures { _, _ -> }
+                }.pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                }.padding(top = 12.dp, bottom = 40.dp, start = 30.dp, end = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         WheelPickerHeader(
@@ -83,9 +81,9 @@ fun TodakunWheelPicker(
                         items = columnState.items,
                         selectedIndex = columnState.selectedIndex,
                         onSelectedIndexChange = { idx ->
-                            onWheelPickerColumnSelected(
+                            onWheelPickerColumnSelect(
                                 columnIndex,
-                                idx
+                                idx,
                             )
                         },
                         visibleCount = visibleCount,
@@ -99,10 +97,10 @@ fun TodakunWheelPicker(
                         onAdvance = {
                             editingColumnIndex = (columnIndex + 1).takeIf { it <= columns.lastIndex }
                         },
-                        onDirectInputCommitted = { raw ->
-                            onColumnDirectInputCommitted(
+                        onDirectInputCommit = { raw ->
+                            onColumnDirectInputCommit(
                                 columnIndex,
-                                raw
+                                raw,
                             )
                         },
                     )
@@ -116,10 +114,10 @@ fun TodakunWheelPicker(
 @Composable
 private fun RowScope.WheelPickerColumnSpacer(
     size: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (size > 1) {
-        Spacer(modifier =  modifier.weight(1f))
+        Spacer(modifier = modifier.weight(1f))
     }
 }
 
@@ -127,7 +125,7 @@ private fun RowScope.WheelPickerColumnSpacer(
 private fun WheelPickerHeader(
     title: String,
     onSaveClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -139,24 +137,24 @@ private fun WheelPickerHeader(
             text = stringResource(R.string.wheel_picker_save),
             style = TodakunTypography.body2SemiBold,
             color = TodakunColor.primary600,
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-            ) { onSaveClick() },
+            modifier =
+                Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) { onSaveClick() },
         )
     }
 }
 
 @Composable
-private fun WheelPickerHighlight(
-    modifier: Modifier = Modifier
-) {
+private fun WheelPickerHighlight(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(WheelPickerDefaults.CenterContainerHeight)
-            .clip(WheelPickerDefaults.WheelPickerHighlightShape)
-            .background(TodakunColor.primary50),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(WheelPickerDefaults.CenterContainerHeight)
+                .clip(WheelPickerDefaults.WheelPickerHighlightShape)
+                .background(TodakunColor.primary50),
     )
 }
 
