@@ -14,13 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 
-
 @Composable
 fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     TodakunButton(
         text = text,
@@ -28,7 +27,7 @@ fun PrimaryButton(
         backgroundColor = TodakunColor.primary600,
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled
+        enabled = enabled,
     )
 }
 
@@ -37,7 +36,7 @@ fun SecondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     TodakunButton(
         text = text,
@@ -45,10 +44,9 @@ fun SecondaryButton(
         backgroundColor = TodakunColor.primary50,
         onClick = onClick,
         modifier = modifier,
-        enabled = enabled
+        enabled = enabled,
     )
 }
-
 
 @Composable
 private fun TodakunButton(
@@ -57,7 +55,7 @@ private fun TodakunButton(
     backgroundColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean
+    enabled: Boolean,
 ) {
     val textStyle =
         if (enabled) TodakunTypography.body2SemiBold else TodakunTypography.body2Medium
@@ -67,16 +65,17 @@ private fun TodakunButton(
         onClick = onClick,
         enabled = enabled,
         shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor,
-            contentColor = textColor,
-            disabledContainerColor = TodakunColor.gray100,
-            disabledContentColor = TodakunColor.gray400
-        )
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = backgroundColor,
+                contentColor = textColor,
+                disabledContainerColor = TodakunColor.gray100,
+                disabledContentColor = TodakunColor.gray400,
+            ),
     ) {
         Text(
             text = text,
-            style = textStyle
+            style = textStyle,
         )
     }
 }
@@ -86,38 +85,39 @@ private fun TodakunButton(
 private fun PrimaryButtonPreview() {
     PrimaryButton(
         text = "다음 단계",
-        modifier = Modifier
-            .width(353.dp)
-            .height(52.dp),
+        modifier =
+            Modifier
+                .width(353.dp)
+                .height(52.dp),
         enabled = true,
-        onClick = {}
+        onClick = {},
     )
 }
-
 
 @Composable
 @Preview
 private fun SecondaryButtonPreview() {
     SecondaryButton(
         text = "다음 단계",
-        modifier = Modifier
-            .width(353.dp)
-            .height(52.dp),
+        modifier =
+            Modifier
+                .width(353.dp)
+                .height(52.dp),
         enabled = true,
-        onClick = {}
+        onClick = {},
     )
 }
-
 
 @Composable
 @Preview
 private fun DisableButtonPreview() {
     SecondaryButton(
         text = "다음 단계",
-        modifier = Modifier
-            .width(353.dp)
-            .height(52.dp),
+        modifier =
+            Modifier
+                .width(353.dp)
+                .height(52.dp),
         enabled = false,
-        onClick = {}
+        onClick = {},
     )
 }
