@@ -54,8 +54,8 @@ private fun TodakunButton(
     textColor: Color,
     backgroundColor: Color,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     enabled: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val textStyle =
         if (enabled) TodakunTypography.body2SemiBold else TodakunTypography.body2Medium
