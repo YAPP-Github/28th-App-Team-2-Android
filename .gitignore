@@ -45,8 +45,6 @@ captures/
 .cxx/
 
 # Keystore files
-# 팀 공용 keystore(debug/release)는 저장소 루트 `.keystore/` 에 두고 로컬로만 공유한다.
-# 이 디렉터리에는 jks 외의 파일을 두지 않는다. 세팅 방법은 README.md 참고.
 *.jks
 *.keystore
 .keystore/

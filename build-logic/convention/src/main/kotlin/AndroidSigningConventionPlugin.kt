@@ -39,14 +39,11 @@ private fun ApplicationExtension.configureSigningConfigs(
             keyPassword = "android"
         }
 
-
-        if (releasePassword != null) {
-            create("release") {
-                storeFile = releaseStoreFile
-                storePassword = releasePassword
-                keyAlias = RELEASE_KEY_ALIAS
-                keyPassword = releasePassword
-            }
+        create("release") {
+            storeFile = releaseStoreFile
+            storePassword = releasePassword
+            keyAlias = RELEASE_KEY_ALIAS
+            keyPassword = releasePassword
         }
     }
 
@@ -61,6 +58,4 @@ private fun Project.releasePassword() =
     file("local.properties")
         .takeIf(File::isFile)
         ?.let { file -> Properties().apply { file.inputStream().use(::load) } }
-        ?.getProperty(RELEASE_PASSWORD_PROPERTY)
-
-
+        ?.getProperty(RELEASE_PASSWORD_PROPERTY) ?: error("todakun.release.password 프로퍼티가 없습니다")

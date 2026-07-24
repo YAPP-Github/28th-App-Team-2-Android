@@ -20,8 +20,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // signingConfigs 는 `todakun.android.signing` convention 플러그인이 구성한다.
-
     buildTypes {
         release {
             isMinifyEnabled = false
