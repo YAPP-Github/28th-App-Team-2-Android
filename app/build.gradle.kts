@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.todakun.android.signing)
 }
 
 android {
@@ -18,6 +19,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    // signingConfigs 는 `todakun.android.signing` convention 플러그인이 구성한다.
 
     buildTypes {
         release {

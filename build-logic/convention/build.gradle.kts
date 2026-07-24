@@ -34,5 +34,9 @@ gradlePlugin {
             id = "todakun.feature"
             implementationClass = "FeatureConventionPlugin"
         }
+        register("androidSigning") {
+            id = "todakun.android.signing"
+            implementationClass = "AndroidSigningConventionPlugin"
+        }
     }
 }

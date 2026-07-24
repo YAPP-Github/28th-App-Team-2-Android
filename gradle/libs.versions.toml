@@ -85,3 +85,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradlePlugin" }
 
+# build-logic convention 플러그인 (버전은 included build 가 제공하므로 명시하지 않는다)
+todakun-android-signing = { id = "todakun.android.signing" }
+
