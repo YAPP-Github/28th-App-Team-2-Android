@@ -58,4 +58,4 @@ private fun Project.releasePassword() =
     file("local.properties")
         .takeIf(File::isFile)
         ?.let { file -> Properties().apply { file.inputStream().use(::load) } }
-        ?.getProperty(RELEASE_PASSWORD_PROPERTY) ?: error("todakun.release.password 프로퍼티가 없습니다")
+        ?.getProperty(RELEASE_PASSWORD_PROPERTY)
