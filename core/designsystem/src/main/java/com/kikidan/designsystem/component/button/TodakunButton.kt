@@ -125,12 +125,11 @@ private fun TodakunButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
+    val pressedOverlay = TodakunColor.gray975.copy(alpha = 0.16f)
     val containerColor =
-        if (isPressed) {
-            TodakunColor.gray975.copy(alpha = 0.16f).compositeOver(backgroundColor)
-        } else {
-            backgroundColor
-        }
+        if (isPressed) pressedOverlay.compositeOver(backgroundColor) else backgroundColor
+    val contentColor =
+        if (isPressed) pressedOverlay.compositeOver(textColor) else textColor
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
@@ -141,7 +140,7 @@ private fun TodakunButton(
             colors =
                 ButtonDefaults.buttonColors(
                     containerColor = containerColor,
-                    contentColor = textColor,
+                    contentColor = contentColor,
                     disabledContainerColor = TodakunColor.gray100,
                     disabledContentColor = TodakunColor.gray400,
                 ),
