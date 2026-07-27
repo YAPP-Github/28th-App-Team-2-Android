@@ -10,17 +10,17 @@ enum class TodakunNavItem(
     @param:DrawableRes val unselectedIconRes: Int,
     // TODO Navigation Route 클래스를 프로퍼티에 추가
 ) {
-    LUCKY(
+    FORTUNE_TELLING(
         labelRes = R.string.bottom_nav_fortune,
         selectedIconRes = R.drawable.ic_navi_lucky_on,
         unselectedIconRes = R.drawable.ic_navi_lucky_off,
     ),
-    AI(
+    TODAK_CHAT(
         labelRes = R.string.bottom_nav_todak,
         selectedIconRes = R.drawable.ic_navi_ai_on,
         unselectedIconRes = R.drawable.ic_navi_ai_off,
     ),
-    ACTION(
+    LUCKY_ACTION(
         labelRes = R.string.bottom_nav_lucky_action,
         selectedIconRes = R.drawable.ic_navi_action_on,
         unselectedIconRes = R.drawable.ic_navi_action_off,

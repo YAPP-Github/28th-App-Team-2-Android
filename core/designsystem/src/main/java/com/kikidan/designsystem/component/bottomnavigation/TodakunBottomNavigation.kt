@@ -35,7 +35,6 @@ fun TodakunBottomNavigation(
     selectedItem: TodakunNavItem,
     onItemSelect: (TodakunNavItem) -> Unit,
     modifier: Modifier = Modifier,
-    items: List<TodakunNavItem> = TodakunNavItem.entries,
 ) {
     Row(
         modifier =
@@ -56,7 +55,7 @@ fun TodakunBottomNavigation(
                 .padding(top = TodakunBottomNavigationDefaults.ContentTopPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        items.forEach { item ->
+        TodakunNavItem.entries.forEach { item ->
             TodakunBottomNavigationTab(
                 item = item,
                 selected = item == selectedItem,
@@ -120,7 +119,7 @@ object TodakunBottomNavigationDefaults {
 private fun TodakunBottomNavigationPreview() {
     TodakunTheme {
         TodakunBottomNavigation(
-            selectedItem = TodakunNavItem.LUCKY,
+            selectedItem = TodakunNavItem.FORTUNE_TELLING,
             onItemSelect = {},
         )
     }
