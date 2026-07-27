@@ -5,19 +5,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TooltipState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupPositionProvider
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
@@ -27,15 +32,28 @@ import com.kikidan.designsystem.theme.TodakunTypography
 fun TodakunTooltip(
     text: String,
     modifier: Modifier = Modifier,
-    maxWidth: Dp = TooltipDefaults.plainTooltipMaxWidth,
     state: TooltipState = rememberTooltipState(),
     anchor: @Composable () -> Unit,
 ) {
+    val density = LocalDensity.current
+    val maxWidth =
+        with(density) {
+            LocalWindowInfo.current.containerSize.width
+                .toDp() - 40.dp
+        }
+
+    val positionProvider =
+        remember(density) {
+            with(density) {
+                TodakunTooltipPositionProvider(
+                    margin = 20.dp.roundToPx(),
+                    spacing = 4.dp.roundToPx(),
+                )
+            }
+        }
+
     TooltipBox(
-        positionProvider =
-            TooltipDefaults.rememberTooltipPositionProvider(
-                positioning = TooltipAnchorPosition.Above,
-            ),
+        positionProvider = positionProvider,
         tooltip = {
             PlainTooltip(
                 caretShape = TooltipDefaults.caretShape(TodakunTooltipDefaults.CaretSize),
@@ -48,8 +66,6 @@ fun TodakunTooltip(
                     text = text,
                     style = TodakunTypography.body3Medium,
                     textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                     modifier =
                         Modifier.padding(
                             horizontal = TodakunTooltipDefaults.ExtraHorizontalPadding,
@@ -80,6 +96,27 @@ object TodakunTooltipDefaults {
     val ExtraVerticalPadding = 2.dp
 }
 
+private class TodakunTooltipPositionProvider(
+    private val margin: Int,
+    private val spacing: Int,
+) : PopupPositionProvider {
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        val centered = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
+        val maxX = (windowSize.width - popupContentSize.width - margin).coerceAtLeast(margin)
+        val x = centered.coerceIn(margin, maxX)
+
+        val above = anchorBounds.top - popupContentSize.height - spacing
+        val y = if (above >= 0) above else anchorBounds.bottom + spacing
+
+        return IntOffset(x, y)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -104,8 +141,7 @@ private fun TodakunTooltipShortPreview() {
 private fun TodakunTooltipLongPreview() {
     TodakunTheme {
         TodakunTooltip(
-            text = "오늘 이 사람과 어디를 갈까? 이 텍스트는 매우 길어서 말줄임 처리됩니다",
-            maxWidth = 220.dp,
+            text = "오늘 이 사람과 어디를 갈까? 이 텍스트는 매우 길어서 줄바꿈 처리됩니다 오늘 이 사람과 어디를 갈까? 이 텍스트는 매우 길어서 줄바꿈 처리됩니다",
             state = rememberTooltipState(initialIsVisible = true, isPersistent = true),
         ) {
             Text(
