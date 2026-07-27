@@ -32,4 +32,8 @@
 
     <!-- Snackbar -->
     <string name="snackbar_dismiss">닫기</string>
+
+    <!-- TodakChat -->
+    <string name="todak_chat_today_free_amount">"오늘 무료 채팅 "</string>
+    <string name="todak_chat_place_holder_chat_input">토닥이에게 운세 물어보기</string>
 </resources>

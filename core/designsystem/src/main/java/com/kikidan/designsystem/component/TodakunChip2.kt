@@ -32,7 +32,7 @@ fun TodakunChip(
     Box(
         modifier =
             modifier
-                .clip(TodakunChipDefaults.Shape)
+                .clip(RoundedCornerShape(100.dp))
                 .background(
                     color = if (selected) colors.primary500 else colors.gray25,
                 ).selectable(
@@ -51,10 +51,6 @@ fun TodakunChip(
             overflow = TextOverflow.Ellipsis,
         )
     }
-}
-
-object TodakunChipDefaults {
-    val Shape = RoundedCornerShape(100.dp)
 }
 
 @Preview(showBackground = true)

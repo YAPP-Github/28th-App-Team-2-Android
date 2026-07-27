@@ -38,22 +38,19 @@ fun TodakunSnackbar(
     modifier: Modifier = Modifier,
     onDismissClick: (() -> Unit)? = null,
 ) {
-    val colors = TodakunColor
-    val typography = TodakunTypography
-
     Row(
         modifier =
             modifier
                 .height(36.dp)
                 .clip(SnackbarShadowDefaults.SnackbarShape)
-                .background(color = colors.blackOpacity80)
+                .background(color = TodakunColor.blackOpacity80)
                 .padding(all = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = text,
-            style = typography.body3Regular,
-            color = colors.white,
+            style = TodakunTypography.body3Regular,
+            color = TodakunColor.white,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -61,7 +58,7 @@ fun TodakunSnackbar(
             Spacer(modifier = Modifier.width(SnackbarShadowDefaults.ContentGap))
             SnackbarDismissButton(
                 onClick = onDismissClick,
-                tint = colors.white,
+                tint = TodakunColor.gray50,
             )
         }
     }
@@ -73,9 +70,6 @@ fun TodakunLuckySnackbar(
     modifier: Modifier = Modifier,
     onDismissClick: (() -> Unit)? = null,
 ) {
-    val colors = TodakunColor
-    val typography = TodakunTypography
-
     Row(
         modifier =
             modifier
@@ -91,17 +85,17 @@ fun TodakunLuckySnackbar(
                 .background(
                     brush =
                         Brush.horizontalGradient(
-                            0.0f to colors.primary600,
-                            0.5f to colors.primary800,
-                            1.0f to colors.sky600,
+                            0.0f to TodakunColor.primary600,
+                            0.5f to TodakunColor.primary800,
+                            1.0f to TodakunColor.sky600,
                         ),
                 ).padding(start = 18.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = text,
-            style = typography.body3Regular,
-            color = colors.white,
+            style = TodakunTypography.body3Regular,
+            color = TodakunColor.white,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
@@ -110,7 +104,7 @@ fun TodakunLuckySnackbar(
             Spacer(modifier = Modifier.width(SnackbarShadowDefaults.ContentGap))
             SnackbarDismissButton(
                 onClick = onDismissClick,
-                tint = colors.whiteOpacity60,
+                tint = TodakunColor.whiteOpacity60,
             )
         }
     }
