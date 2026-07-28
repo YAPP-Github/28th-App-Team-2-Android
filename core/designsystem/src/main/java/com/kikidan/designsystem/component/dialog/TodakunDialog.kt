@@ -1,4 +1,4 @@
-package com.kikidan.designsystem.dialog
+package com.kikidan.designsystem.component.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
