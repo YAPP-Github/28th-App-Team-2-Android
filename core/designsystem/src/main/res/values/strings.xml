@@ -33,4 +33,9 @@
     <!-- TodakChat -->
     <string name="todak_chat_today_free_amount">"오늘 무료 채팅 "</string>
     <string name="todak_chat_place_holder_chat_input">토닥이에게 운세 물어보기</string>
+
+    <!-- Header -->
+    <string name="header_notice_content_description">알림</string>
+    <string name="header_close_content_description">닫기</string>
+    <string name="header_back_content_description">뒤로 가기</string>
 </resources>
