@@ -1,3 +1,6 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.hilt)
@@ -5,21 +8,31 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+val localProperty =
+    Properties().apply {
+        rootProject
+            .file("local.properties")
+            .takeIf { it.exists() }
+            ?.inputStream()
+            ?.use { load(it) }
+    }
+val baseUrl: String = localProperty.getProperty("BASE_URL", "")
+
+
 android {
     namespace = "com.kikidan.data_remote"
     compileSdk = 37
 
     defaultConfig {
         minSdk = 26
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "BASE_URL", "\"https://api-dev.todakun.com/\"")
+        buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
     }
     buildTypes {
         release {
             // TODO(#후속): prod 서버 개설 시 교체
-            buildConfigField("String", "BASE_URL", "\"https://api-dev.todakun.com/\"")
+            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
         }
     }
     buildFeatures {
