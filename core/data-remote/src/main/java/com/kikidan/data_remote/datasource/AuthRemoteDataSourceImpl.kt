@@ -1,7 +1,6 @@
 package com.kikidan.data_remote.datasource
 
 import com.kikidan.data.datasource.AuthRemoteDataSource
-import com.kikidan.data_remote.auth.AuthApi
 import com.kikidan.data_remote.dto.CommonResponse
 import com.kikidan.data_remote.dto.auth.RefreshRequest
 import com.kikidan.data_remote.dto.auth.RefreshResponse
@@ -16,24 +15,28 @@ import io.ktor.client.request.setBody
 import javax.inject.Inject
 
 class AuthRemoteDataSourceImpl
-    @Inject
-    constructor(
-        private val client: Lazy<HttpClient>,
-    ) : AuthRemoteDataSource {
-        override suspend fun postRefresh(refreshToken: String): AuthToken {
-            val response =
-                client
-                    .get()
-                    .post(AuthApi.REFRESH) {
-                        //설정하지 않았을 때, refreshToken이 두 번 실행
-                        attributes.put(AuthCircuitBreaker, Unit)
-                        setBody(RefreshRequest(refreshToken))
-                    }.body<CommonResponse<RefreshResponse>>()
+@Inject
+constructor(
+    private val client: Lazy<HttpClient>,
+) : AuthRemoteDataSource {
+    override suspend fun postRefresh(refreshToken: String): AuthToken {
+        val response =
+            client
+                .get()
+                .post(REFRESH_URL) {
+                    //설정하지 않았을 때, refreshToken이 두 번 실행
+                    attributes.put(AuthCircuitBreaker, Unit)
+                    setBody(RefreshRequest(refreshToken))
+                }.body<CommonResponse<RefreshResponse>>()
 
-            val refreshResponse =
-                requireNotNull(response.data) {
-                    "refresh 응답의 data가 null입니다. code=${response.code}, message=${response.message}"
-                }
-            return refreshResponse.toDomain()
-        }
+        val refreshResponse =
+            requireNotNull(response.data) {
+                "refresh 응답의 data가 null입니다. code=${response.code}, message=${response.message}"
+            }
+        return refreshResponse.toDomain()
     }
+
+    companion object {
+        private const val REFRESH_URL = "api/v1/auth/refresh"
+    }
+}

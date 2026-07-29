@@ -1,6 +1,5 @@
 package com.kikidan.data_remote.client
 
-import com.kikidan.data_remote.auth.AuthApi
 import com.kikidan.data_remote.datasource.AuthRemoteDataSourceImpl
 import com.kikidan.data_remote.di.TodakunJson
 import com.kikidan.data_remote.di.installBearerAuth
@@ -61,7 +60,7 @@ class BearerAuthIntegrationTest {
         val engine =
             MockEngine { request ->
                 val path = request.url.encodedPath.trimStart('/')
-                if (path == AuthApi.REFRESH) {
+                if (path == "api/v1/auth/refresh") {
                     refreshHandler(request)
                 } else {
                     authHandler(request)
@@ -224,7 +223,7 @@ class BearerAuthIntegrationTest {
             val engine =
                 MockEngine { request ->
                     val path = request.url.encodedPath.trimStart('/')
-                    if (path == AuthApi.REFRESH) {
+                    if (path == "api/v1/auth/refresh") {
                         gate.await()
                         refreshCallCount.incrementAndGet()
                         respond(newTokenRefreshJson, HttpStatusCode.OK, jsonHeaders)

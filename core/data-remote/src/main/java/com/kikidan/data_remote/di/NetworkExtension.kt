@@ -2,7 +2,6 @@ package com.kikidan.data_remote.di
 
 import com.kikidan.data.datasource.AuthRemoteDataSource
 import com.kikidan.data.datasource.TokenDataSource
-import com.kikidan.data_remote.auth.AuthApi
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -52,7 +51,7 @@ internal fun HttpClientConfig<*>.installBearerAuth(
                         .build()
                         .encodedPath
                         .trimStart('/')
-                AuthApi.NO_AUTH_PATHS.none { noAuthPath -> path == noAuthPath }
+                NO_AUTH_PATHS.none { noAuthPath -> path == noAuthPath }
             }
 
             refreshTokens {
@@ -85,3 +84,10 @@ internal val TodakunJson: Json =
         explicitNulls = false
         coerceInputValues = true
     }
+
+private val NO_AUTH_PATHS = setOf(
+    "api/v1/auth/refresh",
+    "api/v1/auth/login",
+    "api/v1/auth/signup",
+    "api/v1/terms"
+)
