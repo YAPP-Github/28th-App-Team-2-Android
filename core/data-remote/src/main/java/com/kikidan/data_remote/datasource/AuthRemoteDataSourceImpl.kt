@@ -5,7 +5,7 @@ import com.kikidan.data_remote.auth.AuthApi
 import com.kikidan.data_remote.dto.CommonResponse
 import com.kikidan.data_remote.dto.auth.RefreshRequest
 import com.kikidan.data_remote.dto.auth.RefreshResponse
-import com.kikidan.data_remote.mapper.toDomain
+import com.kikidan.data_remote.dto.auth.toDomain
 import com.kikidan.domain.model.auth.AuthToken
 import dagger.Lazy
 import io.ktor.client.HttpClient
@@ -25,6 +25,7 @@ class AuthRemoteDataSourceImpl
                 client
                     .get()
                     .post(AuthApi.REFRESH) {
+                        //설정하지 않았을 때, refreshToken이 두 번 실행
                         attributes.put(AuthCircuitBreaker, Unit)
                         setBody(RefreshRequest(refreshToken))
                     }.body<CommonResponse<RefreshResponse>>()

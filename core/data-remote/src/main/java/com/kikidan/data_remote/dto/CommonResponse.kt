@@ -8,6 +8,5 @@ data class CommonResponse<T>(
     val code: String,
     val message: String,
     val data: T? = null,
-    val reason: Map<String, String>? = null,
     val timestamp: String? = null,
 )
