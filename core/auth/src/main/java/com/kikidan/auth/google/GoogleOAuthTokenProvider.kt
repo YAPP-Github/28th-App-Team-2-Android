@@ -8,11 +8,11 @@ import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.kikidan.auth.BuildConfig
-import com.kikidan.auth.OAuthCredential
 import com.kikidan.auth.OAuthException
-import com.kikidan.auth.OAuthToken
 import com.kikidan.auth.OAuthTokenProvider
+import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.model.auth.OAuthProviderType
+import com.kikidan.domain.model.auth.OAuthToken
 import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 

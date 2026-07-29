@@ -2,11 +2,11 @@ package com.kikidan.auth.kakao
 
 import android.app.Activity
 import com.kakao.sdk.user.UserApiClient
-import com.kikidan.auth.OAuthCredential
 import com.kikidan.auth.OAuthException
-import com.kikidan.auth.OAuthToken
 import com.kikidan.auth.OAuthTokenProvider
+import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.model.auth.OAuthProviderType
+import com.kikidan.domain.model.auth.OAuthToken
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject

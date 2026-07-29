@@ -1,6 +1,7 @@
 package com.kikidan.auth
 
 import android.app.Activity
+import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.model.auth.OAuthProviderType
 
 interface OAuthTokenProvider {
