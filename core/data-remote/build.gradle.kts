@@ -18,7 +18,6 @@ val localProperty =
     }
 val baseUrl: String = localProperty.getProperty("BASE_URL", "")
 
-
 android {
     namespace = "com.kikidan.data_remote"
     compileSdk = 37
