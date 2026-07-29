@@ -41,4 +41,10 @@
     <string name="header_notice_content_description">알림</string>
     <string name="header_close_content_description">닫기</string>
     <string name="header_back_content_description">뒤로 가기</string>
+
+    <!-- BottomNavigation -->
+    <string name="bottom_nav_fortune">운세</string>
+    <string name="bottom_nav_todak">토닥이</string>
+    <string name="bottom_nav_lucky_action">행운 액션</string>
+    <string name="bottom_nav_my">마이</string>
 </resources>
