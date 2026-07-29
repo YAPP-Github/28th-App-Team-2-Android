@@ -1,8 +1,13 @@
 package com.kikidan.data_remote.client
 
+import com.kikidan.data_remote.auth.AuthApi
 import com.kikidan.data_remote.datasource.AuthRemoteDataSourceImpl
+import com.kikidan.data_remote.di.TodakunJson
+import com.kikidan.data_remote.di.installBearerAuth
+import com.kikidan.data_remote.di.installTodakunDefaults
 import com.kikidan.data_remote.fake.FakeTokenDataSource
 import com.kikidan.domain.model.auth.AuthToken
+import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandler
@@ -23,6 +28,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration.Companion.seconds
 
 class BearerAuthIntegrationTest {
     private val json = TodakunJson
@@ -38,23 +44,36 @@ class BearerAuthIntegrationTest {
         """.trimIndent()
     private val successJson = """{"success":true,"code":"200","message":"ok"}"""
 
-    /** 테스트용 클라이언트 쌍 조립: 프로덕션과 동일한 확장 함수 사용 */
-    private fun buildClients(
+    /**
+     * 테스트용 단일 클라이언트 조립: 프로덕션과 동일하게 @AuthenticatedClient 클라이언트 1개만 만든다.
+     * AuthRemoteDataSourceImpl이 Lazy<HttpClient>로 자기 자신이 속한 클라이언트를 되받아 쓰므로,
+     * client(lateinit) → dataSource(Lazy로 client 참조) → client 초기화 순서로 조립한다.
+     * MockEngine 1개가 request.url.encodedPath로 REFRESH 경로와 나머지를 분기해 각 handler로 위임한다.
+     */
+    private fun buildClient(
         fakeTokenDataSource: FakeTokenDataSource,
         authHandler: MockRequestHandler,
         refreshHandler: MockRequestHandler,
-    ): Pair<HttpClient, HttpClient> {
-        val refreshEngine = MockEngine(refreshHandler)
-        val refreshClient = HttpClient(refreshEngine) { installTodakunDefaults(json, baseUrl) }
-        val authRemoteDataSource = AuthRemoteDataSourceImpl(refreshClient)
+    ): HttpClient {
+        lateinit var client: HttpClient
+        val authRemoteDataSource = AuthRemoteDataSourceImpl(Lazy { client })
 
-        val authEngine = MockEngine(authHandler)
-        val authClient =
-            HttpClient(authEngine) {
+        val engine =
+            MockEngine { request ->
+                val path = request.url.encodedPath.trimStart('/')
+                if (path == AuthApi.REFRESH) {
+                    refreshHandler(request)
+                } else {
+                    authHandler(request)
+                }
+            }
+
+        client =
+            HttpClient(engine) {
                 installTodakunDefaults(json, baseUrl)
                 installBearerAuth(fakeTokenDataSource, authRemoteDataSource)
             }
-        return authClient to refreshClient
+        return client
     }
 
     /** T1: 저장된 토큰이 있으면 Authorization: Bearer <token> 헤더가 부착된다 (AC-2) */
@@ -64,8 +83,8 @@ class BearerAuthIntegrationTest {
             val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
             var capturedAuthHeader: String? = null
 
-            val (authClient) =
-                buildClients(
+            val authClient =
+                buildClient(
                     fakeTokenDataSource = fakeTokenDs,
                     authHandler = { request ->
                         capturedAuthHeader = request.headers[HttpHeaders.Authorization]
@@ -89,8 +108,8 @@ class BearerAuthIntegrationTest {
             var capturedAuthHeader: String? = "sentinel"
             var refreshCalled = false
 
-            val (authClient) =
-                buildClients(
+            val authClient =
+                buildClient(
                     fakeTokenDataSource = fakeTokenDs,
                     authHandler = { request ->
                         capturedAuthHeader = request.headers[HttpHeaders.Authorization]
@@ -117,8 +136,8 @@ class BearerAuthIntegrationTest {
             val authCallCount = AtomicInteger(0)
             var retryAuthHeader: String? = null
 
-            val (authClient) =
-                buildClients(
+            val authClient =
+                buildClient(
                     fakeTokenDataSource = fakeTokenDs,
                     authHandler = { request ->
                         val n = authCallCount.incrementAndGet()
@@ -149,8 +168,8 @@ class BearerAuthIntegrationTest {
             val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
             val authCallCount = AtomicInteger(0)
 
-            val (authClient) =
-                buildClients(
+            val authClient =
+                buildClient(
                     fakeTokenDataSource = fakeTokenDs,
                     authHandler = {
                         if (authCallCount.incrementAndGet() == 1) {
@@ -175,8 +194,8 @@ class BearerAuthIntegrationTest {
         runTest {
             val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
 
-            val (authClient) =
-                buildClients(
+            val authClient =
+                buildClient(
                     fakeTokenDataSource = fakeTokenDs,
                     authHandler = { respond("", HttpStatusCode.Unauthorized) },
                     refreshHandler = { respond("", HttpStatusCode.Unauthorized) },
@@ -198,28 +217,29 @@ class BearerAuthIntegrationTest {
             val authInitialCount = AtomicInteger(0)
             val refreshCallCount = AtomicInteger(0)
 
-            // 5번째 초기 요청이 들어와야 gate 열림 → refresh가 그 전에 응답하지 않도록 보장
-            val refreshEngine =
-                MockEngine { _ ->
-                    gate.await()
-                    refreshCallCount.incrementAndGet()
-                    respond(newTokenRefreshJson, HttpStatusCode.OK, jsonHeaders)
-                }
-            val refreshClient = HttpClient(refreshEngine) { installTodakunDefaults(json, baseUrl) }
-            val authRemoteDataSource = AuthRemoteDataSourceImpl(refreshClient)
+            lateinit var client: HttpClient
+            val authRemoteDataSource = AuthRemoteDataSourceImpl(Lazy { client })
 
-            val authEngine =
-                MockEngine { _ ->
-                    val n = authInitialCount.incrementAndGet()
-                    if (n <= 5) {
-                        if (n == 5) gate.complete(Unit)
-                        respond("", HttpStatusCode.Unauthorized)
+            // 5번째 초기 요청이 들어와야 gate 열림 → refresh가 그 전에 응답하지 않도록 보장
+            val engine =
+                MockEngine { request ->
+                    val path = request.url.encodedPath.trimStart('/')
+                    if (path == AuthApi.REFRESH) {
+                        gate.await()
+                        refreshCallCount.incrementAndGet()
+                        respond(newTokenRefreshJson, HttpStatusCode.OK, jsonHeaders)
                     } else {
-                        respond(successJson, HttpStatusCode.OK, jsonHeaders)
+                        val n = authInitialCount.incrementAndGet()
+                        if (n <= 5) {
+                            if (n == 5) gate.complete(Unit)
+                            respond("", HttpStatusCode.Unauthorized)
+                        } else {
+                            respond(successJson, HttpStatusCode.OK, jsonHeaders)
+                        }
                     }
                 }
-            val authClient =
-                HttpClient(authEngine) {
+            client =
+                HttpClient(engine) {
                     installTodakunDefaults(json, baseUrl)
                     installBearerAuth(fakeTokenDs, authRemoteDataSource)
                 }
@@ -227,7 +247,7 @@ class BearerAuthIntegrationTest {
             val results =
                 (1..5)
                     .map {
-                        async(Dispatchers.IO) { runCatching { authClient.get("api/test") } }
+                        async(Dispatchers.IO) { runCatching { client.get("api/test") } }
                     }.awaitAll()
 
             assertEquals(1, refreshCallCount.get())
@@ -241,8 +261,8 @@ class BearerAuthIntegrationTest {
             val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
             var capturedHeader: String? = "sentinel"
 
-            val (authClient) =
-                buildClients(
+            val authClient =
+                buildClient(
                     fakeTokenDataSource = fakeTokenDs,
                     authHandler = { request ->
                         capturedHeader = request.headers[HttpHeaders.Authorization]
@@ -266,8 +286,8 @@ class BearerAuthIntegrationTest {
             val fakeTokenDs = FakeTokenDataSource() // 토큰 없음 → oldTokens = null
             var refreshHttpCalled = false
 
-            val (authClient) =
-                buildClients(
+            val authClient =
+                buildClient(
                     fakeTokenDataSource = fakeTokenDs,
                     authHandler = { respond("", HttpStatusCode.Unauthorized) },
                     refreshHandler = {
@@ -280,5 +300,42 @@ class BearerAuthIntegrationTest {
 
             assertTrue(result.isFailure)
             assertFalse("oldTokens=null이면 refresh HTTP 미호출", refreshHttpCalled)
+        }
+
+    /**
+     * T9 - 회귀 가드: refresh 경로가 sendWithoutRequest에서 빠지거나 AuthCircuitBreaker가 없으면
+     * refresh 요청 자체가 Auth 플러그인의 일반 401 처리 경로를 다시 타게 된다.
+     *
+     * `AuthRemoteDataSourceImpl.postRefresh()`는 Auth 플러그인이 설치된 단일 클라이언트로 나가므로,
+     * refresh 응답이 401이면 Ktor Auth의 Send 단계 인터셉터가 이 응답도 감지한다.
+     * `attributes.put(AuthCircuitBreaker, Unit)`가 없으면:
+     *  - `sendWithoutRequest`가 refresh 경로를 제외하지 않는 설정이었다면 `AuthTokenHolder`의
+     *    Mutex 재진입으로 영구 데드락이 난다.
+     *  - 지금처럼 refresh가 `NO_AUTH_PATHS`로 제외돼 있어도, `executeWithNewToken`의 맹목적
+     *    1회 재시도 때문에 `/auth/refresh` HTTP가 2회 발사된다.
+     * AuthCircuitBreaker가 이 경로를 구조적으로 차단해 정확히 1회만 나가게 한다.
+     * 이 테스트가 깨지면(타임아웃 또는 refresh 2회) AuthCircuitBreaker 배선이 빠진 것이다.
+     */
+    @Test
+    fun `T9 - refresh 경로 서킷브레이커 없으면 데드락 또는 중복 호출 회귀 가드`() =
+        runTest(timeout = 10.seconds) {
+            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val refreshCallCount = AtomicInteger(0)
+
+            val authClient =
+                buildClient(
+                    fakeTokenDataSource = fakeTokenDs,
+                    authHandler = { respond("", HttpStatusCode.Unauthorized) },
+                    refreshHandler = {
+                        refreshCallCount.incrementAndGet()
+                        respond("", HttpStatusCode.Unauthorized)
+                    },
+                )
+
+            val result = runCatching { authClient.get("api/test") }
+
+            assertEquals(1, refreshCallCount.get())
+            assertTrue(fakeTokenDs.clearTokenCalled)
+            assertTrue(result.isFailure)
         }
 }

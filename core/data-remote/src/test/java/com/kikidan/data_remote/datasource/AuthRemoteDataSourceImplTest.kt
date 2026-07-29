@@ -1,8 +1,9 @@
 package com.kikidan.data_remote.datasource
 
-import com.kikidan.data_remote.client.TodakunJson
-import com.kikidan.data_remote.client.installTodakunDefaults
+import com.kikidan.data_remote.di.TodakunJson
+import com.kikidan.data_remote.di.installTodakunDefaults
 import com.kikidan.domain.model.auth.AuthToken
+import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandler
@@ -24,7 +25,7 @@ class AuthRemoteDataSourceImplTest {
     private fun buildSut(handler: MockRequestHandler): AuthRemoteDataSourceImpl {
         val engine = MockEngine(handler)
         val client = HttpClient(engine) { installTodakunDefaults(json, baseUrl) }
-        return AuthRemoteDataSourceImpl(client)
+        return AuthRemoteDataSourceImpl(Lazy { client })
     }
 
     /** T9: postRefresh 정상 — AuthToken 도메인 모델 반환 */
