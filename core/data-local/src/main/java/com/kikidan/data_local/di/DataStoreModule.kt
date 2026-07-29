@@ -19,6 +19,7 @@ private val Context.authTokenDataStore: DataStore<Preferences> by preferencesDat
 object DataStoreModule {
     @Provides
     @Singleton
+    @AuthTokenDataStore
     fun provideAuthTokenDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.authTokenDataStore

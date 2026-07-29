@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.kikidan.data.datasource.LocalTokenDataSource
 import com.kikidan.data_local.datastore.TokenPreferencesKeys
+import com.kikidan.data_local.di.AuthTokenDataStore
 import com.kikidan.domain.model.auth.AuthToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -14,7 +15,7 @@ import javax.inject.Inject
 class LocalTokenDataSourceImpl
     @Inject
     constructor(
-        private val dataStore: DataStore<Preferences>,
+        @param:AuthTokenDataStore private val dataStore: DataStore<Preferences>,
     ) : LocalTokenDataSource {
         override fun observeToken(): Flow<AuthToken?> = dataStore.data.map { prefs -> prefs.toAuthToken() }
 
