@@ -117,7 +117,7 @@ fun TodakunTextField(
     }
 }
 
-object TodakunTextFieldDefaults {
+private object TodakunTextFieldDefaults {
     val CursorColor = Color(0xFF0040FF)
 }
 

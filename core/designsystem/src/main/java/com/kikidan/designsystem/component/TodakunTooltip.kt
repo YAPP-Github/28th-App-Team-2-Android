@@ -80,7 +80,7 @@ fun TodakunTooltip(
     )
 }
 
-object TodakunTooltipDefaults {
+private object TodakunTooltipDefaults {
     val CaretSize = DpSize(width = 8.dp, height = 8.dp)
 
     /**

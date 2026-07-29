@@ -108,7 +108,7 @@ fun BirthDateWheelPicker(
     }
 }
 
-object BirthDateWheelPickerDefaults {
+private object BirthDateWheelPickerDefaults {
     val MonthRange = 1..12
 }
 

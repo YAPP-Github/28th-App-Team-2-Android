@@ -27,6 +27,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Generate local.properties
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+          KAKAO_NATIVE_APP_KEY: ${{ secrets.KAKAO_NATIVE_APP_KEY }}
+        run: |
+          {
+            echo "BASE_URL=$BASE_URL"
+            echo "GOOGLE_WEB_CLIENT_ID=$GOOGLE_WEB_CLIENT_ID"
+            echo "KAKAO_NATIVE_APP_KEY=$KAKAO_NATIVE_APP_KEY"
+          } > local.properties
+
       - name: Run lint and tests
         id: build
         run: ./gradlew ktlintCheck test --continue

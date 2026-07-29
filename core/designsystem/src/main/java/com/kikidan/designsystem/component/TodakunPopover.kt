@@ -67,7 +67,7 @@ fun TodakunPopover(
     }
 }
 
-object TodakunPopoverDefaults {
+private object TodakunPopoverDefaults {
     val Shape = RoundedCornerShape(12.dp)
     val OuterContentPadding = 8.dp
 

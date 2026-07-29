@@ -64,7 +64,7 @@ fun TodakunSelectBox(
     }
 }
 
-object TodakunSelectBoxDefaults {
+private object TodakunSelectBoxDefaults {
     val Shape = RoundedCornerShape(12.dp)
 }
 

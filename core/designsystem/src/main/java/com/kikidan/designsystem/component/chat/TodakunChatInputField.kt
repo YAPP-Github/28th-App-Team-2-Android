@@ -153,7 +153,7 @@ private fun SendMessageButton(
     }
 }
 
-object TodakunChatInputFieldDefaults {
+private object TodakunChatInputFieldDefaults {
     val InputFieldShape = RoundedCornerShape(24.dp)
     val MaxFieldHeight = 104.dp
     val VerticalPadding = 16.dp

@@ -8,6 +8,8 @@ max_line_length = 120
 ktlint_code_style = ktlint_official
 ktlint_function_naming_ignore_when_annotated_with = Composable
 
+ktlint_compose_defaults-visibility = disabled
+
 # core/data-local, core/data-remote: Android namespace(빌드 스크립트의 module 이름 유래, 대시 미허용)가
 # 밑줄을 포함하므로 해당 패키지명은 표준 package-name 규칙에서 예외로 둔다.
 [core/data-local/**/*.kt]
