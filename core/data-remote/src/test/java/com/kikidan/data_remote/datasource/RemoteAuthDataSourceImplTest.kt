@@ -17,7 +17,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class AuthRemoteDataSourceImplTest {
+class RemoteAuthDataSourceImplTest {
     private val json = TodakunJson
     private val baseUrl = "https://test.example.com/"
     private val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -28,10 +28,10 @@ class AuthRemoteDataSourceImplTest {
         return RemoteAuthDataSourceImpl(Lazy { client })
     }
 
-    /** T9: postRefresh 정상 — AuthToken 도메인 모델 반환 */
     @Test
-    fun `T9 - postRefresh 성공 시 AuthToken 반환`() =
+    fun `postRefresh를_호출하면_정상_응답이_AuthToken_도메인_모델로_반환된다`() =
         runTest {
+            // given
             val body =
                 """{"success":true,"code":"200","message":"ok",""" +
                     """"data":{"accessToken":"a-1","refreshToken":"r-1"}}"""
@@ -44,15 +44,17 @@ class AuthRemoteDataSourceImplTest {
                     )
                 }
 
+            // when
             val result = sut.postRefresh("old-refresh")
 
+            // then
             assertEquals(AuthToken("a-1", "r-1"), result)
         }
 
-    /** T10: ignoreUnknownKeys — 서버가 모르는 필드를 추가해도 파싱 성공 */
     @Test
-    fun `T10 - 미지 필드 있어도 파싱 성공`() =
+    fun `서버_응답에_알_수_없는_필드가_포함돼도_ignoreUnknownKeys로_파싱에_성공한다`() =
         runTest {
+            // given
             val sut =
                 buildSut {
                     val body =
@@ -66,22 +68,26 @@ class AuthRemoteDataSourceImplTest {
                     )
                 }
 
+            // when
             val result = runCatching { sut.postRefresh("old-refresh") }
 
+            // then
             assertTrue(result.isSuccess)
         }
 
-    /** T11: 4xx 응답 시 DataSource가 예외를 삼키지 않고 throw (rules/20-data) */
     @Test
-    fun `T11 - 4xx 응답 시 예외 throw, 삼키지 않음`() =
+    fun `refresh_응답이_401이면_예외가_삼켜지지_않고_그대로_throw된다`() =
         runTest {
+            // given
             val sut =
                 buildSut {
                     respond("", HttpStatusCode.Unauthorized)
                 }
 
+            // when
             val result = runCatching { sut.postRefresh("old-refresh") }
 
+            // then
             assertTrue(result.isFailure)
         }
 }

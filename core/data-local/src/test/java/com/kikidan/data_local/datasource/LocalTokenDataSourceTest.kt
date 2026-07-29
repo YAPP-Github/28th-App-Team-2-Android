@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TokenLocalDataSourceTest {
+class LocalTokenDataSourceTest {
     @get:Rule
     val tmpFolder = TemporaryFolder()
 
@@ -36,38 +36,44 @@ class TokenLocalDataSourceTest {
         testScope.testScheduler.advanceUntilIdle()
     }
 
-    /** T12: saveToken 후 getToken 반환값 일치 */
     @Test
-    fun `T12 - saveToken 후 getToken 왕복 일치`() =
+    fun `saveToken으로_저장한_토큰이_getToken으로_그대로_조회된다`() =
         testScope.runTest {
+            // given
             val token = AuthToken("access-1", "refresh-1")
+
+            // when
             sut.saveToken(token)
 
+            // then
             assertEquals(token, sut.getToken())
         }
 
-    /** T13: clearToken 후 getToken == null, observeToken 이 null 방출 */
     @Test
-    fun `T13 - clearToken 후 getToken null, observeToken null 방출`() =
+    fun `clearToken을_호출하면_getToken과_observeToken이_모두_null이_된다`() =
         testScope.runTest {
+            // given
             sut.saveToken(AuthToken("access-1", "refresh-1"))
+
+            // when
             sut.clearToken()
 
+            // then
             assertNull(sut.getToken())
             assertNull(sut.observeToken().first())
         }
 
-    /** T14: access만 있고 refresh 없는 손상 상태 → observeToken null (부분 토큰을 유효로 오인하지 않음) */
+    // access_token 키만 직접 쓰는 부분 손상 상태는 DataStore 공개 API로 재현 불가(atomic edit이라
+    // partial write가 없음). 대신 저장 후 클리어해 "두 키 모두 없음"을 만들어 같은 불변식(두 키가
+    // 모두 있어야 유효)을 검증한다.
     @Test
-    fun `T14 - 부분 토큰만 존재하면 observeToken null`() =
+    fun `두_토큰_키가_모두_없으면_observeToken이_null을_방출해_부분_토큰을_유효로_오인하지_않는다`() =
         testScope.runTest {
-            // saveToken을 호출하지 않고 직접 access_token 키만 쓰면 DataStore API로는 불가.
-            // 대신: 정상 토큰 저장 후 clearToken 해서 둘 다 없는 상태를 검증한다.
-            // DataStore는 atomic edit이라 partial write가 발생하지 않는다.
-            // 이 테스트는 "두 키가 모두 있어야 유효"라는 로직을 검증한다.
+            // given
             sut.saveToken(AuthToken("a", "r"))
-            sut.clearToken() // 두 키 모두 삭제
+            sut.clearToken()
 
+            // when & then
             assertNull(sut.observeToken().first())
         }
 }
