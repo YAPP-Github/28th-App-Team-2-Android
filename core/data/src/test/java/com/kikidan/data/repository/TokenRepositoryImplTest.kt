@@ -1,7 +1,7 @@
 package com.kikidan.data.repository
 
 import com.kikidan.data.auth.AuthTokenCacheInvalidator
-import com.kikidan.data.datasource.TokenDataSource
+import com.kikidan.data.datasource.LocalTokenDataSource
 import com.kikidan.domain.model.auth.AuthToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +15,13 @@ import org.junit.Test
 import java.io.IOException
 
 class TokenRepositoryImplTest {
-    private lateinit var fakeTokenDataSource: FakeTokenDataSource
+    private lateinit var fakeTokenDataSource: FakeLocalTokenDataSource
     private lateinit var fakeInvalidator: FakeInvalidator
     private lateinit var sut: TokenRepositoryImpl
 
     @Before
     fun setUp() {
-        fakeTokenDataSource = FakeTokenDataSource()
+        fakeTokenDataSource = FakeLocalTokenDataSource()
         fakeInvalidator = FakeInvalidator()
         sut = TokenRepositoryImpl(fakeTokenDataSource, fakeInvalidator)
     }
@@ -80,7 +80,7 @@ class TokenRepositoryImplTest {
 
     // ── 테스트 전용 더블 ──────────────────────────────────────────────────────
 
-    private class FakeTokenDataSource : TokenDataSource {
+    private class FakeLocalTokenDataSource : LocalTokenDataSource {
         private val tokenFlow = MutableStateFlow<AuthToken?>(null)
         var throwOnGet: Throwable? = null
         var throwOnObserve: Throwable? = null

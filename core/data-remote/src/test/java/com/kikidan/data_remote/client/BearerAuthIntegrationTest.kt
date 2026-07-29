@@ -1,10 +1,10 @@
 package com.kikidan.data_remote.client
 
-import com.kikidan.data_remote.datasource.AuthRemoteDataSourceImpl
+import com.kikidan.data_remote.datasource.RemoteAuthDataSourceImpl
 import com.kikidan.data_remote.di.TodakunJson
 import com.kikidan.data_remote.di.installBearerAuth
 import com.kikidan.data_remote.di.installTodakunDefaults
-import com.kikidan.data_remote.fake.FakeTokenDataSource
+import com.kikidan.data_remote.fake.FakeLocalTokenDataSource
 import com.kikidan.domain.model.auth.AuthToken
 import dagger.Lazy
 import io.ktor.client.HttpClient
@@ -50,12 +50,12 @@ class BearerAuthIntegrationTest {
      * MockEngine 1개가 request.url.encodedPath로 REFRESH 경로와 나머지를 분기해 각 handler로 위임한다.
      */
     private fun buildClient(
-        fakeTokenDataSource: FakeTokenDataSource,
+        fakeTokenDataSource: FakeLocalTokenDataSource,
         authHandler: MockRequestHandler,
         refreshHandler: MockRequestHandler,
     ): HttpClient {
         lateinit var client: HttpClient
-        val authRemoteDataSource = AuthRemoteDataSourceImpl(Lazy { client })
+        val authRemoteDataSource = RemoteAuthDataSourceImpl(Lazy { client })
 
         val engine =
             MockEngine { request ->
@@ -79,7 +79,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T1 - 저장된 토큰이 있으면 Authorization 헤더 포함`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val fakeTokenDs = FakeLocalTokenDataSource().apply { saveToken(initialToken) }
             var capturedAuthHeader: String? = null
 
             val authClient =
@@ -103,7 +103,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T2 - 저장된 토큰 없으면 Authorization 헤더 없음, refresh 미호출`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource() // 토큰 없음
+            val fakeTokenDs = FakeLocalTokenDataSource() // 토큰 없음
             var capturedAuthHeader: String? = "sentinel"
             var refreshCalled = false
 
@@ -130,7 +130,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T3 - 401 응답 시 refresh 후 원 요청 자동 재시도`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val fakeTokenDs = FakeLocalTokenDataSource().apply { saveToken(initialToken) }
             var refreshCalled = false
             val authCallCount = AtomicInteger(0)
             var retryAuthHeader: String? = null
@@ -164,7 +164,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T4 - refresh 성공 시 새 access·refresh 토큰 저장`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val fakeTokenDs = FakeLocalTokenDataSource().apply { saveToken(initialToken) }
             val authCallCount = AtomicInteger(0)
 
             val authClient =
@@ -191,7 +191,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T5 - refresh 실패 시 토큰 클리어 및 예외 전파`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val fakeTokenDs = FakeLocalTokenDataSource().apply { saveToken(initialToken) }
 
             val authClient =
                 buildClient(
@@ -211,13 +211,13 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T6 - 5개 동시 401 시 refresh 정확히 1회`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val fakeTokenDs = FakeLocalTokenDataSource().apply { saveToken(initialToken) }
             val gate = CompletableDeferred<Unit>()
             val authInitialCount = AtomicInteger(0)
             val refreshCallCount = AtomicInteger(0)
 
             lateinit var client: HttpClient
-            val authRemoteDataSource = AuthRemoteDataSourceImpl(Lazy { client })
+            val authRemoteDataSource = RemoteAuthDataSourceImpl(Lazy { client })
 
             // 5번째 초기 요청이 들어와야 gate 열림 → refresh가 그 전에 응답하지 않도록 보장
             val engine =
@@ -257,7 +257,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T7 - sendWithoutRequest - 비인증 경로에는 Authorization 헤더 없음`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val fakeTokenDs = FakeLocalTokenDataSource().apply { saveToken(initialToken) }
             var capturedHeader: String? = "sentinel"
 
             val authClient =
@@ -282,7 +282,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T8 - oldTokens null 상태 401 시 무한 루프 없이 실패`() =
         runTest {
-            val fakeTokenDs = FakeTokenDataSource() // 토큰 없음 → oldTokens = null
+            val fakeTokenDs = FakeLocalTokenDataSource() // 토큰 없음 → oldTokens = null
             var refreshHttpCalled = false
 
             val authClient =
@@ -318,7 +318,7 @@ class BearerAuthIntegrationTest {
     @Test
     fun `T9 - refresh 경로 서킷브레이커 없으면 데드락 또는 중복 호출 회귀 가드`() =
         runTest(timeout = 10.seconds) {
-            val fakeTokenDs = FakeTokenDataSource().apply { saveToken(initialToken) }
+            val fakeTokenDs = FakeLocalTokenDataSource().apply { saveToken(initialToken) }
             val refreshCallCount = AtomicInteger(0)
 
             val authClient =

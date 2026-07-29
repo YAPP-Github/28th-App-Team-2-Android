@@ -22,10 +22,10 @@ class AuthRemoteDataSourceImplTest {
     private val baseUrl = "https://test.example.com/"
     private val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
 
-    private fun buildSut(handler: MockRequestHandler): AuthRemoteDataSourceImpl {
+    private fun buildSut(handler: MockRequestHandler): RemoteAuthDataSourceImpl {
         val engine = MockEngine(handler)
         val client = HttpClient(engine) { installTodakunDefaults(json, baseUrl) }
-        return AuthRemoteDataSourceImpl(Lazy { client })
+        return RemoteAuthDataSourceImpl(Lazy { client })
     }
 
     /** T9: postRefresh 정상 — AuthToken 도메인 모델 반환 */

@@ -1,7 +1,7 @@
 package com.kikidan.data_local.di
 
-import com.kikidan.data.datasource.TokenDataSource
-import com.kikidan.data_local.datasource.TokenLocalDataSource
+import com.kikidan.data.datasource.LocalTokenDataSource
+import com.kikidan.data_local.datasource.LocalTokenDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 abstract class LocalDataSourceModule {
     @Binds
     @Singleton
-    abstract fun bindTokenDataSource(impl: TokenLocalDataSource): TokenDataSource
+    abstract fun bindTokenDataSource(impl: LocalTokenDataSourceImpl): LocalTokenDataSource
 }

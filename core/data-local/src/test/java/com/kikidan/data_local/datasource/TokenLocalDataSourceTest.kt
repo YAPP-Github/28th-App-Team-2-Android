@@ -22,13 +22,13 @@ class TokenLocalDataSourceTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
-    private lateinit var sut: TokenLocalDataSource
+    private lateinit var sut: LocalTokenDataSourceImpl
 
     @Before
     fun setUp() {
         val file = tmpFolder.newFile("test_auth_token.preferences_pb")
         val dataStore = PreferenceDataStoreFactory.create(scope = testScope) { file }
-        sut = TokenLocalDataSource(dataStore)
+        sut = LocalTokenDataSourceImpl(dataStore)
     }
 
     @After

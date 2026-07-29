@@ -11,9 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-// DataStore 파일명: auth_token
-// 반드시 app/src/main/res/xml/backup_rules.xml 및 data_extraction_rules.xml 의
-// "datastore/auth_token.preferences_pb" 경로와 일치해야 한다.
+// app/src/main/res/xml/backup_rules.xml 및 data_extraction_rules.xml과 경로가 일치해야 한다
 private val Context.authTokenDataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_token")
 
 @Module

@@ -1,7 +1,7 @@
 package com.kikidan.data_remote.di
 
-import com.kikidan.data.datasource.AuthRemoteDataSource
-import com.kikidan.data.datasource.TokenDataSource
+import com.kikidan.data.datasource.LocalTokenDataSource
+import com.kikidan.data.datasource.RemoteAuthDataSource
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpTimeout
@@ -34,13 +34,13 @@ internal fun HttpClientConfig<*>.installTodakunDefaults(
 }
 
 internal fun HttpClientConfig<*>.installBearerAuth(
-    tokenDataSource: TokenDataSource,
-    authRemoteDataSource: AuthRemoteDataSource,
+    localTokenDataSource: LocalTokenDataSource,
+    remoteAuthDataSource: RemoteAuthDataSource,
 ) {
     install(Auth) {
         bearer {
             loadTokens {
-                tokenDataSource.getToken()?.let { token ->
+                localTokenDataSource.getToken()?.let { token ->
                     BearerTokens(token.accessToken, token.refreshToken)
                 }
             }
@@ -57,18 +57,18 @@ internal fun HttpClientConfig<*>.installBearerAuth(
             refreshTokens {
                 val oldRefreshToken = oldTokens?.refreshToken
                 if (oldRefreshToken == null) {
-                    tokenDataSource.clearToken()
+                    localTokenDataSource.clearToken()
                     return@refreshTokens null
                 }
 
-                runCatching { authRemoteDataSource.postRefresh(oldRefreshToken) }
+                runCatching { remoteAuthDataSource.postRefresh(oldRefreshToken) }
                     .fold(
                         onSuccess = { newToken ->
-                            tokenDataSource.saveToken(newToken)
+                            localTokenDataSource.saveToken(newToken)
                             BearerTokens(newToken.accessToken, newToken.refreshToken)
                         },
                         onFailure = {
-                            tokenDataSource.clearToken()
+                            localTokenDataSource.clearToken()
                             null
                         },
                     )
@@ -85,9 +85,10 @@ internal val TodakunJson: Json =
         coerceInputValues = true
     }
 
-private val NO_AUTH_PATHS = setOf(
-    "api/v1/auth/refresh",
-    "api/v1/auth/login",
-    "api/v1/auth/signup",
-    "api/v1/terms"
-)
+private val NO_AUTH_PATHS =
+    setOf(
+        "api/v1/auth/refresh",
+        "api/v1/auth/login",
+        "api/v1/auth/signup",
+        "api/v1/terms",
+    )

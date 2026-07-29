@@ -1,11 +1,11 @@
 package com.kikidan.data_remote.fake
 
-import com.kikidan.data.datasource.TokenDataSource
+import com.kikidan.data.datasource.LocalTokenDataSource
 import com.kikidan.domain.model.auth.AuthToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class FakeTokenDataSource : TokenDataSource {
+class FakeLocalTokenDataSource : LocalTokenDataSource {
     private val tokenFlow = MutableStateFlow<AuthToken?>(null)
 
     var clearTokenCalled = false

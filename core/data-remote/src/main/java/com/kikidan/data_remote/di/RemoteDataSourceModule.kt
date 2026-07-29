@@ -1,9 +1,9 @@
 package com.kikidan.data_remote.di
 
 import com.kikidan.data.auth.AuthTokenCacheInvalidator
-import com.kikidan.data.datasource.AuthRemoteDataSource
+import com.kikidan.data.datasource.RemoteAuthDataSource
 import com.kikidan.data_remote.auth.BearerTokenCacheInvalidator
-import com.kikidan.data_remote.datasource.AuthRemoteDataSourceImpl
+import com.kikidan.data_remote.datasource.RemoteAuthDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 abstract class RemoteDataSourceModule {
     @Binds
     @Singleton
-    abstract fun bindAuthRemoteDataSource(impl: AuthRemoteDataSourceImpl): AuthRemoteDataSource
+    abstract fun bindAuthRemoteDataSource(impl: RemoteAuthDataSourceImpl): RemoteAuthDataSource
 
     @Binds
     @Singleton
