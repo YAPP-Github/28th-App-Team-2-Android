@@ -23,7 +23,7 @@ class RemoteAuthDataSourceImpl
     constructor(
         private val client: Lazy<HttpClient>,
     ) : RemoteAuthDataSource {
-        override suspend fun login(oauthCredential: OAuthCredential): LoginResult {
+        override suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult {
             val response =
                 client
                     .get()

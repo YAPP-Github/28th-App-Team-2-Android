@@ -1,6 +1,5 @@
 package com.kikidan.data.repository
 
-import com.kikidan.data.datasource.LocalTokenDataSource
 import com.kikidan.data.datasource.RemoteAuthDataSource
 import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthCredential
@@ -15,6 +14,6 @@ class AuthRepositoryImpl
     ) : AuthRepository {
         override suspend fun login(credential: OAuthCredential): Result<LoginResult> =
             runCatchingCancellable {
-                remoteAuthDataSource.login(credential)
+                remoteAuthDataSource.postLogin(credential)
             }
     }

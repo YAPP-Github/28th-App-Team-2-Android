@@ -9,7 +9,7 @@ class FakeRemoteAuthDataSource : RemoteAuthDataSource {
     var loginResult: LoginResult = LoginResult(AuthToken("access", "refresh"), "onboarding", newMember = false)
     var throwOnLogin: Throwable? = null
 
-    override suspend fun login(oauthCredential: OAuthCredential): LoginResult {
+    override suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult {
         throwOnLogin?.let { throw it }
         return loginResult
     }

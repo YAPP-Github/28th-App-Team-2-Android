@@ -5,7 +5,7 @@ import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthCredential
 
 interface RemoteAuthDataSource {
-    suspend fun login(oauthCredential: OAuthCredential): LoginResult
+    suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult
 
     suspend fun postRefresh(refreshToken: String): AuthToken
 }
