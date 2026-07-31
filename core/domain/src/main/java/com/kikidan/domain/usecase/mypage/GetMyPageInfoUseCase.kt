@@ -11,13 +11,15 @@ data class MyPageInfo(
     val sajuPalja: SajuPalja,
 )
 
-class GetMyPageInfoUseCase @Inject constructor(
-    private val getUserUseCase: GetUserUseCase,
-    private val getSajuPaljaUseCase: GetSajuPaljaUseCase,
-) {
-    suspend operator fun invoke(): Result<MyPageInfo> {
-        val user = getUserUseCase().getOrElse { return Result.failure(it) }
-        val sajuPalja = getSajuPaljaUseCase().getOrElse { return Result.failure(it) }
-        return Result.success(MyPageInfo(user, sajuPalja))
+class GetMyPageInfoUseCase
+    @Inject
+    constructor(
+        private val getUserUseCase: GetUserUseCase,
+        private val getSajuPaljaUseCase: GetSajuPaljaUseCase,
+    ) {
+        suspend operator fun invoke(): Result<MyPageInfo> {
+            val user = getUserUseCase().getOrElse { return Result.failure(it) }
+            val sajuPalja = getSajuPaljaUseCase().getOrElse { return Result.failure(it) }
+            return Result.success(MyPageInfo(user, sajuPalja))
+        }
     }
-}
