@@ -84,7 +84,7 @@ fun TodakunChip2(
     }
 }
 
-object TodakunChipDefaults {
+private object TodakunChipDefaults {
     val Shape = RoundedCornerShape(100.dp)
     val HorizontalPadding = 10.dp
     val VerticalPadding = 5.dp

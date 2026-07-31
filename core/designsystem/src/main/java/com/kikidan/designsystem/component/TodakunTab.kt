@@ -62,7 +62,7 @@ fun TodakunTab(
     }
 }
 
-object TodakunTabDefaults {
+private object TodakunTabDefaults {
     val Shape = RoundedCornerShape(99.dp)
 }
 

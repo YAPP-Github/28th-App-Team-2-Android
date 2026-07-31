@@ -96,7 +96,7 @@ private fun RowScope.TodakunBottomNavigationTab(
     }
 }
 
-object TodakunBottomNavigationDefaults {
+private object TodakunBottomNavigationDefaults {
     val ContainerHeight = 56.dp
     val ContainerCornerRadius = 24.dp
 

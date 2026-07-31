@@ -60,7 +60,7 @@ private fun TodakunBadgeType.toColors(): Pair<Color, Color> =
         TodakunBadgeType.Gray -> TodakunColor.coolGray100 to TodakunColor.coolGray500
     }
 
-object TodakunBadgeDefaults {
+private object TodakunBadgeDefaults {
     val Shape = RoundedCornerShape(6.dp)
     val HorizontalPadding = 6.dp
     val VerticalPadding = 3.dp

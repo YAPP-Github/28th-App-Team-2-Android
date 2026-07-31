@@ -82,7 +82,7 @@ private fun DragHandle(modifier: Modifier = Modifier) {
     )
 }
 
-internal object WheelPickerBottomSheetDefaults {
+private object WheelPickerBottomSheetDefaults {
     val HorizontalMargin: Dp = 20.dp
 
     val BottomSpacing: Dp = 16.dp

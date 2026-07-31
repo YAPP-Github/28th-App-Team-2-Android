@@ -35,7 +35,7 @@ fun TodakunDivider(
     )
 }
 
-object TodakunDividerDefaults {
+private object TodakunDividerDefaults {
     val LineThickness = 1.dp
     val SectionThickness = 10.dp
 }

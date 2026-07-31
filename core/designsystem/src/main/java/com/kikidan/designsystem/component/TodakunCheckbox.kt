@@ -63,7 +63,7 @@ fun TodakunCheckbox(
     }
 }
 
-object TodakunCheckboxDefaults {
+private object TodakunCheckboxDefaults {
     val Size = 20.dp
     val Shape = RoundedCornerShape(6.dp)
 }
