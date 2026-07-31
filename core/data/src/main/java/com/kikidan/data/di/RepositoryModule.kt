@@ -1,6 +1,8 @@
 package com.kikidan.data.di
 
+import com.kikidan.data.repository.AuthRepositoryImpl
 import com.kikidan.data.repository.TokenRepositoryImpl
+import com.kikidan.domain.repository.AuthRepository
 import com.kikidan.domain.repository.TokenRepository
 import dagger.Binds
 import dagger.Module
@@ -14,4 +16,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTokenRepository(impl: TokenRepositoryImpl): TokenRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 }

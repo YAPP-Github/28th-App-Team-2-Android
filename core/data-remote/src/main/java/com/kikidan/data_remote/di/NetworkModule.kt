@@ -18,7 +18,6 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideAuthenticatedClient(
-        engine: HttpClientEngine,
         localTokenDataSource: LocalTokenDataSource,
         remoteAuthDataSource: RemoteAuthDataSource,
     ): HttpClient =
