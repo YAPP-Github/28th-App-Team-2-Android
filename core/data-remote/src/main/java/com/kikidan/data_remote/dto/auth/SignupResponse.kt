@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SignupResponse(
     val accessToken: String,
-    val refreshToken: String
+    val refreshToken: String,
 )
 
 fun SignupResponse.toDomain(): AuthToken =
     AuthToken(
         accessToken = accessToken,
-        refreshToken = refreshToken
+        refreshToken = refreshToken,
     )

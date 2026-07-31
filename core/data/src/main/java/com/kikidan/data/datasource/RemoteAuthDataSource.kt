@@ -10,7 +10,10 @@ import com.kikidan.domain.model.user.User
 interface RemoteAuthDataSource {
     suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult
 
-    suspend fun postSignup(user: User, onboardingToken: OnboardingToken): AuthToken
+    suspend fun postSignup(
+        user: User,
+        onboardingToken: OnboardingToken,
+    ): AuthToken
 
     suspend fun postLogout()
 

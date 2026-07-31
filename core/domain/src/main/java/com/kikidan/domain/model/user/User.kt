@@ -62,12 +62,12 @@ enum class Job {
     FREELANCER,
     JOBSEEKER,
     HOMEMAKER,
-    LEAVER
+    LEAVER,
 }
 
 enum class RelationshipStatus {
     SOLO,
     DATING,
     MARRY,
-    REMARRY
+    REMARRY,
 }
