@@ -2,6 +2,7 @@ package com.kikidan.data_remote.datasource
 
 import com.kikidan.data.datasource.RemoteAuthDataSource
 import com.kikidan.data_remote.dto.CommonResponse
+import com.kikidan.data_remote.dto.auth.LoginRequest
 import com.kikidan.data_remote.dto.auth.LoginResponse
 import com.kikidan.data_remote.dto.auth.RefreshRequest
 import com.kikidan.data_remote.dto.auth.RefreshResponse
@@ -27,6 +28,12 @@ class RemoteAuthDataSourceImpl
                 client
                     .get()
                     .post(LOGIN_URL) {
+                        setBody(
+                            LoginRequest(
+                                provider = oauthCredential.provider.toString(),
+                                oauthAccessToken = oauthCredential.token.value,
+                            ),
+                        )
                     }.body<CommonResponse<LoginResponse>>()
             val loginResponse =
                 requireNotNull(response.data) {

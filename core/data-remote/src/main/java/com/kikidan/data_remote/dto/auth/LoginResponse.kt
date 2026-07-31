@@ -6,19 +6,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LoginResponse(
-    val accessToken: String,
-    val refreshToken: String,
-    val onboardingToken: String,
-    val newMember: Boolean,
+    val accessToken: String?,
+    val refreshToken: String?,
+    val onboardingToken: String?,
+    val isNewMember: Boolean,
 )
 
 fun LoginResponse.toDomain(): LoginResult =
     LoginResult(
         authToken =
-            AuthToken(
-                accessToken = accessToken,
-                refreshToken = refreshToken,
-            ),
+            if (accessToken != null && refreshToken != null) {
+                AuthToken(
+                    accessToken = accessToken,
+                    refreshToken = refreshToken,
+                )
+            } else {
+                null
+            },
         onboardingToken = onboardingToken,
-        newMember = newMember,
+        newMember = isNewMember,
     )

@@ -14,7 +14,9 @@ class LoginUseCase
     ) {
         suspend operator fun invoke(credential: OAuthCredential): Result<LoginResult> {
             val result = authRepository.login(credential).getOrElse { return Result.failure(it) }
-            tokenRepository.saveToken(result.authToken).getOrElse { return Result.failure(it) }
+            if (result.authToken != null) {
+                tokenRepository.saveToken(result.authToken).getOrElse { return Result.failure(it) }
+            }
             return Result.success(result)
         }
     }
