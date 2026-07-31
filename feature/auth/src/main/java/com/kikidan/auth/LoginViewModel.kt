@@ -3,7 +3,6 @@ package com.kikidan.auth
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import com.kikidan.domain.model.auth.AuthState
-import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthProviderType
 import com.kikidan.domain.usecase.CheckAuthStateUseCase
 import com.kikidan.domain.usecase.LoginUseCase
@@ -16,23 +15,6 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
-data class LoginState(
-    val step: LoginStep = LoginStep.SPLASH,
-    val isLoading: Boolean = false,
-)
-
-sealed interface LoginSideEffect {
-    data class LoginSucceeded(
-        val result: LoginResult,
-    ) : LoginSideEffect
-
-    data class LoginFailed(
-        val throwable: Throwable,
-    ) : LoginSideEffect
-
-    data object AlreadyAuthenticated : LoginSideEffect
-}
-
 @HiltViewModel
 class LoginViewModel
     @Inject
@@ -42,12 +24,9 @@ class LoginViewModel
         private val checkAuthStateUseCase: CheckAuthStateUseCase,
     ) : ViewModel(),
         ContainerHost<LoginState, LoginSideEffect> {
-        override val container: Container<LoginState, LoginSideEffect> = container(LoginState())
+        override val container: Container<LoginState, LoginSideEffect> =
+            container(LoginState.Loading(LoginStep.SPLASH))
 
-        /**
-         * 스플래시 진입 시 1회 호출. 로컬 토큰·서버 세션을 확인하는 동안에도 스플래시가
-         * 너무 짧게 깜빡이지 않도록 최소 노출 시간([SPLASH_MIN_DURATION_MILLIS])을 함께 보장한다.
-         */
         fun checkAuthState() =
             intent {
                 val authState =
@@ -58,7 +37,7 @@ class LoginViewModel
                     }
                 when (authState) {
                     AuthState.Authenticated -> postSideEffect(LoginSideEffect.AlreadyAuthenticated)
-                    AuthState.Unauthenticated -> reduce { state.copy(step = LoginStep.LOGIN) }
+                    AuthState.Unauthenticated -> reduce { LoginState.Success(LoginStep.LOGIN) }
                 }
             }
 
@@ -66,23 +45,23 @@ class LoginViewModel
             provider: OAuthProviderType,
             activity: Activity,
         ) = intent {
-            reduce { state.copy(isLoading = true) }
+            reduce { LoginState.Loading(LoginStep.LOGIN) }
 
             val credential =
                 try {
                     oAuthTokenProviderRegistry[provider].authorize(activity)
                 } catch (e: OAuthException) {
-                    reduce { state.copy(isLoading = false) }
+                    reduce { LoginState.Failure(LoginStep.LOGIN) }
                     postSideEffect(LoginSideEffect.LoginFailed(e))
                     return@intent
                 }
 
             loginUseCase(credential)
                 .onSuccess { result ->
-                    reduce { state.copy(isLoading = false) }
+                    reduce { LoginState.Success(LoginStep.LOGIN) }
                     postSideEffect(LoginSideEffect.LoginSucceeded(result))
                 }.onFailure { error ->
-                    reduce { state.copy(isLoading = false) }
+                    reduce { LoginState.Failure(LoginStep.LOGIN) }
                     postSideEffect(LoginSideEffect.LoginFailed(error))
                 }
         }
