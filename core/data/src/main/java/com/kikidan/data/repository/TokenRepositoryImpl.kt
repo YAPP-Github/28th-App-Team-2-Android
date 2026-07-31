@@ -4,6 +4,7 @@ import com.kikidan.data.auth.AuthTokenCacheInvalidator
 import com.kikidan.data.datasource.LocalTokenDataSource
 import com.kikidan.domain.model.auth.AuthToken
 import com.kikidan.domain.repository.TokenRepository
+import com.kikidan.domain.util.runCatchingCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -21,16 +22,16 @@ class TokenRepositoryImpl
                 .map { token -> Result.success(token != null) }
                 .catch { error -> emit(Result.failure(error)) }
 
-        override suspend fun getToken(): Result<AuthToken?> = runCatching { localTokenDataSource.getToken() }
+        override suspend fun getToken(): Result<AuthToken?> = runCatchingCancellable { localTokenDataSource.getToken() }
 
         override suspend fun saveToken(token: AuthToken): Result<Unit> =
-            runCatching {
+            runCatchingCancellable {
                 localTokenDataSource.saveToken(token)
                 tokenCacheInvalidator.invalidate()
             }
 
         override suspend fun clearToken(): Result<Unit> =
-            runCatching {
+            runCatchingCancellable {
                 localTokenDataSource.clearToken()
                 tokenCacheInvalidator.invalidate()
             }
