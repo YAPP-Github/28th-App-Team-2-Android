@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- WheelPicker -->
+    <string name="wheel_picker_save">저장</string>
+
+    <!-- SajuBirthTimeWheelPicker -->
+    <string name="wheel_picker_saju_birth_time_title">태어난 시각 선택</string>
+    <string-array name="wheel_picker_saju_birth_times">
+        <item>자시 (子時): 23:30 ~ 01:29</item>
+        <item>축시 (丑時): 01:30 ~ 03:29</item>
+        <item>인시 (寅時): 03:30 ~ 05:29</item>
+        <item>묘시 (卯時): 05:30 ~ 07:29</item>
+        <item>진시 (辰時): 07:30 ~ 09:29</item>
+        <item>사시 (巳時): 09:30 ~ 11:29</item>
+        <item>오시 (午時): 11:30 ~ 13:29</item>
+        <item>미시 (未時): 13:30 ~ 15:29</item>
+        <item>신시 (申時): 15:30 ~ 17:29</item>
+        <item>유시 (酉時): 17:30 ~ 19:29</item>
+        <item>술시 (戌時): 19:30 ~ 21:29</item>
+        <item>해시 (亥時): 21:30 ~ 23:29</item>
+    </string-array>
+
+    <!-- TimeWheelPicker -->
+    <string name="wheel_picker_time_title">받을 시간 입력</string>
+
+    <!-- BirthDateWheelPicker -->
+    <string name="wheel_picker_year_postfix">년</string>
+    <string name="wheel_picker_month_postfix">월</string>
+    <string name="wheel_picker_date_postfix">일</string>
+    <string name="wheel_picker_birth_date_title">생년월일 입력</string>
+    <string name="wheel_picker_birth_date_invalid">올바른 날짜를 입력해 주세요.</string>
+
+    <!-- Snackbar -->
+    <string name="snackbar_dismiss">닫기</string>
+
+    <!-- TodakChat -->
+    <string name="todak_chat_today_free_amount">"오늘 무료 채팅 "</string>
+    <string name="todak_chat_place_holder_chat_input">토닥이에게 운세 물어보기</string>
+
+    <!-- Header -->
+    <string name="header_notice_content_description">알림</string>
+    <string name="header_close_content_description">닫기</string>
+    <string name="header_back_content_description">뒤로 가기</string>
+
+    <!-- BottomNavigation -->
+    <string name="bottom_nav_fortune">운세</string>
+    <string name="bottom_nav_todak">토닥이</string>
+    <string name="bottom_nav_lucky_action">행운 액션</string>
+    <string name="bottom_nav_my">마이</string>
+</resources>

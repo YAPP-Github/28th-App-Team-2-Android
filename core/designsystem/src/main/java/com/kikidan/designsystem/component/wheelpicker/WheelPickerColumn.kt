@@ -1,0 +1,331 @@
+package com.kikidan.designsystem.component.wheelpicker
+
+import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import com.kikidan.designsystem.theme.TodakunColor
+import com.kikidan.designsystem.theme.TodakunTypography
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
+import kotlin.math.abs
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun WheelPickerColumn(
+    items: List<String>,
+    selectedIndex: Int,
+    onSelectedIndexChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    visibleCount: Int = 5,
+    directInputEnabled: Boolean = false,
+    maxInputDigits: Int = 2,
+    editing: Boolean = false,
+    onEditStart: () -> Unit = {},
+    onEditFinish: () -> Unit = {},
+    onAdvance: () -> Unit = {},
+    onDirectInputCommit: (rawDigits: String) -> Unit = {},
+) {
+    require(visibleCount % 2 == 1) { "visibleCount 는 홀수여야 합니다." }
+
+    val halfCount = visibleCount / 2
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+    val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+
+    val focusRequester = remember { FocusRequester() }
+
+    val clampedSelectedIndex =
+        if (items.isEmpty()) 0 else selectedIndex.coerceIn(0, items.lastIndex)
+    val latestSelectedIndex by rememberUpdatedState(selectedIndex)
+    val latestOnSelectedIndexChange by rememberUpdatedState(onSelectedIndexChange)
+
+    val centeredIndex by remember {
+        derivedStateOf {
+            val info = listState.layoutInfo
+            if (info.visibleItemsInfo.isEmpty()) {
+                clampedSelectedIndex
+            } else {
+                val viewportCenter = (info.viewportStartOffset + info.viewportEndOffset) / 2f
+                info.visibleItemsInfo.minByOrNull { abs((it.offset + it.size / 2f) - viewportCenter) }?.index
+                    ?: clampedSelectedIndex
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) { listState.scrollToItem(clampedSelectedIndex) }
+
+    LaunchedEffect(clampedSelectedIndex) {
+        if (centeredIndex == clampedSelectedIndex) return@LaunchedEffect
+        val distance = abs(centeredIndex - clampedSelectedIndex)
+        if (distance > WheelPickerDefaults.ANIMATION_JUMP_THRESHOLD) {
+            val direction = if (centeredIndex > clampedSelectedIndex) -1 else 1
+            val preIndex =
+                (clampedSelectedIndex + direction * WheelPickerDefaults.ANIMATION_JUMP_THRESHOLD)
+                    .coerceIn(0, items.lastIndex)
+            listState.scrollToItem(preIndex)
+        }
+        listState.animateScrollToItem(clampedSelectedIndex)
+    }
+
+    LaunchedEffect(listState, editing) {
+        snapshotFlow { listState.isScrollInProgress }
+            .drop(1)
+            .distinctUntilChanged()
+            .filter { inProgress -> !inProgress && !editing }
+            .collect {
+                val idx = centeredIndex
+                if (idx in items.indices && idx != latestSelectedIndex) {
+                    latestOnSelectedIndexChange(
+                        idx,
+                    )
+                }
+            }
+    }
+
+    LaunchedEffect(editing) {
+        if (editing) focusRequester.requestFocus()
+    }
+
+    fun selectIndex(index: Int) {
+        if (index !in items.indices || index == selectedIndex) return
+        scope.launch { listState.animateScrollToItem(index) }
+    }
+
+    // translationY로 밀려 들어간 만큼(위+아래) 바깥 레이아웃 높이에서 빼서, 시각적으로 안 쓰는
+    // 여백을 없앤다. 단, LazyColumn 자체는 fullHeight로 그대로 측정해야 뷰포트 기반의
+    // fraction/scale/translationY 계산(listState.layoutInfo)이 안 틀어진다.
+    val fullHeight = WheelPickerDefaults.CenterContainerHeight * visibleCount
+    val adjustedHeight =
+        fullHeight -
+            WheelPickerDefaults.CenterContainerHeight * (halfCount * WheelPickerDefaults.CENTER_FULL_FACTOR * 2)
+
+    Box(
+        modifier =
+            modifier
+                .height(adjustedHeight)
+                .clipToBounds(),
+        contentAlignment = Alignment.Center,
+    ) {
+        LazyColumn(
+            state = listState,
+            flingBehavior = flingBehavior,
+            contentPadding = PaddingValues(vertical = WheelPickerDefaults.CenterContainerHeight * halfCount),
+            userScrollEnabled = !editing,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier =
+                Modifier
+                    .requiredHeight(fullHeight)
+                    .fillMaxSize(),
+        ) {
+            itemsIndexed(items, key = { index, _ -> index }) { index, item ->
+                val isCenter = index == centeredIndex
+                val distance = abs(index - centeredIndex)
+                val textStyle =
+                    when (distance) {
+                        0 -> TodakunTypography.body1Medium
+                        1 -> TodakunTypography.body1Regular
+                        else -> TodakunTypography.body1Regular
+                    }
+                val textColor =
+                    when (distance) {
+                        0 -> TodakunColor.black
+                        1 -> TodakunColor.gray700
+                        else -> TodakunColor.gray400
+                    }
+                val itemHeight = WheelPickerDefaults.CenterContainerHeight
+
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(itemHeight)
+                            .semantics { selected = isCenter }
+                            .wheelPickerGraphics(listState, halfCount, index, itemHeight)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                            ) {
+                                if (isCenter) {
+                                    if (directInputEnabled) onEditStart()
+                                } else {
+                                    selectIndex(index)
+                                }
+                            },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (!(editing && isCenter)) {
+                        Text(text = item, style = textStyle, color = textColor)
+                    }
+                }
+            }
+        }
+
+        if (editing) {
+            EditTextField(
+                maxInputDigits = maxInputDigits,
+                placeHolder = items.getOrElse(clampedSelectedIndex) { "" },
+                focusRequester = focusRequester,
+                onCommit = onDirectInputCommit,
+                onFinish = onEditFinish,
+                onAdvance = onAdvance,
+            )
+        }
+    }
+}
+
+@SuppressLint("RememberReturnType")
+@Composable
+private fun EditTextField(
+    placeHolder: String,
+    maxInputDigits: Int,
+    focusRequester: FocusRequester,
+    onCommit: (String) -> Unit,
+    onFinish: () -> Unit,
+    onAdvance: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var isEdited by remember { mutableStateOf(false) }
+    var value by remember { mutableStateOf("") }
+    var consumed by remember { mutableStateOf(false) }
+    // 이 편집 세션 안에서 한 번이라도 포커스를 얻었는지. 반드시 EditTextField 인스턴스 로컬이어야
+    // 한다. 컬럼 레벨로 두면 이전 세션의 true 가 남아, 재편집으로 새로 생성된 필드의 최초
+    // onFocusChanged(false) 가 곧바로 consumeFinish 를 호출해 편집이 즉시 종료된다.
+    var hasGainedFocus by remember { mutableStateOf(false) }
+
+    fun commitCurrent() {
+        if (value.isNotEmpty()) onCommit(value)
+    }
+
+    fun consumeAdvance() {
+        if (consumed) return
+        consumed = true
+        commitCurrent()
+        onAdvance()
+    }
+
+    fun consumeFinish() {
+        if (consumed) return
+        consumed = true
+        commitCurrent()
+        onFinish()
+    }
+
+    BasicTextField(
+        value = value,
+        onValueChange = { new ->
+            isEdited = true
+            value = new.filter { it.isDigit() }.take(maxInputDigits)
+            if (value.length == maxInputDigits) consumeAdvance()
+        },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        hasGainedFocus = true
+                    } else if (hasGainedFocus) {
+                        consumeFinish()
+                    }
+                },
+        textStyle =
+            TodakunTypography.body1Medium.copy(
+                color = TodakunColor.primary600,
+                textAlign = TextAlign.Center,
+            ),
+        singleLine = true,
+        cursorBrush = SolidColor(TodakunColor.primary600),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done,
+            ),
+        keyboardActions = KeyboardActions(onDone = { consumeFinish() }),
+        decorationBox = { innerTextField ->
+            Box {
+                if (!isEdited) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = placeHolder,
+                        style =
+                            TodakunTypography.body1Medium.copy(
+                                color = TodakunColor.primary600,
+                                textAlign = TextAlign.Center,
+                            ),
+                    )
+                }
+                innerTextField()
+            }
+        },
+    )
+}
+
+private fun Modifier.wheelPickerGraphics(
+    listState: LazyListState,
+    halfCount: Int,
+    index: Int,
+    itemHeight: Dp,
+): Modifier =
+    graphicsLayer {
+        val info = listState.layoutInfo
+        val viewportCenter =
+            (info.viewportStartOffset + info.viewportEndOffset) / 2f
+        val itemInfo =
+            info.visibleItemsInfo.firstOrNull { it.index == index }
+        val itemPx = with(density) { itemHeight.toPx() }
+        val itemCenter =
+            itemInfo?.let { it.offset + it.size / 2f } ?: viewportCenter
+        val fraction =
+            ((itemCenter - viewportCenter) / itemPx).coerceIn(
+                -halfCount.toFloat(),
+                halfCount.toFloat(),
+            )
+        val s = (1f - abs(fraction) * 0.08f).coerceIn(0.8f, 1f)
+        scaleX = s
+        scaleY = s
+        translationY =
+            -fraction * itemPx * WheelPickerDefaults.CENTER_FULL_FACTOR
+        cameraDistance = 14f * this.density
+    }
