@@ -10,7 +10,8 @@ data class User(
 )
 
 enum class Gender {
-    MALE, FEMALE
+    MALE,
+    FEMALE,
 }
 
 data class Birth(
@@ -20,7 +21,8 @@ data class Birth(
 )
 
 enum class DateType {
-    LUNAR, SOLAR
+    LUNAR,
+    SOLAR,
 }
 
 enum class BirthTime(
