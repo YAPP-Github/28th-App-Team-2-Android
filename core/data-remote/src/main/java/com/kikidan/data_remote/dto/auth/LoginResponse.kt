@@ -2,6 +2,7 @@ package com.kikidan.data_remote.dto.auth
 
 import com.kikidan.domain.model.auth.AuthToken
 import com.kikidan.domain.model.auth.LoginResult
+import com.kikidan.domain.model.auth.OnboardingToken
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -23,6 +24,6 @@ fun LoginResponse.toDomain(): LoginResult =
             } else {
                 null
             },
-        onboardingToken = onboardingToken,
+        onboardingToken = if (onboardingToken != null) OnboardingToken(onboardingToken) else null,
         newMember = isNewMember,
     )
