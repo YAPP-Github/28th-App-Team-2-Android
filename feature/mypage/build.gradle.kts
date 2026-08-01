@@ -1,7 +1,8 @@
 plugins {
-    id("todakun.feature")
+    alias(libs.plugins.todakun.feature)
 }
 
 android {
     namespace = "com.kikidan.mypage"
 }
+
