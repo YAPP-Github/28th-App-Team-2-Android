@@ -6,6 +6,7 @@ import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.model.auth.OAuthProviderType
 import com.kikidan.domain.model.auth.OAuthToken
+import com.kikidan.domain.model.auth.OnboardingToken
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -30,7 +31,7 @@ class AuthRepositoryImplTest {
     fun `login이_성공하면_DataSource의_LoginResult가_그대로_Result_success로_반환된다`() =
         runTest {
             // given
-            val expected = LoginResult(AuthToken("a-1", "r-1"), "onboarding-1", newMember = true)
+            val expected = LoginResult(AuthToken("a-1", "r-1"), OnboardingToken("onboarding-1"), newMember = true)
             fakeRemoteAuthDataSource.loginResult = expected
 
             // when

@@ -6,10 +6,16 @@ import com.kikidan.data_remote.dto.auth.LoginRequest
 import com.kikidan.data_remote.dto.auth.LoginResponse
 import com.kikidan.data_remote.dto.auth.RefreshRequest
 import com.kikidan.data_remote.dto.auth.RefreshResponse
+import com.kikidan.data_remote.dto.auth.SignupResponse
 import com.kikidan.data_remote.dto.auth.toDomain
+import com.kikidan.data_remote.dto.auth.toSignupRequest
+import com.kikidan.data_remote.util.bodyNotNull
 import com.kikidan.domain.model.auth.AuthToken
 import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthCredential
+import com.kikidan.domain.model.auth.OnboardingToken
+import com.kikidan.domain.model.auth.SignupSubmission
+import com.kikidan.domain.model.user.User
 import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -23,44 +29,51 @@ class RemoteAuthDataSourceImpl
     constructor(
         private val client: Lazy<HttpClient>,
     ) : RemoteAuthDataSource {
-        override suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult {
-            val response =
-                client
-                    .get()
-                    .post(LOGIN_URL) {
-                        setBody(
-                            LoginRequest(
-                                provider = oauthCredential.provider.toString(),
-                                oauthAccessToken = oauthCredential.token.value,
-                            ),
-                        )
-                    }.body<CommonResponse<LoginResponse>>()
-            val loginResponse =
-                requireNotNull(response.data) {
-                    "login 응답의 data가 null입니다. code=${response.code}, message=${response.message}"
-                }
-            return loginResponse.toDomain()
+        override suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult =
+            client
+                .get()
+                .post(LOGIN_URL) {
+                    setBody(
+                        LoginRequest(
+                            provider = oauthCredential.provider.toString(),
+                            oauthAccessToken = oauthCredential.token.value,
+                        ),
+                    )
+                }.bodyNotNull<LoginResponse>()
+                .toDomain()
+
+        override suspend fun postSignup(
+            signupSubmission: SignupSubmission,
+            onboardingToken: OnboardingToken,
+        ): AuthToken =
+            client
+                .get()
+                .post(SIGNUP_URL) {
+                    setBody(signupSubmission.toSignupRequest(onboardingToken))
+                }.bodyNotNull<SignupResponse>()
+                .toDomain()
+
+        override suspend fun postLogout() {
+            client
+                .get()
+                .post(LOGOUT_URL)
+                .body<CommonResponse<Unit>>()
         }
 
-        override suspend fun postRefresh(refreshToken: String): AuthToken {
-            val response =
-                client
-                    .get()
-                    .post(REFRESH_URL) {
-                        // 설정하지 않았을 때, refreshToken이 두 번 실행
-                        attributes.put(AuthCircuitBreaker, Unit)
-                        setBody(RefreshRequest(refreshToken))
-                    }.body<CommonResponse<RefreshResponse>>()
-
-            val refreshResponse =
-                requireNotNull(response.data) {
-                    "refresh 응답의 data가 null입니다. code=${response.code}, message=${response.message}"
-                }
-            return refreshResponse.toDomain()
-        }
+        override suspend fun postRefresh(refreshToken: String): AuthToken =
+            client
+                .get()
+                .post(REFRESH_URL) {
+                    // 설정하지 않았을 때, refreshToken이 두 번 실행
+                    attributes.put(AuthCircuitBreaker, Unit)
+                    setBody(RefreshRequest(refreshToken))
+                }.bodyNotNull<RefreshResponse>()
+                .toDomain()
 
         companion object {
             private const val REFRESH_URL = "api/v1/auth/refresh"
             private const val LOGIN_URL = "api/v1/auth/login"
+            private const val SIGNUP_URL = "api/v1/auth/signup"
+            private const val LOGOUT_URL = "api/v1/auth/logout"
         }
     }
