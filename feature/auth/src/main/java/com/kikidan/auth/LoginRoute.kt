@@ -8,6 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.auth.component.toOAuthProviderType
+import com.kikidan.auth.model.LoginSideEffect
+import com.kikidan.auth.model.LoginStep
+import com.kikidan.auth.screen.LoginScreen
+import com.kikidan.auth.screen.SplashScreen
 import com.kikidan.domain.model.auth.LoginResult
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -42,7 +46,12 @@ fun LoginRoute(
 
         LoginStep.LOGIN -> {
             LoginScreen(
-                onProviderClick = { provider -> viewModel.login(provider.toOAuthProviderType(), activity) },
+                onProviderClick = { provider ->
+                    viewModel.login(
+                        provider.toOAuthProviderType(),
+                        activity,
+                    )
+                },
                 modifier = modifier,
             )
         }

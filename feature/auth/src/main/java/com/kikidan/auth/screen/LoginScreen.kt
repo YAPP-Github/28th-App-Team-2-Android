@@ -1,4 +1,4 @@
-package com.kikidan.auth
+package com.kikidan.auth.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kikidan.auth.R
 import com.kikidan.auth.component.SocialLoginButton
 import com.kikidan.auth.component.SocialLoginProvider
 import com.kikidan.designsystem.theme.TodakunColor

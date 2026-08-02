@@ -1,4 +1,4 @@
-package com.kikidan.auth
+package com.kikidan.auth.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,14 +21,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kikidan.auth.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 
-/**
- * 로그인 상태 확인이 끝날 때까지 보여주는 순수 UI. 실제 토큰/세션 확인과 화면 전환 타이밍은
- * [LoginViewModel.checkAuthState]가 담당하므로 이 컴포저블은 타이머나 콜백을 갖지 않는다.
- */
 @Composable
 internal fun SplashScreen(modifier: Modifier = Modifier) {
     Box(
