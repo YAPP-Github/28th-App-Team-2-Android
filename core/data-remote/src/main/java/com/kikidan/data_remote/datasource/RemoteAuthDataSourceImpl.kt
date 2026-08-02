@@ -14,6 +14,7 @@ import com.kikidan.domain.model.auth.AuthToken
 import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.model.auth.OnboardingToken
+import com.kikidan.domain.model.auth.SignupSubmission
 import com.kikidan.domain.model.user.User
 import dagger.Lazy
 import io.ktor.client.HttpClient
@@ -42,13 +43,13 @@ class RemoteAuthDataSourceImpl
                 .toDomain()
 
         override suspend fun postSignup(
-            user: User,
+            signupSubmission: SignupSubmission,
             onboardingToken: OnboardingToken,
         ): AuthToken =
             client
                 .get()
                 .post(SIGNUP_URL) {
-                    setBody(user.toSignupRequest(onboardingToken))
+                    setBody(signupSubmission.toSignupRequest(onboardingToken))
                 }.bodyNotNull<SignupResponse>()
                 .toDomain()
 

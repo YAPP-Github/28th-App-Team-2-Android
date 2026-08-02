@@ -5,19 +5,9 @@ import java.time.LocalTime
 
 data class User(
     val id: String,
-    val name: String,
-    val job: Job,
-    val relationshipStatus: RelationshipStatus,
-    val favoriteFortuneCategories: List<String>,
     val gender: Gender,
     val birth: Birth,
-) {
-    init {
-        require(favoriteFortuneCategories.size <= 5) {
-            "관심 운세 카테고리 목록은 5개 이하여야 합니다"
-        }
-    }
-}
+)
 
 enum class Gender {
     MALE,
@@ -54,20 +44,4 @@ enum class BirthTime(
     SUL("술시", "戌時", LocalTime.of(19, 0), LocalTime.of(21, 0)),
     HAE("해시", "亥時", LocalTime.of(21, 0), LocalTime.of(23, 0)),
     UNKNOWN("모름", null, null, null),
-}
-
-enum class Job {
-    STUDENT,
-    WORKER,
-    FREELANCER,
-    JOBSEEKER,
-    HOMEMAKER,
-    LEAVER,
-}
-
-enum class RelationshipStatus {
-    SOLO,
-    DATING,
-    MARRY,
-    REMARRY,
 }
