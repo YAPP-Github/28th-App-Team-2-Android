@@ -78,13 +78,14 @@ class OnboardingViewModelTest {
     @Test
     fun `선택 약관은 다음 단계 진행에 영향을 주지 않는다`() =
         runTest {
-            val terms = TermsAgreementUiModel(
-                setOf(
-                    OnboardingTerm.SERVICE,
-                    OnboardingTerm.PRIVACY,
-                    OnboardingTerm.AI_DATA_TRANSFER
+            val terms =
+                TermsAgreementUiModel(
+                    setOf(
+                        OnboardingTerm.SERVICE,
+                        OnboardingTerm.PRIVACY,
+                        OnboardingTerm.AI_DATA_TRANSFER,
+                    ),
                 )
-            )
 
             assertTrue(OnboardingState(step = OnboardingStep.TERMS, termsAgreement = terms).canProceed)
             assertFalse(
