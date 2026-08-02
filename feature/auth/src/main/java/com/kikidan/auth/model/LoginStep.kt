@@ -1,4 +1,4 @@
-package com.kikidan.auth
+package com.kikidan.auth.model
 
 enum class LoginStep {
     SPLASH,

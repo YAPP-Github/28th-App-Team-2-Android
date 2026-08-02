@@ -1,4 +1,4 @@
-package com.kikidan.auth
+package com.kikidan.auth.model
 
 import com.kikidan.domain.model.auth.LoginResult
 

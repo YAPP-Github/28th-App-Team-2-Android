@@ -1,4 +1,4 @@
-package com.kikidan.auth
+package com.kikidan.auth.model
 
 sealed interface LoginState {
     val step: LoginStep

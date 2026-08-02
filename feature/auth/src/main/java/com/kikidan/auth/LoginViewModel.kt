@@ -2,6 +2,9 @@ package com.kikidan.auth
 
 import android.app.Activity
 import androidx.lifecycle.ViewModel
+import com.kikidan.auth.model.LoginSideEffect
+import com.kikidan.auth.model.LoginState
+import com.kikidan.auth.model.LoginStep
 import com.kikidan.domain.model.auth.AuthState
 import com.kikidan.domain.model.auth.OAuthProviderType
 import com.kikidan.domain.usecase.CheckAuthStateUseCase
