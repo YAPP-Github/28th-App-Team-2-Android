@@ -3,7 +3,6 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 
@@ -35,6 +34,7 @@ class FeatureConventionPlugin : Plugin<Project> {
 
             dependencies {
                 add("implementation", libs.findLibrary("hilt-android").get())
+                add("implementation", libs.findLibrary("kotlinx-collections-immutable").get())
                 add("ksp", libs.findLibrary("hilt-compiler").get())
                 add("implementation", platform(libs.findLibrary("androidx-compose-bom").get()))
                 add("implementation", libs.findLibrary("androidx-compose-ui-tooling-preview").get())
