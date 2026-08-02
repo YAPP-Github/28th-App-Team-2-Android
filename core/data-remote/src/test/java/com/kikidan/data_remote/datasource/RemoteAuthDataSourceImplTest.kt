@@ -3,14 +3,14 @@ package com.kikidan.data_remote.datasource
 import com.kikidan.data_remote.di.TodakunJson
 import com.kikidan.data_remote.di.installTodakunDefaults
 import com.kikidan.domain.model.auth.AuthToken
+import com.kikidan.domain.model.auth.Job
 import com.kikidan.domain.model.auth.OnboardingToken
+import com.kikidan.domain.model.auth.RelationshipStatus
+import com.kikidan.domain.model.auth.SignupSubmission
 import com.kikidan.domain.model.user.Birth
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
-import com.kikidan.domain.model.user.Job
-import com.kikidan.domain.model.user.RelationshipStatus
-import com.kikidan.domain.model.user.User
 import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -75,19 +75,17 @@ class RemoteAuthDataSourceImplTest {
                         headers = jsonHeaders,
                     )
                 }
-            val user =
-                User(
-                    id = "user-1",
+            val signupSubmission =
+                SignupSubmission(
                     name = "홍길동",
                     job = Job.STUDENT,
                     relationshipStatus = RelationshipStatus.SOLO,
-                    favoriteFortuneCategories = listOf("MONEY"),
                     gender = Gender.MALE,
                     birth = Birth(dateType = DateType.SOLAR, date = LocalDate.of(2000, 1, 1), time = BirthTime.JA),
                 )
 
             // when
-            val result = sut.postSignup(user, OnboardingToken("token-1"))
+            val result = sut.postSignup(signupSubmission, OnboardingToken("token-1"))
 
             // then
             assertEquals(AuthToken("a-1", "r-1"), result)
