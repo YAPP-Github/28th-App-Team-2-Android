@@ -1,6 +1,7 @@
 package com.kikidan.data_remote.dto.auth
 
 import com.kikidan.domain.model.auth.OnboardingToken
+import com.kikidan.domain.model.auth.SignupSubmission
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.User
 import kotlinx.serialization.Serializable
@@ -10,7 +11,6 @@ data class SignupRequest(
     val birthDate: String,
     val birthTime: String,
     val calendarType: String,
-    val favoriteFortuneCategories: List<String>,
     val gender: String,
     val job: String,
     val name: String,
@@ -18,12 +18,11 @@ data class SignupRequest(
     val relationshipStatus: String,
 )
 
-fun User.toSignupRequest(onboardingToken: OnboardingToken): SignupRequest =
+fun SignupSubmission.toSignupRequest(onboardingToken: OnboardingToken): SignupRequest =
     SignupRequest(
         birthDate = birth.date.toString(),
         birthTime = birth.time.toApiValue(),
         calendarType = birth.dateType.name,
-        favoriteFortuneCategories = favoriteFortuneCategories,
         gender = gender.name,
         job = job.name,
         name = name,

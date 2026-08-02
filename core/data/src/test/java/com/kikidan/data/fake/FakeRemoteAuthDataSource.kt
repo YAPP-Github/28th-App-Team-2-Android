@@ -5,6 +5,7 @@ import com.kikidan.domain.model.auth.AuthToken
 import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.model.auth.OnboardingToken
+import com.kikidan.domain.model.auth.SignupSubmission
 import com.kikidan.domain.model.user.User
 
 class FakeRemoteAuthDataSource : RemoteAuthDataSource {
@@ -18,7 +19,7 @@ class FakeRemoteAuthDataSource : RemoteAuthDataSource {
     }
 
     override suspend fun postSignup(
-        user: User,
+        signupSubmission: SignupSubmission,
         onboardingToken: OnboardingToken,
     ): AuthToken = error("not used")
 
