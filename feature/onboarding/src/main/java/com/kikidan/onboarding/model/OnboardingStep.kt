@@ -1,4 +1,4 @@
-package com.kikidan.onboarding
+package com.kikidan.onboarding.model
 
 /**
  * 가입 플로우의 단계. 선언 순서가 곧 진행 순서다.

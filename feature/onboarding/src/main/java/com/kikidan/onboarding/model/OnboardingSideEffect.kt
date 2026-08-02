@@ -1,4 +1,4 @@
-package com.kikidan.onboarding
+package com.kikidan.onboarding.model
 
 sealed interface OnboardingSideEffect {
     data object NavigateToHome : OnboardingSideEffect

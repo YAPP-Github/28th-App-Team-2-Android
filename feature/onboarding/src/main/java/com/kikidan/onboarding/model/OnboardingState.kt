@@ -1,4 +1,4 @@
-package com.kikidan.onboarding
+package com.kikidan.onboarding.model
 
 import androidx.compose.runtime.Immutable
 import com.kikidan.domain.model.auth.Job

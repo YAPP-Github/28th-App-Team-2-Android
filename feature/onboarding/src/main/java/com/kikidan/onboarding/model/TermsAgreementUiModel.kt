@@ -1,4 +1,4 @@
-package com.kikidan.onboarding
+package com.kikidan.onboarding.model
 
 import com.kikidan.domain.model.onboarding.OnboardingTerm
 

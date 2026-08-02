@@ -10,6 +10,12 @@ import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.SignUpUseCase
+import com.kikidan.onboarding.model.OnboardingDialog
+import com.kikidan.onboarding.model.OnboardingSheet
+import com.kikidan.onboarding.model.OnboardingSideEffect
+import com.kikidan.onboarding.model.OnboardingState
+import com.kikidan.onboarding.model.OnboardingStep
+import com.kikidan.onboarding.model.toDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
