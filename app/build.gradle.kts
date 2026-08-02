@@ -64,6 +64,7 @@ dependencies {
     implementation(projects.core.dataLocal)
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
+    implementation(projects.feature.auth)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)

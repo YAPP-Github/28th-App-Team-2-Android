@@ -20,6 +20,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://devrepo.kakao.com/nexus/content/groups/public") // Kakao SDK
     }
 }
 
@@ -34,5 +35,5 @@ include(":core:data")
 include(":core:data-local")
 include(":core:data-remote")
 include(":core:navigation")
-include(":feature:login")
 include(":core:designsystem")
+include(":feature:auth")
