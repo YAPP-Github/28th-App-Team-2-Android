@@ -28,10 +28,10 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.onboarding.OnboardingTerm
-import com.kikidan.onboarding.OnboardingStep
 import com.kikidan.onboarding.R
-import com.kikidan.onboarding.TermsAgreementUiModel
 import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.model.OnboardingStep
+import com.kikidan.onboarding.model.TermsAgreementUiModel
 
 @Composable
 internal fun TermsScreen(

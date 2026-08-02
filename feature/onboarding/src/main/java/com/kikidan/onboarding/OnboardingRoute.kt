@@ -15,6 +15,10 @@ import com.kikidan.designsystem.component.wheelpicker.BirthDateWheelPicker
 import com.kikidan.designsystem.component.wheelpicker.SajuBirthTimeWheelPicker
 import com.kikidan.domain.model.auth.OnboardingToken
 import com.kikidan.domain.model.user.BirthTime
+import com.kikidan.onboarding.model.OnboardingDialog
+import com.kikidan.onboarding.model.OnboardingSheet
+import com.kikidan.onboarding.model.OnboardingSideEffect
+import com.kikidan.onboarding.model.OnboardingStep
 import com.kikidan.onboarding.screen.BirthInfoScreen
 import com.kikidan.onboarding.screen.ExtraQuestionScreen
 import com.kikidan.onboarding.screen.NameScreen
@@ -142,7 +146,12 @@ private fun OnboardingSheetHost(
         OnboardingSheet.BIRTH_DATE -> {
             // 휠을 굴리는 동안의 값은 시트 안에서만 유효하고, 저장할 때 비로소 상태에 반영한다.
             var draft by remember(birthDate) {
-                mutableStateOf(BirthDateState.of(birthDate ?: DefaultBirthDate, BirthDateYearRange))
+                mutableStateOf(
+                    BirthDateState.of(
+                        birthDate ?: OnboardingRouteDefaults.DefaultBirthDate,
+                        OnboardingRouteDefaults.BirthDateYearRange,
+                    ),
+                )
             }
             BirthDateWheelPicker(
                 birthDateState = draft,
@@ -161,7 +170,7 @@ private fun OnboardingSheetHost(
             SajuBirthTimeWheelPicker(
                 onSajuBirthTimeChange = { label -> draft = birthTimeFromLabel(label) },
                 onSaveClick = {
-                    (draft ?: DefaultBirthTime).let(onBirthTimeChange)
+                    (draft ?: OnboardingRouteDefaults.DefaultBirthTime).let(onBirthTimeChange)
                     onDismiss()
                 },
                 onDismissRequest = onDismiss,
@@ -204,11 +213,13 @@ private fun OnboardingDialogHost(
     }
 }
 
-private val DefaultBirthDate: LocalDate = LocalDate.of(1999, 2, 13)
-private val BirthDateYearRange = 1900..2025
+private object OnboardingRouteDefaults {
+    val DefaultBirthDate: LocalDate = LocalDate.of(1999, 2, 13)
+    val BirthDateYearRange = 1900..2025
 
-/** 휠피커가 처음 보여주는 항목(index 2 = 인시). 사용자가 굴리지 않고 저장하면 이 값이 선택된 것으로 본다. */
-private val DefaultBirthTime = BirthTime.IN
+    /** 휠피커가 처음 보여주는 항목(index 2 = 인시). 사용자가 굴리지 않고 저장하면 이 값이 선택된 것으로 본다. */
+    val DefaultBirthTime = BirthTime.IN
+}
 
 /**
  * `"자시 (子時): 23:30 ~ 01:29"` 형태의 휠피커 label을 지시로 되돌린다.

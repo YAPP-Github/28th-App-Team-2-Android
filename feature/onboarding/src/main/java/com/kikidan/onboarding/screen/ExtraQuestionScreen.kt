@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.component.TodakunChip
@@ -22,9 +21,9 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.auth.Job
 import com.kikidan.domain.model.auth.RelationshipStatus
-import com.kikidan.onboarding.OnboardingStep
 import com.kikidan.onboarding.R
 import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.model.OnboardingStep
 
 @Composable
 internal fun ExtraQuestionScreen(

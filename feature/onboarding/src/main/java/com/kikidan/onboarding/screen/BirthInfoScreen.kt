@@ -26,10 +26,10 @@ import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
-import com.kikidan.onboarding.OnboardingSheet
-import com.kikidan.onboarding.OnboardingStep
 import com.kikidan.onboarding.R
 import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.model.OnboardingSheet
+import com.kikidan.onboarding.model.OnboardingStep
 import java.time.LocalDate
 import com.kikidan.designsystem.R as DesignSystemR
 

@@ -18,9 +18,9 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.onboarding.UserName
-import com.kikidan.onboarding.OnboardingStep
 import com.kikidan.onboarding.R
 import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.model.OnboardingStep
 
 @Composable
 internal fun NameScreen(
