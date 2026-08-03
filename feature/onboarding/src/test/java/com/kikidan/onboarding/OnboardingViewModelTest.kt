@@ -214,7 +214,7 @@ class OnboardingViewModelTest {
         }
 
     @Test
-    fun `마지막 스텝에서 다음을 누르면 완료 단계로 넘어간다`() =
+    fun `마지막 스텝에서 다음을 누르면 완료 화면으로 전환된다`() =
         runTest {
             val initial =
                 OnboardingState(
