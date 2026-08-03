@@ -21,7 +21,7 @@ class LoginViewModel
     ) : ViewModel(),
         ContainerHost<LoginState, LoginSideEffect> {
         override val container: Container<LoginState, LoginSideEffect> =
-            container(LoginState.Loading)
+            container(LoginState.Idle)
 
         fun login(
             provider: OAuthProviderType,
