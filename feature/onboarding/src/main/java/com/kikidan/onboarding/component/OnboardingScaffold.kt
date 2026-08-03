@@ -118,17 +118,20 @@ private fun TermsHeader(
                 .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier.size(48.dp),
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_back),
-                contentDescription = stringResource(id = R.string.header_back_content_description),
-                tint = TodakunColor.gray400,
-                modifier = Modifier.size(width = 8.dp, height = 16.dp),
-            )
-        }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_back),
+            contentDescription = stringResource(id = R.string.header_back_content_description),
+            tint = TodakunColor.gray400,
+            modifier =
+                Modifier
+                    .size(width = 8.dp, height = 16.dp)
+                    .clickable(
+                        onClick = onBackClick,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ),
+        )
+
         Spacer(modifier = Modifier.width(24.dp))
         Text(
             text = label,
