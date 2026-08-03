@@ -64,20 +64,29 @@ class OnboardingViewModel
 
         fun onCompleteConfirmed(onboardingToken: OnboardingToken) =
             intent {
+                if (state.isSubmitting) return@intent
                 val signupSubmission = state.toDomain()
                 if (signupSubmission == null) {
                     postSideEffect(OnboardingSideEffect.InvalidInput)
                     return@intent
                 }
+                reduce { state.copy(isSubmitting = true) }
                 signUpUseCase(
                     signupSubmission = signupSubmission,
                     onboardingToken = onboardingToken,
                 ).onSuccess {
-                    reduce { state.copy(dialog = OnboardingDialog.SIGN_UP_COMPLETE) }
-                    postSideEffect(OnboardingSideEffect.NavigateToHome)
+                    reduce { state.copy(isSubmitting = false) }
+                    postSideEffect(OnboardingSideEffect.PermissionRequest)
                 }.onFailure { e ->
-                    postSideEffect(OnboardingSideEffect.Failure)
+                    reduce { state.copy(isSubmitting = false) }
+                    postSideEffect(OnboardingSideEffect.Failure(e))
                 }
+            }
+
+        fun onSignUpCompleteConfirmed() =
+            intent {
+                reduce { state.copy(dialog = null) }
+                postSideEffect(OnboardingSideEffect.NavigateToHome)
             }
 
         fun onTermChange(term: OnboardingTerm) =

@@ -34,6 +34,7 @@ data class OnboardingState(
     val relationshipStatus: RelationshipStatus? = null,
     val sheet: OnboardingSheet? = null,
     val dialog: OnboardingDialog? = null,
+    val isSubmitting: Boolean = false,
 ) {
     val canProceed: Boolean
         get() =

@@ -30,6 +30,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -234,20 +235,75 @@ class OnboardingViewModelTest {
                 )
             viewModel().test(this, initialState = initial) {
                 containerHost.onCompleteConfirmed(onboardingToken)
-                expectState { copy(dialog = OnboardingDialog.SIGN_UP_COMPLETE) }
+                expectState { copy(isSubmitting = true) }
+                expectState { copy(isSubmitting = false, dialog = OnboardingDialog.SIGN_UP_COMPLETE) }
+                expectSideEffect(OnboardingSideEffect.PermissionRequest)
+
+                containerHost.onSignUpCompleteConfirmed()
+                expectState { copy(dialog = null) }
                 expectSideEffect(OnboardingSideEffect.NavigateToHome)
+            }
+        }
+
+    @Test
+    fun `제출 중에는 완료 요청이 다시 전송되지 않는다`() =
+        runTest {
+            val initial =
+                OnboardingState(
+                    step = OnboardingStep.EXTRA_QUESTION,
+                    username = UserName.Valid("토닥이"),
+                    gender = Gender.FEMALE,
+                    calendarType = DateType.SOLAR,
+                    birthDate = LocalDate.of(1999, 2, 13),
+                    birthTime = BirthTime.JA,
+                    lifeStage = Job.STUDENT,
+                    relationshipStatus = RelationshipStatus.SOLO,
+                    isSubmitting = true,
+                )
+            viewModel().test(this, initialState = initial) {
+                containerHost.onCompleteConfirmed(onboardingToken)
+                expectNoItems()
+            }
+            assertEquals(0, authRepository.signupCallCount)
+        }
+
+    @Test
+    fun `회원가입이 실패하면 원인과 함께 실패 사이드이펙트가 전달된다`() =
+        runTest {
+            val error = IllegalStateException("네트워크 오류")
+            authRepository.signupResult = Result.failure(error)
+            val initial =
+                OnboardingState(
+                    step = OnboardingStep.EXTRA_QUESTION,
+                    username = UserName.Valid("토닥이"),
+                    gender = Gender.FEMALE,
+                    calendarType = DateType.SOLAR,
+                    birthDate = LocalDate.of(1999, 2, 13),
+                    birthTime = BirthTime.JA,
+                    lifeStage = Job.STUDENT,
+                    relationshipStatus = RelationshipStatus.SOLO,
+                )
+            viewModel().test(this, initialState = initial) {
+                containerHost.onCompleteConfirmed(onboardingToken)
+                expectState { copy(isSubmitting = true) }
+                expectState { copy(isSubmitting = false) }
+                expectSideEffect(OnboardingSideEffect.Failure(error))
             }
         }
 
     private class FakeAuthRepository : AuthRepository {
         var signupResult: Result<AuthToken> = Result.success(AuthToken("access", "refresh"))
+        var signupCallCount = 0
 
         override suspend fun login(credential: OAuthCredential): Result<LoginResult> = error("not used")
 
         override suspend fun signup(
             signupSubmission: SignupSubmission,
             onboardingToken: OnboardingToken,
-        ): Result<AuthToken> = signupResult
+        ): Result<AuthToken> {
+            signupCallCount++
+            return signupResult
+        }
 
         override suspend fun refresh(refreshToken: String): Result<AuthToken> = error("not used")
     }
