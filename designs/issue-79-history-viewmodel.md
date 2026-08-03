@@ -2,10 +2,11 @@
 
 > 이 문서는 **설계(Design) 단계 산출물**이며 구현 단계가 이 문서를 단일 소스로 삼아 진행한다.
 
-- **이슈**: #59 하위 작업 단위 F-history (사용자가 추후 별도 이슈로 생성 예정)
+- **이슈**: #79 (상위 이슈: #59)
 - **작성**: 설계 에이전트 (Opus) / 2026-08-03
 - **상태**: 검토 대기
-- **선행**: A, B(`GetConversationsUseCase`/`DeleteConversationUseCase` 직접 주입 — 컴파일 의존), F-chat(`designs/issue-59-F-chat-viewmodel.md`, `feature:chat` 모듈과 테스트용 `FakeChatRepository`가 이미 있어야 함) — **G-chat은 필요 없음**(같은 모듈에 있을 뿐 `ChatState`/`ChatViewModel`을 참조하지 않는다). 전체 그래프는 `designs/issue-59-task-dependency-graph.md` 참고
+- **선행**: A, B(`GetConversationsUseCase`/`DeleteConversationUseCase` 직접 주입 — 컴파일 의존), F-chat(`designs/issue-77-chat-viewmodel.md`, `feature:chat` 모듈과 테스트용 `FakeChatRepository`가 이미 있어야 함) — **G-chat은 필요 없음**(같은 모듈에 있을 뿐 `ChatState`/`ChatViewModel`을 참조하지 않는다). 전체 그래프는 `designs/issue-59-task-dependency-graph.md` 참고
+- **선행 조건 불충족(보류)**: G-chat이 Navigation 3 없이 화면만 구현하기로 결정됨(2026-08-04) — 히스토리 화면 간 이동 경로가 생기기 전까지 이 단위는 보류
 
 ## 1. 범위
 

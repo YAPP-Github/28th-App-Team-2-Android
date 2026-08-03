@@ -2,8 +2,9 @@
 
 > 이 문서는 **설계(Design) 단계 산출물**이며 구현 단계가 이 문서를 단일 소스로 삼아 진행한다.
 
-- **이슈**: #59 하위 작업 단위 A (사용자가 추후 별도 이슈로 생성 예정)
+- **이슈**: #72 (상위 이슈: #59)
 - **작성**: 설계 에이전트 (Opus) / 2026-08-03
+- **2026-08-04 갱신**: 백엔드 실제 SSE 스키마 확인 후 교정 (근거: 사용자 제공 `SseEmitterChatStreamListener` 및 이벤트 DTO 소스)
 - **상태**: 검토 대기
 
 ## 1. 범위
@@ -63,6 +64,9 @@
 
 ### 2-3. 그 외 설계 판단
 
+- **`Delta`의 필드명을 `text`로 둔다** — 백엔드 `ChatDeltaEvent`의 필드명이 `text`다. 도메인만 `content`로 바꾸면 DTO(`text`) → 도메인(`content`) → State(`streamingText`)로 이름이 세 번 바뀌어 디버깅 시 grep이 끊긴다. `ChatStreamEvent`는 "SSE 프로토콜의 도메인 표현"이라는 성격이 강하므로 **전 계층에서 `text`로 통일**한다. `ChatMessage.content`(REST 스키마 그대로)와 이름이 다른 것은 서버 스키마 자체가 다르기 때문이며 혼동 요소가 아니다.
+- **`Start`가 `ChatQuota`를 통째로 갖는다** — 백엔드는 `quotaUsed`/`quotaLimit` 두 Int로 보내지만, 도메인에 느슨한 Int 2개를 두면 `remaining` 계산이 호출부로 샌다. 이미 있는 `ChatQuota`를 재사용해 매퍼가 한 번만 조립한다.
+- **`Done`이 `assistantMessageId`만 갖는다** — 백엔드 `ChatDoneEvent`가 id 하나만 보낸다. 최종 텍스트/상태/시각은 클라이언트가 조립한다(누적 delta + `COMPLETED` + `Instant.now()`). 도메인 이벤트가 서버가 보내지 않은 값을 지어내면 안 되므로 `ChatMessage`를 싣지 않는다. 조립 책임은 presentation(F-chat).
 - **id 타입**: 서버는 `uuid`지만 도메인은 `String`으로 둔다. 도메인에 `java.util.UUID`를 넣으면 Navigation 3 인자 직렬화·테스트 픽스처 작성이 불필요하게 무거워지고, 클라이언트는 id를 파싱하지 않고 그대로 전달만 한다. (YAGNI)
 - **시각 타입**: `createdAt`, `lastMessageAt`은 `java.time.Instant`. `core:domain`은 순수 JVM 모듈(`java-library`)이라 `java.time` 사용 가능하며 기존 `model/user/User.kt`가 이미 `LocalDate`/`LocalTime`을 쓰고 있어 선례가 있다. 표시용 포맷/타임존 변환은 presentation 책임.
 - **`ChatAction.type` / `category`를 enum이 아닌 `String`으로 두는 이유**: Swagger에 허용 값 목록이 없다. 값 집합이 확정되기 전에 enum을 만들면 서버가 새 값을 추가하는 순간 매핑이 깨진다. String 유지 + 리스크 등록 → 백엔드 확정 후 후속 이슈에서 enum 승격. 단, `role`/`status`는 SSE 렌더링 분기에 직접 쓰이므로 enum으로 만들되 `UNKNOWN` 폴백을 둔다.
@@ -193,15 +197,19 @@ package com.kikidan.domain.model.chat
 /**
  * SSE 이벤트 순서: Start -> Delta* -> (Action) -> Done.
  * 실패는 이 sealed의 변형이 아니라 Flow의 Result.failure(ChatStreamException)으로 전달된다.
+ *
+ * 필드 구성은 백엔드 이벤트 DTO(ChatStartEvent/ChatDeltaEvent/ChatActionEvent/ChatDoneEvent)와 1:1이다.
  */
 sealed interface ChatStreamEvent {
     data class Start(
         val conversationId: String,
-        val messageId: String?,
+        val userMessageId: String,
+        val assistantMessageId: String,
+        val quota: ChatQuota,
     ) : ChatStreamEvent
 
     data class Delta(
-        val content: String,
+        val text: String,
     ) : ChatStreamEvent
 
     data class Action(
@@ -209,7 +217,7 @@ sealed interface ChatStreamEvent {
     ) : ChatStreamEvent
 
     data class Done(
-        val message: ChatMessage,
+        val assistantMessageId: String,
     ) : ChatStreamEvent
 }
 
@@ -252,9 +260,9 @@ interface ChatRepository {
 
 ## 4. 리스크 / 미해결 질문 (사람 확인 필요)
 
-- [ ] **[높음] SSE 이벤트 페이로드 스키마 미확정** — Swagger의 `SseEmitter`에는 `timeout`만 있고 각 이벤트 `data`의 JSON 스키마가 없다. `ChatStreamEvent.Start`가 `conversationId`/`messageId`를 갖는다는 것, `Delta`가 텍스트 조각 하나만 갖는다는 것은 **추론**이다. 백엔드에 확인 필요. (실제 매핑 방어 로직은 단위 D에서 처리)
-- [ ] **[중간] `ChatStreamEvent.Start`에 quota 정보가 함께 오는가?** — 화면에 "남은 횟수"를 전송 직후 갱신해야 한다면 start 이벤트에 quota가 실려야 한다. 없으면 전송 후 `/chat/entry`를 재조회해야 하는데 이는 추가 왕복이다. 백엔드 확인 필요.
+- [x] **[해결됨 · 2026-08-04] SSE 이벤트 페이로드 스키마 미확정** — 백엔드 이벤트 DTO 소스(`ChatStartEvent`/`ChatDeltaEvent`/`ChatActionEvent`/`ChatDoneEvent`/`ChatErrorEvent`)를 직접 확인했다. `start`는 `conversationId`·`userMessageId`·`assistantMessageId`·`quotaUsed`·`quotaLimit`, `delta`는 `text` 하나, `done`은 `assistantMessageId` 하나, `error`는 `code`+`message`다. 위 3절 sealed 정의가 이 스키마와 1:1이다. 추론 기반 방어 코드는 D에서 제거한다.
+- [x] **[해결됨 · 2026-08-04] `ChatStreamEvent.Start`에 quota 정보가 함께 오는가?** — **온다.** `ChatStartEvent(quotaUsed, quotaLimit)`. 전송 직후 `/chat/entry` 재조회가 불필요하고, presentation의 quota 낙관적 증가 로직도 폐기한다(F-chat 문서 반영 완료).
+- [ ] **[낮음] SSE `action`의 `date`는 non-null인데 도메인은 `LocalDate?`다** — 백엔드 `ChatActionEvent.date`는 `LocalDate`(non-null)이지만, REST 조회 경로(`ConversationDetailResponse` → `ChatMessageResponse.action`)의 Swagger는 required를 명시하지 않는다. 두 경로가 같은 `ChatAction`을 공유하므로 **느슨한 쪽(nullable)에 맞춰 `LocalDate?`를 유지**한다. REST 쪽도 항상 non-null임이 확인되면 non-null로 조인다.
 - [ ] **[중간] `MessageStatus` 허용 값** — `PENDING/STREAMING/COMPLETED/FAILED`는 추론이다. `UNKNOWN` 폴백을 두었으므로 앱이 죽지는 않지만 분기 로직이 어긋날 수 있다.
 - [ ] **[중간] `ChatAction.type` / `category` 허용 값** — 확정되면 enum으로 승격하는 후속 이슈 필요. 현재는 presentation이 String 비교로 분기해야 한다.
-- [ ] **[낮음] `ChatActionResponse.date`가 optional인지** — 캘린더 액션이 아닌 액션 타입이 생기면 null일 수 있어 `LocalDate?`로 두었다. 항상 존재한다면 non-null로 조여도 된다.
-- [ ] **[낮음] `ChatMessage.id`가 SSE 스트리밍 중에는 없을 수 있는가?** — presentation이 스트리밍 중인 임시 메시지를 어떤 키로 식별할지는 단위 F/G에서 결정한다(도메인 모델은 그대로 두고 UI 모델에서 처리 권장).
+- [x] **[해결됨 · 2026-08-04] `ChatMessage.id`가 SSE 스트리밍 중에는 없을 수 있는가?** — `start`가 `userMessageId`·`assistantMessageId`를 모두 주므로 스트리밍 시작 시점에 양쪽 id를 안다. presentation은 낙관적 사용자 메시지의 로컬 임시 id를 `start` 수신 시 서버 id로 교체한다(F-chat 문서 참조). UI 전용 메시지 모델은 여전히 불필요하다.

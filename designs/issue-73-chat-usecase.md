@@ -2,10 +2,10 @@
 
 > 이 문서는 **설계(Design) 단계 산출물**이며 구현 단계가 이 문서를 단일 소스로 삼아 진행한다.
 
-- **이슈**: #59 하위 작업 단위 B (사용자가 추후 별도 이슈로 생성 예정)
+- **이슈**: #73 (상위 이슈: #59)
 - **작성**: 설계 에이전트 (Opus) / 2026-08-03
 - **상태**: 검토 대기
-- **선행**: 단위 A (`designs/issue-59-A-chat-domain-model.md`) — `ChatRepository`, 도메인 모델 필요. 전체 그래프는 `designs/issue-59-task-dependency-graph.md` 참고
+- **선행**: 단위 A (`designs/issue-72-chat-domain-model.md`) — `ChatRepository`, 도메인 모델 필요. 전체 그래프는 `designs/issue-59-task-dependency-graph.md` 참고
 
 ## 1. 범위
 

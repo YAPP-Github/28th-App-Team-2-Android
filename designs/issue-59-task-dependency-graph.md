@@ -3,6 +3,22 @@
 > 이 문서는 이슈 #59의 9개 작업 단위(A/B/C1/C2/D/F-chat/G-chat/F-history/G-history)의 **실행 의존성 단일 소스**다.
 > 각 단위 설계 문서는 이 파일을 참조하고, 자체적으로 그래프를 다시 그리지 않는다(중복 작성 시 어긋남이 생긴다 — 아래 "발견된 불일치" 참고).
 
+## 유닛 ↔ 이슈 번호 매핑 (2026-08-04, 이슈 생성 완료)
+
+| 유닛 | 이슈 | 설계 문서 |
+|------|------|-----------|
+| A | #72 | `designs/issue-72-chat-domain-model.md` |
+| B | #73 | `designs/issue-73-chat-usecase.md` |
+| C1 | #74 | `designs/issue-74-sse-client-infra.md` |
+| C2 | #75 | `designs/issue-75-chat-dto.md` |
+| D | #76 | `designs/issue-76-chat-data-layer.md` |
+| F-chat | #77 | `designs/issue-77-chat-viewmodel.md` |
+| G-chat | #78 | `designs/issue-78-chat-screen.md` |
+| F-history | #79 (보류) | `designs/issue-79-history-viewmodel.md` |
+| G-history | #80 (보류) | `designs/issue-80-history-screen.md` |
+
+모두 GitHub sub-issues 기능으로 #59에 연결돼 있다. 아래 ASCII 그래프의 `[A]`/`[B]` 등 유닛 라벨은 위 표로 이슈 번호와 대응시킨다(그래프 자체는 가독성을 위해 유닛 라벨을 유지).
+
 ## 범례
 
 - `──▶` **컴파일 의존**: 화살표 대상 유닛의 코드가 화살표 출발 유닛의 타입/함수를 소스에서 직접 import한다. 이게 없으면 컴파일 자체가 안 된다.
@@ -52,6 +68,23 @@ A → { B, C1, C2 (병렬) } → D → F-chat → G-chat → F-history → G-his
 ```
 
 자유도가 있는 지점은 단 하나: **B와 D의 순서**. D는 B에 컴파일 의존이 없으므로 이론상 바꿔도 되지만, 위 순서(B를 D보다 먼저)를 권장한다 — F-chat이 A/B/D 셋 다 필요하므로 어차피 B가 F-chat보다 먼저 있어야 하고, 병렬로 진행 중인 B를 D보다 일찍 끝내 두면 대기가 줄어든다.
+
+## 2026-08-04 결정 — G-chat에서 Navigation 3 제외, F-history/G-history 보류
+
+사용자 지시로 **G-chat이 Navigation 3 없이 화면만 구현**한다(`MainActivity`가 `ChatScreen`을 직접 그린다). 근거와 파급은 `designs/issue-78-chat-screen.md` 2-2 참조.
+
+위 그래프는 그대로 유효하되, 아래 두 줄만 덧붙는다.
+
+- **G-history**: 선행이던 "G-chat의 Navigation 3 골격"이 사라져 **착수 불가 — 보류.** 히스토리 화면으로 이동할 경로 자체가 없다.
+- **F-history**: 컴파일 의존(A, B, F-chat)은 그대로 충족되지만 **붙일 화면이 없어 함께 보류.** 지금 만들면 소비자 없는 ViewModel이 하나 늘 뿐이다.
+
+따라서 현재 실행 가능한 위상 정렬은 다음에서 끝난다.
+
+```
+A → { B, C1, C2 (병렬) } → D → F-chat → G-chat  ┃  (여기서 중단) F-history → G-history
+```
+
+두 단위의 재개 조건은 **두 번째 화면이 필요해져 Navigation 3를 실제로 도입하는 시점**이다. 그때 G-chat 2-2가 회피해 둔 "nav3 API 표기 미검증" 리스크가 그대로 되살아난다.
 
 ## 발견된 불일치 (이 문서를 만들게 된 배경)
 

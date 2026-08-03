@@ -2,8 +2,9 @@
 
 > 이 문서는 **설계(Design) 단계 산출물**이며 구현 단계가 이 문서를 단일 소스로 삼아 진행한다.
 
-- **이슈**: #59 하위 작업 단위 D (사용자가 추후 별도 이슈로 생성 예정)
+- **이슈**: #76 (상위 이슈: #59)
 - **작성**: 설계 에이전트 (Opus) / 2026-08-03
+- **2026-08-04 갱신**: 백엔드 실제 SSE 스키마 확인 후 교정 (근거: 사용자 제공 `SseEmitterChatStreamListener` 및 이벤트 DTO 소스)
 - **상태**: 검토 대기
 - **선행**: A(도메인 모델·Repository), B(UseCase, 컴파일 의존은 없음), C1(SSE 인프라), C2(DTO) — **4개 모두 머지된 뒤 시작**. 전체 그래프는 `designs/issue-59-task-dependency-graph.md` 참고
 
@@ -74,13 +75,15 @@ override fun sendMessage(conversationId: String?, content: String): Flow<Result<
 
 `core/data-remote/dto/chat/ChatMapper.kt` 한 파일에 모은다 (근거는 C2 문서 2-1).
 
-**방어적 매핑 3가지** — 각각 실제 리스크를 하나씩 제거한다:
+**방어적 매핑 2가지** — 각각 실제 리스크를 하나씩 제거한다:
 
 1. **`String.toInstantOrThrow()`** — 서버 `date-time` 포맷이 오프셋 포함인지 미확정(C2 리스크). `Instant.parse` 시도 후 실패하면 `LocalDateTime.parse` + KST 적용. 두 형태를 모두 처리해 백엔드 확인 결과와 무관하게 동작한다.
 2. **enum 폴백** — `MessageRole`/`MessageStatus`는 `valueOf` 실패 시 `UNKNOWN`. 서버가 새 값을 추가해도 화면 전체가 죽지 않는다.
-3. **delta 평문 폴백** — `data`가 `{`로 시작하면 JSON 파싱, 아니면 문자열 자체를 chunk로 사용(C2 문서 2-5). 백엔드 구현이 어느 쪽이든 동작한다.
 
-이 3개는 "혹시 몰라서"가 아니라 **미확정 스펙 3건에 정확히 1:1 대응**하는 방어다. 스펙이 확정되면 제거 가능하며, 그 사실을 주석으로 남긴다.
+이 2개는 "혹시 몰라서"가 아니라 **미확정 스펙 2건에 정확히 1:1 대응**하는 방어다. 스펙이 확정되면 제거 가능하며, 그 사실을 주석으로 남긴다.
+
+> **2026-08-04 삭제**: 3번째였던 "delta 평문 폴백"(`extractDeltaContent()`)을 제거했다. 백엔드가 Jackson으로 직렬화하므로 delta payload는 **항상 `{"text":"..."}` JSON**이다(C2 문서 2-5). 폴백을 남기면 필드명 오타로 파싱이 깨져도 payload 원문(`{"text":"안"}`)이 그대로 화면에 찍히는 더 나쁜 실패 모드가 생긴다.
+> SSE 이벤트 payload는 전 필드 non-null이 확정됐으므로 `?: return null` 형태의 필드 누락 방어도 함께 제거한다. 필드가 실제로 빠지면 `SerializationException`이 던져지고 `Flow.catch`가 `Result.failure`로 수렴시킨다 — 조용히 이벤트를 버리는 것보다 낫다.
 
 `Json` 인스턴스는 `TodakunJson`(같은 모듈 `di` 패키지의 `internal val`)을 직접 참조한다. 별도 주입은 하지 않는다 — 설정이 고정된 값이고 매퍼는 순수 함수라 테스트에서도 그대로 쓸 수 있다.
 
@@ -111,10 +114,11 @@ override fun sendMessage(conversationId: String?, content: String): Flow<Result<
 | `status = "WEIRD_NEW_VALUE"` | `MessageStatus.UNKNOWN` (예외 아님) |
 | `createdAt = "2026-08-03T12:00:00Z"` | `Instant` 파싱 성공 |
 | `createdAt = "2026-08-03T12:00:00"` (오프셋 없음) | KST 기준 `Instant`로 파싱 성공 |
-| SSE `event: delta`, `data: {"content":"안"}` | `ChatStreamEvent.Delta("안")` |
-| SSE `event: delta`, `data: 안` (평문) | `ChatStreamEvent.Delta("안")` |
+| SSE `event: start`, `data: {conversationId, userMessageId, assistantMessageId, quotaUsed:1, quotaLimit:5}` | `ChatStreamEvent.Start` 4필드 일치, `quota.remaining == 4` |
+| SSE `event: delta`, `data: {"text":"안"}` | `ChatStreamEvent.Delta("안")` |
 | SSE `event: error`, `data: {"code":"QUOTA","message":"초과"}` | `ChatStreamException` throw |
-| SSE `event: done`, `data: {ChatMessageResponse}` | `ChatStreamEvent.Done(message)` |
+| SSE `event: done`, `data: {"assistantMessageId":"m-1"}` | `ChatStreamEvent.Done("m-1")` |
+| SSE `event: action`, `data: {type,label,category,date}` | `ChatStreamEvent.Action`, `date` 파싱 성공 |
 | SSE 알 수 없는 이벤트 이름 | `null` 반환 (무시) |
 | SSE `event == null` (heartbeat/comment) | `null` 반환 (무시) |
 
@@ -268,12 +272,17 @@ internal fun ServerSentEvent.toChatStreamEventOrNull(): ChatStreamEvent? {
         EVENT_START -> {
             val dto = TodakunJson.decodeFromString<ChatStreamStartResponse>(payload)
             ChatStreamEvent.Start(
-                conversationId = dto.conversationId ?: return null,
-                messageId = dto.messageId,
+                conversationId = dto.conversationId,
+                userMessageId = dto.userMessageId,
+                assistantMessageId = dto.assistantMessageId,
+                quota = ChatQuota(used = dto.quotaUsed, limit = dto.quotaLimit),
             )
         }
 
-        EVENT_DELTA -> ChatStreamEvent.Delta(payload.extractDeltaContent() ?: return null)
+        EVENT_DELTA ->
+            ChatStreamEvent.Delta(
+                TodakunJson.decodeFromString<ChatStreamDeltaResponse>(payload).text,
+            )
 
         EVENT_ACTION ->
             ChatStreamEvent.Action(
@@ -282,7 +291,7 @@ internal fun ServerSentEvent.toChatStreamEventOrNull(): ChatStreamEvent? {
 
         EVENT_DONE ->
             ChatStreamEvent.Done(
-                TodakunJson.decodeFromString<ChatMessageResponse>(payload).toDomain(),
+                TodakunJson.decodeFromString<ChatStreamDoneResponse>(payload).assistantMessageId,
             )
 
         EVENT_ERROR -> {
@@ -293,15 +302,6 @@ internal fun ServerSentEvent.toChatStreamEventOrNull(): ChatStreamEvent? {
         else -> null
     }
 }
-
-// delta의 data가 JSON인지 평문인지 서버 스펙 미확정. 양쪽 모두 처리한다.
-// (백엔드 확정 후 한쪽으로 정리 가능)
-private fun String.extractDeltaContent(): String? =
-    if (trimStart().startsWith("{")) {
-        TodakunJson.decodeFromString<ChatStreamDeltaResponse>(this).content
-    } else {
-        this
-    }
 
 private fun String.toMessageRole(): MessageRole =
     runCatching { MessageRole.valueOf(uppercase()) }.getOrDefault(MessageRole.UNKNOWN)
@@ -476,13 +476,15 @@ abstract fun bindChatRemoteDataSource(impl: RemoteChatDataSourceImpl): RemoteCha
 
 - [ ] `core/data/src/test/java/com/kikidan/data/fake/FakeRemoteChatDataSource.kt` — 반환값/throw 예외를 주입 가능한 Fake (기존 `FakeRemoteAuthDataSource` 스타일)
 - [ ] `core/data/src/test/java/com/kikidan/data/repository/ChatRepositoryImplTest.kt` — 2-6의 8케이스
-- [ ] `core/data-remote/src/test/java/com/kikidan/data_remote/dto/chat/ChatMapperTest.kt` — 2-6의 12케이스
+- [ ] `core/data-remote/src/test/java/com/kikidan/data_remote/dto/chat/ChatMapperTest.kt` — 2-6의 13케이스
 - [ ] `core/data-remote/src/test/java/com/kikidan/data_remote/datasource/RemoteChatDataSourceImplTest.kt` — 2-6의 7케이스
 
 ## 4. 리스크 / 미해결 질문 (사람 확인 필요)
 
-- [ ] **[높음] C1·C2의 미해결 리스크가 그대로 상속된다** — SSE 이벤트 필드명 미확정, delta 증분/누적 여부, OkHttp 엔진 SSE 스트리밍 동작. D는 이들을 방어 코드로 흡수했을 뿐 해결하지 않았다. **dev 서버 스모크 테스트가 이 단위의 실질적 완료 조건이다.**
-- [ ] **[높음] `ChatStreamEvent.Start`에서 새 conversationId를 못 받으면 대화 이어가기가 깨진다** — 신규 대화에서 첫 응답의 start 이벤트가 conversationId를 주지 않으면(추론이 틀리면), 두 번째 메시지도 `conversationId = null`로 나가 매번 새 대화가 만들어진다. 현재 매퍼는 이 경우 start 이벤트를 `null`로 버려 조용히 실패한다. **가장 눈에 안 띄는 실패 모드**이므로 스모크 테스트에서 "두 번째 메시지가 같은 대화에 들어가는지"를 반드시 확인할 것.
+- [x] **[해결됨 · 2026-08-04] SSE 이벤트 필드명 미확정** — 백엔드 이벤트 DTO 소스로 확정. `delta`는 `text`, `done`은 `assistantMessageId`, `start`는 5필드. 매퍼를 실제 스키마에 맞춰 교정했고 평문 폴백·필드 누락 폴백을 제거했다.
+- [x] **[해결됨 · 2026-08-04] delta 증분/누적 여부** — **증분**. 백엔드 `ChatDeltaEvent` 주석("답변 토큰 조각")으로 확인. 매퍼는 조각을 그대로 통과시키고 누적은 presentation의 `typewriter()`가 담당한다.
+- [x] **[해결됨 · 2026-08-04] `ChatStreamEvent.Start`에서 새 conversationId를 못 받는 실패 모드** — `ChatStartEvent.conversationId`가 non-null로 항상 온다. `?: return null`로 start를 조용히 버리던 경로를 삭제했으므로, 만에 하나 필드가 빠지면 `SerializationException` → `Result.failure`로 **눈에 띄게** 실패한다. 조용한 실패 모드가 사라졌다.
+- [ ] **[높음] C1의 미해결 리스크는 그대로 상속된다** — OkHttp 엔진에서 SSE가 버퍼링 없이 점진 도착하는지는 여전히 미검증이다. **dev 서버 스모크 테스트가 이 단위의 실질적 완료 조건이다**(전송 → delta 점진 도착 확인).
 - [ ] **[중간] MockEngine으로 SSE 응답을 만드는 방법 확인 필요** — `respond(content = ByteReadChannel(sseText), headers = text/event-stream)`으로 Ktor SSE 플러그인이 정상 파싱하는지 검증 필요. 불가하면 `RemoteChatDataSourceImplTest`의 SSE 케이스는 제외하고 `ChatMapperTest`가 `ServerSentEvent` 객체를 직접 만들어 커버한다(파싱 로직 자체는 Ktor 책임이므로 커버리지 손실은 크지 않다).
 - [ ] **[중간] `deleteConversation`의 `CommonResponse<Unit>` 역직렬화** — 기존 `postLogout`이 같은 패턴을 쓰고 있어 동작한다고 판단했으나, `data` 필드가 아예 없을 때 `Unit?`가 정상 처리되는지 테스트로 확인한다. 실패 시 `bodyAsText()`만 소비하거나 `CommonResponse<JsonElement>`로 받는다.
 - [ ] **[중간] `getChatEntry`의 `bodyNotNull`이 `IllegalArgumentException`을 던지는 것이 적절한가** — 기존 컨벤션을 따랐다. Repository가 `Result.failure(IllegalArgumentException)`을 주게 되는데, presentation이 "서버 응답 이상"과 "잘못된 입력"을 구분하기 어렵다. 도메인 예외 타입 도입은 이번 범위 밖으로 두되 후속 과제로 등록 권장.

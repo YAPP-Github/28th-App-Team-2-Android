@@ -2,8 +2,9 @@
 
 > 이 문서는 **설계(Design) 단계 산출물**이며 구현 단계가 이 문서를 단일 소스로 삼아 진행한다.
 
-- **이슈**: #59 하위 작업 단위 F-chat (사용자가 추후 별도 이슈로 생성 예정)
+- **이슈**: #77 (상위 이슈: #59)
 - **작성**: 설계 에이전트 (Opus) / 2026-08-03
+- **2026-08-04 갱신**: 백엔드 실제 SSE 스키마 확인 후 교정 (근거: 사용자 제공 `SseEmitterChatStreamListener` 및 이벤트 DTO 소스)
 - **상태**: 검토 대기
 - **선행**: A(도메인 모델), B(UseCase), D(RepositoryImpl+Hilt 바인딩) — **3개 모두 머지된 뒤 시작**
 
@@ -54,17 +55,17 @@
 
 **옵션 3의 파이프라인 구성**
 
-`sendMessage`는 `Flow<Result<ChatStreamEvent>>` 하나로 오는데, 타이핑 대상은 `Delta`뿐이고 `Start`/`Done`은 텍스트가 아니다. 그래서 파이프라인을 **둘로 쪼개지 않고** `transform`으로 갈라낸다.
+`sendMessage`는 `Flow<Result<ChatStreamEvent>>` 하나로 오는데, 타이핑 대상은 `Delta`뿐이고 `Start`/`Action`/`Done`은 텍스트가 아니다. 그래서 파이프라인을 **둘로 쪼개지 않고** `transform`으로 갈라낸다.
 
 ```
 sendChatMessage(...)                       Flow<Result<ChatStreamEvent>>
-  └ transform { Start/Done은 지역 변수에 담고, Delta의 content만 아래로 emit }
+  └ transform { Start/Action/Done은 지역 변수에 담고, Delta의 text만 아래로 emit }
                                            Flow<String>   (도착 속도 그대로)
   └ typewriter()                           Flow<String>   (표시 속도로 재타이밍, 누적 텍스트)
   └ collect { reduce { streamingText = it } }
 ```
 
-이 구조의 이점이 결정적이다: **`typewriter()`가 완료되는 시점이 곧 "버퍼가 다 비었다"는 뜻**이므로, `collect`가 끝난 다음 줄에서 `Done` 메시지를 확정하면 "네트워크는 끝났는데 화면엔 아직 절반만 찍힌" 상태에서 답변이 튀는 문제가 자동으로 사라진다. 별도 동기화 장치가 필요 없다.
+이 구조의 이점이 결정적이다: **`typewriter()`가 완료되는 시점이 곧 "버퍼가 다 비었다"는 뜻**이므로, `collect`가 끝난 다음 줄에서 최종 어시스턴트 메시지를 조립하면 "네트워크는 끝났는데 화면엔 아직 절반만 찍힌" 상태에서 답변이 튀는 문제가 자동으로 사라진다. 별도 동기화 장치가 필요 없다.
 
 **연산자 내부 설계 — 왜 "한 틱에 한 글자"가 아닌가**
 
@@ -101,6 +102,9 @@ entry 조회가 실패해도 화면은 동작해야 한다(입력은 가능). �
 
 - **스트리밍 텍스트를 `messages` 리스트 안에 넣지 않는다.** 넣으면 문자 하나마다 `List`를 새로 만들어 복사한다. 별도 `streamingText: String` 필드로 빼면 틱당 비용이 data class 얕은 복사 1회로 끝난다. 화면에선 리스트 마지막에 이어 그린다(G-chat).
 - **UI 전용 메시지 모델을 만들지 않는다.** 도메인 `ChatMessage`를 그대로 State에 담는다. 낙관적으로 추가하는 사용자 메시지는 `id = "local-user-<epochMillis>"`, `status = PENDING`으로 만든다 — 도메인 모델이 이미 `PENDING`을 갖고 있어 별도 타입이 필요 없다.
+- **로컬 임시 id는 `Start` 수신 시 서버 id로 교체한다.** `ChatStartEvent`가 `userMessageId`를 주므로, 낙관적으로 추가한 메시지가 로컬 id를 계속 들고 있을 이유가 없다. 그대로 두면 히스토리 재진입 시 같은 메시지가 서버 id로 다시 그려져 **키가 어긋난 중복 렌더링**이 생기고, "이 메시지 삭제/재전송" 같은 후속 기능이 서버 id를 못 찾는다. 교체는 `messages.map { if (it.id == placeholderId) it.copy(id = event.userMessageId, status = MessageStatus.COMPLETED) else it }` 한 줄이다. 전송 1회당 한 번뿐이라 리스트 복사 비용은 무시 가능하다.
+- **최종 어시스턴트 메시지는 클라이언트가 조립한다.** `ChatDoneEvent`는 `assistantMessageId` 하나만 준다. `content`는 누적된 스트리밍 텍스트, `status`는 `COMPLETED`, `action`은 `Action` 이벤트로 받아둔 값, `createdAt`은 `Instant.now()`다. 서버 시각과 최대 수백 ms 어긋나지만 이 값은 **정렬 키가 아니라 화면 표시용**이고, 히스토리 재진입 시 서버 값으로 덮어써진다. 정확한 시각을 위해 `done` 직후 상세를 재조회하는 것은 왕복 1회를 화면 전환도 없이 추가하는 것이라 하지 않는다.
+  `assistantMessageId`는 `start`와 `done` 양쪽에서 오며 값이 같다. **`done` 값으로 덮어쓴다** — 두 값이 어긋나는 상황은 서버가 도중에 메시지를 갈아끼운 경우뿐이고 그때 유효한 것은 종료 시점 값이다. 덮어쓰기가 한 줄이므로 "같으니 무시" 대신 최신 값을 쓰는 쪽이 더 안전하고 코드량도 같다. `start`에서 미리 담아두는 이유는 `done` 없이 스트림이 끝난 경우의 폴백을 위해서다.
 - **불안정 클래스 우려**: `ChatMessage`는 Compose 미의존 모듈의 data class이고 `List`는 인터페이스라 둘 다 Compose가 안정으로 추론하지 못한다. 다만 Kotlin 2.2 / Compose 컴파일러의 **강한 건너뛰기(strong skipping)가 기본 활성**이라 값이 같으면 리컴포지션이 건너뛰어진다. `kotlinx-collections-immutable`을 이 한 건 때문에 새로 추가하지 않는다.
 - **에러를 State에 두지 않는다.** 일회성 알림이므로 `ShowMessage` 사이드이펙트로만 낸다. State에 두면 "이미 본 에러"를 지우는 코드가 따라붙는다.
 
@@ -151,8 +155,12 @@ entry 조회가 실패해도 화면은 동작해야 한다(입력은 가능). �
 | `load("c-1")` | detail의 메시지가 `messages`에 채워짐 |
 | `send("안녕")` | 사용자 메시지가 즉시 `messages`에 추가되고 `phase == THINKING` |
 | Delta 도착 | `phase == TYPING`, `streamingText`가 단조 증가(각 값이 이전 값의 prefix 확장) |
-| Done 수신 | `messages` 마지막이 서버 메시지, `streamingText == ""`, `phase == IDLE`, `quota.used`가 1 증가 |
-| Start의 conversationId 저장 | 두 번째 `send` 시 Fake에 그 id가 전달됨 (**A/D 문서가 "가장 눈에 안 띄는 실패 모드"로 지목한 항목**) |
+| Done 수신 | `messages` 마지막이 `id == assistantMessageId`, `content == 누적 delta`, `status == COMPLETED`인 ASSISTANT 메시지. `streamingText == ""`, `phase == IDLE` |
+| Start의 conversationId 저장 | 두 번째 `send` 시 Fake에 그 id가 전달됨 (**A/D 문서가 "가장 눈에 안 띄는 실패 모드"로 지목했던 항목 — 백엔드 확정으로 해소됐으나 회귀 방지로 유지**) |
+| Start의 userMessageId로 로컬 메시지 id 교체 | 낙관적 사용자 메시지의 `id`가 `"local-user-*"`에서 서버 `userMessageId`로 바뀌고 `status == COMPLETED` |
+| Start의 quota 즉시 반영 | `Start` 수신 직후(Done 전) `state.quota == ChatQuota(quotaUsed, quotaLimit)` |
+| Action 이벤트 수신 | 최종 조립된 어시스턴트 메시지의 `action`이 그 값 (무시되지 않음) |
+| Start 없이 delta만 오고 스트림 종료 | 어시스턴트 메시지가 `"local-assistant-*"` 폴백 id로 추가되고 텍스트는 보존됨 |
 | 스트림이 `Result.failure` 방출 | `ShowMessage`, `phase == IDLE`, `streamingText == ""` |
 | 스트리밍 중 `send` 재호출 | 무시됨 (Fake의 호출 횟수 1 유지) |
 | `quota.remaining == 0`에서 `send` | 전송 없이 `ShowMessage` |
@@ -342,6 +350,7 @@ sealed interface ChatSideEffect {
 package com.kikidan.chat
 
 import androidx.lifecycle.ViewModel
+import com.kikidan.domain.model.chat.ChatAction
 import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatStreamEvent
 import com.kikidan.domain.model.chat.ChatStreamException
@@ -430,26 +439,49 @@ class ChatViewModel
             }
 
             val conversationId = state.conversationId
+            val placeholder = localUserMessage(content)
             reduce {
                 state.copy(
-                    messages = state.messages + localUserMessage(content),
+                    messages = state.messages + placeholder,
                     phase = ChatPhase.THINKING,
                     streamingText = "",
                 )
             }
 
             var streamConversationId: String? = conversationId
-            var completed: ChatMessage? = null
+            var assistantMessageId: String? = null
+            var pendingAction: ChatAction? = null
 
             try {
                 sendChatMessage(conversationId, content)
                     .transform { result ->
                         // 모든 실패를 예외 한 채널로 되돌린다 (설계 2-3).
                         when (val event = result.getOrElse { throw it }) {
-                            is ChatStreamEvent.Start -> streamConversationId = event.conversationId
-                            is ChatStreamEvent.Delta -> emit(event.content)
-                            is ChatStreamEvent.Action -> Unit // Done.message.action으로도 오므로 이 범위에선 무시
-                            is ChatStreamEvent.Done -> completed = event.message
+                            is ChatStreamEvent.Start -> {
+                                streamConversationId = event.conversationId
+                                assistantMessageId = event.assistantMessageId
+                                reduce {
+                                    state.copy(
+                                        // 낙관적 메시지의 로컬 id를 서버가 준 진짜 id로 교체 (설계 2-6).
+                                        messages =
+                                            state.messages.map {
+                                                if (it.id == placeholder.id) {
+                                                    it.copy(
+                                                        id = event.userMessageId,
+                                                        status = MessageStatus.COMPLETED,
+                                                    )
+                                                } else {
+                                                    it
+                                                }
+                                            },
+                                        quota = event.quota,
+                                    )
+                                }
+                            }
+                            is ChatStreamEvent.Delta -> emit(event.text)
+                            // done은 action을 주지 않는다. 이 이벤트가 유일한 획득 경로다.
+                            is ChatStreamEvent.Action -> pendingAction = event.action
+                            is ChatStreamEvent.Done -> assistantMessageId = event.assistantMessageId
                         }
                     }.typewriter()
                     .collect { shown -> reduce { state.copy(phase = ChatPhase.TYPING, streamingText = shown) } }
@@ -458,11 +490,15 @@ class ChatViewModel
                 reduce {
                     state.copy(
                         conversationId = streamConversationId,
-                        messages = state.messages + (completed ?: localAssistantMessage(state.streamingText)),
+                        messages =
+                            state.messages +
+                                assistantMessage(
+                                    id = assistantMessageId,
+                                    content = state.streamingText,
+                                    action = pendingAction,
+                                ),
                         streamingText = "",
                         phase = ChatPhase.IDLE,
-                        // start 이벤트에 quota가 실려 오는지 미확정이라 낙관적으로 1 증가시킨다(4절 참조).
-                        quota = state.quota?.let { it.copy(used = it.used + 1) },
                     )
                 }
             } catch (e: CancellationException) {
@@ -492,19 +528,27 @@ private fun localUserMessage(content: String) =
         createdAt = Instant.now(),
     )
 
-// done 이벤트 없이 스트림이 정상 종료된 경우에도 그려진 답변을 잃지 않게 한다.
-private fun localAssistantMessage(content: String) =
-    ChatMessage(
-        id = "local-assistant-${System.currentTimeMillis()}",
-        role = MessageRole.ASSISTANT,
-        content = content,
-        status = MessageStatus.COMPLETED,
-        action = null,
-        createdAt = Instant.now(),
-    )
+/**
+ * 서버는 done에 텍스트/시각을 싣지 않으므로(assistantMessageId만 전달) 최종 메시지는 여기서 조립한다.
+ * id는 start/done이 준 값을 쓰되, start도 못 받고 스트림이 끝난 경우를 대비해 로컬 id로 폴백한다.
+ */
+private fun assistantMessage(
+    id: String?,
+    content: String,
+    action: ChatAction?,
+) = ChatMessage(
+    id = id ?: "local-assistant-${System.currentTimeMillis()}",
+    role = MessageRole.ASSISTANT,
+    content = content,
+    status = MessageStatus.COMPLETED,
+    action = action,
+    createdAt = Instant.now(),
+)
 ```
 
-> 구현 시 주의: `SimpleSyntax` 수신자를 갖는 `private suspend fun send(...)`의 정확한 타입 표기는 Orbit 11의 실제 시그니처(`SimpleSyntax` vs `IntentContext`)를 IDE로 확인해 맞춘다. 확인이 번거로우면 `send`를 별도 `intent { }`로 분리하고 `onSendClick`/`onSuggestionClick`이 그것을 호출하는 형태로 바꿔도 동작은 같다.
+> 구현 시 주의 (1): `transform` 람다 안의 `reduce`/`state`는 바깥 `SimpleSyntax` 수신자로 해석된다(`FlowCollector`에 동명 멤버가 없다). `Flow.reduce` 확장과 이름이 겹쳐 보이지만 수신자가 Flow가 아니므로 충돌하지 않는다. IDE가 모호하다고 표시하면 `this@send.reduce { }`로 명시한다.
+>
+> 구현 시 주의 (2): `SimpleSyntax` 수신자를 갖는 `private suspend fun send(...)`의 정확한 타입 표기는 Orbit 11의 실제 시그니처(`SimpleSyntax` vs `IntentContext`)를 IDE로 확인해 맞춘다. 확인이 번거로우면 `send`를 별도 `intent { }`로 분리하고 `onSendClick`/`onSuggestionClick`이 그것을 호출하는 형태로 바꿔도 동작은 같다.
 
 - [ ] `feature/chat/src/test/java/com/kikidan/chat/FakeChatRepository.kt` (신규)
   — `sendMessage` 호출 인자(`conversationId`/`content`)와 호출 횟수를 기록하고, 주입된 `List<Result<ChatStreamEvent>>`를 방출하는 Fake. 나머지 4개 함수는 주입된 `Result`를 그대로 반환.
@@ -512,17 +556,17 @@ private fun localAssistantMessage(content: String) =
   테스트는 이 Fake로 **실제 UseCase 인스턴스**를 만들어 VM에 주입한다(UseCase는 인터페이스가 아니므로 Fake 대상이 Repository여야 한다).
 
 - [ ] `feature/chat/src/test/java/com/kikidan/chat/TypewriterFlowTest.kt` (신규) — 2-9의 7케이스
-- [ ] `feature/chat/src/test/java/com/kikidan/chat/ChatViewModelTest.kt` (신규) — 2-9의 12케이스
+- [ ] `feature/chat/src/test/java/com/kikidan/chat/ChatViewModelTest.kt` (신규) — 2-9의 16케이스
 
 ## 4. 리스크 / 미해결 질문 (사람 확인 필요)
 
-- [ ] **[높음] C2 문서의 "delta가 증분인가 누적인가"가 이 설계의 전제다** — 본 설계는 **증분(append)** 을 가정한다. 서버가 매번 누적 전체 텍스트를 보내면 `typewriter()`가 텍스트를 이중으로 이어붙여 답변이 뭉개진다. 백엔드 확인 전까지 **F-chat 구현을 시작하지 말 것**을 권한다. 누적으로 판명되면 `transform`에서 `emit(event.content)` → `emit(event.content.removePrefix(누적본))` 한 줄 수정으로 흡수 가능하다.
-- [ ] **[높음] `ChatStreamEvent.Start`의 conversationId 유실은 조용히 실패한다** — D 문서가 지적한 실패 모드가 그대로 상속된다. `ChatViewModelTest`의 "두 번째 send에 같은 id 전달" 케이스로 클라이언트 로직은 고정되지만, 서버가 id를 안 주면 매번 새 대화가 만들어진다. **dev 서버 스모크 테스트 필수.**
-- [ ] **[중간] quota 낙관적 증가** — Done 이후 `used + 1`로 갱신한다. start 이벤트에 quota가 실려 오면(A 문서 리스크) 그 값을 쓰는 편이 정확하다. 그전까지 헤더 숫자가 서버와 어긋날 수 있다(다음 화면 진입 시 entry 재조회로 교정됨).
+- [x] **[해결됨 · 2026-08-04] "delta가 증분인가 누적인가"** — **증분(append)** 확정. 백엔드 `ChatDeltaEvent` 주석("답변 토큰 조각")으로 확인했다. `typewriter()`의 누적 전제가 그대로 유효하며 `removePrefix` 보정은 불필요하다.
+- [x] **[해결됨 · 2026-08-04] `ChatStreamEvent.Start`의 conversationId 유실** — `ChatStartEvent.conversationId`가 non-null로 항상 온다. D의 매퍼에서 조용히 버리던 경로가 제거됐으므로 유실 시 `Result.failure`로 드러난다.
 - [ ] **[중간] `TYPING_TICK_MS` / `CATCH_UP_DIVISOR` 실기기 튜닝 필요** — 서버 청크가 이미 크고 드문드문 오면 catch-up이 자주 발동해 "한 글자씩"이 아니라 "덩어리씩"으로 보일 수 있다. 실제 청크 크기를 측정한 뒤 두 상수를 조정한다. 조정만으로 부족하면 `CATCH_UP_DIVISOR`를 늘리고 `TYPING_TICK_MS`를 8ms로 낮춘다.
 - [ ] **[중간] `orbit-test`와 `delay`의 상호작용** — `typewriter()`의 `delay`가 orbit-test의 `TestScope` 가상 시간에서 스킵된다는 전제다. 실제로 실시간 대기가 발생하면 `ChatViewModel` 생성자에 `typingTickMillis: Long = TYPING_TICK_MS`를 추가해 테스트에서 0으로 주입한다(폴백 준비됨).
 - [ ] **[중간] `rules/30-presentation.md`의 "`by(Delegate)` 형태 권장" 문구 정정 필요** — 2-8 참조. Orbit 11 API로는 불가능한 표현이므로 규칙 문서를 팀이 정정할지 확인.
-- [ ] **[낮음] `ChatStreamEvent.Action`을 무시한다** — 액션 카드 UI가 Figma에 확정되지 않았고 `Done.message.action`으로도 동일 정보가 오므로 State에는 이미 담긴다. 렌더링은 후속 이슈.
+- [ ] **[중간] `ChatStreamEvent.Action`이 액션을 얻는 유일한 경로가 됐다** — `ChatDoneEvent`는 `assistantMessageId`만 주므로 이전 설계의 "`Done.message.action`으로도 오니 무시해도 된다"는 근거가 사라졌다. `Action` 이벤트를 `pendingAction`에 담아 최종 메시지 조립에 반드시 넣는다(구현 반영 완료). 렌더링(액션 카드 UI)은 Figma 확정 후 후속 이슈지만, **데이터를 버리지 않는 것은 이번 단위에서 처리한다.**
+- [ ] **[낮음] 어시스턴트 메시지의 `createdAt`이 클라이언트 시각이다** — 서버가 `done`에 시각을 싣지 않아 `Instant.now()`를 쓴다. 기기 시계가 크게 틀어져 있으면 표시 시각이 어긋나지만, 목록 정렬은 서버 응답 순서를 따르므로 순서가 뒤집히지는 않는다. 히스토리 재진입 시 서버 값으로 교정된다.
 - [ ] **[낮음] `FakeChatRepository`가 `core:domain` 테스트와 중복** — `java-test-fixtures` 플러그인을 `core:domain`에 도입하면 공유할 수 있으나 다른 모듈의 gradle 설정을 건드리게 되어 이 단위 범위 밖으로 둔다. 세 번째 중복이 생기면 그때 도입한다.
 - [ ] **[낮음] 진입 시 entry/detail 순차 호출** — 왕복 2회. 체감이 느리면 `coroutineScope { async }`로 병렬화(3줄).
 - [ ] **[낮음] `AndroidManifest.xml`이 실제로 필요한지** — AGP 9 + namespace 지정 라이브러리 모듈은 빈 매니페스트 없이도 빌드될 수 있다. `feature:auth`가 갖고 있어 따랐다. 없어도 빌드되면 파일을 지운다.
