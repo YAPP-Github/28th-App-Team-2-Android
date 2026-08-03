@@ -35,6 +35,7 @@ internal fun LoginScreen(
     onProviderClick: (SocialLoginProvider) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val loginEnabled = state is LoginState.Idle || state is LoginState.Failure
     Box(
         modifier =
             modifier
@@ -47,7 +48,7 @@ internal fun LoginScreen(
             modifier = Modifier.align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.height(112.dp))
+            Spacer(modifier = Modifier.height(164.dp))
             Image(
                 painter = painterResource(id = R.drawable.img_login_character),
                 contentDescription = stringResource(id = R.string.login_logo_content_description),
@@ -77,13 +78,13 @@ internal fun LoginScreen(
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 90.dp),
+                    .padding(bottom = 124.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             SocialLoginProvider.entries.forEach { provider ->
                 SocialLoginButton(
-                    enabled = state !is LoginState.Loading,
+                    enabled = loginEnabled,
                     provider = provider,
                     onClick = { onProviderClick(provider) },
                 )
