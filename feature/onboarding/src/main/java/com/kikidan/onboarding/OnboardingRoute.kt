@@ -1,21 +1,18 @@
 package com.kikidan.onboarding
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.designsystem.component.dialog.TodakunDialog
 import com.kikidan.designsystem.component.wheelpicker.BirthDateState
@@ -45,7 +42,7 @@ fun OnboardingRoute(
     viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
-    var permissionHandled by remember {
+    var permissionHandled by rememberSaveable {
         mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
     }
     val permissionLauncher =

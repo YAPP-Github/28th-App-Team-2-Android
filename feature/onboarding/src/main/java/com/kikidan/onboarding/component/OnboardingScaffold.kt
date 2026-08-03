@@ -15,7 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
@@ -86,6 +90,7 @@ internal fun OnboardingScaffold(
                 Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp),
         ) {
             Spacer(modifier = Modifier.height(12.dp))
@@ -113,19 +118,17 @@ private fun TermsHeader(
                 .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_back),
-            contentDescription = null,
-            tint = TodakunColor.gray400,
-            modifier =
-                Modifier
-                    .size(width = 8.dp, height = 16.dp)
-                    .clickable(
-                        onClick = onBackClick,
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                    ),
-        )
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier.size(48.dp),
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_back),
+                contentDescription = stringResource(id = R.string.header_back_content_description),
+                tint = TodakunColor.gray400,
+                modifier = Modifier.size(width = 8.dp, height = 16.dp),
+            )
+        }
         Spacer(modifier = Modifier.width(24.dp))
         Text(
             text = label,

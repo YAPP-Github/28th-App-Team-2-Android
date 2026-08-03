@@ -118,7 +118,7 @@ private val RelationshipStatus.labelRes: Int
             RelationshipStatus.SOLO -> R.string.onboarding_extra_relationship_single
             RelationshipStatus.DATING -> R.string.onboarding_extra_relationship_in_relationship
             RelationshipStatus.MARRY -> R.string.onboarding_extra_relationship_married
-            RelationshipStatus.REMARRY -> R.string.onboarding_extra_relationship_divorced
+            RelationshipStatus.REMARRY -> R.string.onboarding_extra_relationship_remarried
         }
 
 @Preview(showBackground = true, widthDp = 393, heightDp = 852)

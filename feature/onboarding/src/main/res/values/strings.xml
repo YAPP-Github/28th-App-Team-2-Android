@@ -60,7 +60,7 @@
     <string name="onboarding_extra_relationship_single">솔로</string>
     <string name="onboarding_extra_relationship_in_relationship">연애중</string>
     <string name="onboarding_extra_relationship_married">기혼</string>
-    <string name="onboarding_extra_relationship_divorced">돌싱</string>
+    <string name="onboarding_extra_relationship_remarried">재혼</string>
 
     <!-- 완료 -->
     <string name="onboarding_complete_title">계정이 생성되었어요!</string>
