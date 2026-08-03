@@ -16,6 +16,7 @@ class FakeUserRepository
             Result.success(
                 User(
                     id = "fake-user-id",
+                    name = "토닥이",
                     gender = Gender.FEMALE,
                     birth =
                         Birth(
