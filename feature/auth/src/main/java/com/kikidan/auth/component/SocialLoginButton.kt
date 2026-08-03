@@ -3,6 +3,7 @@ package com.kikidan.auth.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,10 +25,6 @@ import com.kikidan.auth.R
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.auth.OAuthProviderType
 
-/**
- * 소셜 로그인 제공자. 배경/글자색은 각 사의 브랜드 가이드가 정하는 값이라
- * `core:designsystem`의 테마 토큰 체계에 속하지 않는다. 그래서 여기서 상수로 고정한다.
- */
 enum class SocialLoginProvider(
     val labelRes: Int,
     val iconRes: Int,
@@ -55,6 +53,7 @@ fun SocialLoginProvider.toOAuthProviderType(): OAuthProviderType =
 
 @Composable
 internal fun SocialLoginButton(
+    enabled: Boolean,
     provider: SocialLoginProvider,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -66,7 +65,12 @@ internal fun SocialLoginButton(
                 .height(48.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(provider.containerColor)
-                .clickable(onClick = onClick),
+                .clickable(
+                    onClick = onClick,
+                    enabled = enabled,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ),
         contentAlignment = Alignment.Center,
     ) {
         Row(

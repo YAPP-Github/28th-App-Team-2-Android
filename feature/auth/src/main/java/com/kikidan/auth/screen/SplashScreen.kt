@@ -48,7 +48,7 @@ internal fun SplashScreen(modifier: Modifier = Modifier) {
                 contentDescription = stringResource(id = R.string.login_logo_content_description),
                 modifier = Modifier.size(width = 164.dp, height = 160.dp),
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(52.dp))
             Text(
                 text = stringResource(id = R.string.login_app_name),
                 // 스플래시 전용 대형 워드마크. 타이포 스케일(최대 32sp)을 넘어서는 값이라 토큰이 없다.
