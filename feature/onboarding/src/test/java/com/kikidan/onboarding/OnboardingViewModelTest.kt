@@ -1,20 +1,16 @@
 package com.kikidan.onboarding
 
-import com.kikidan.domain.model.auth.AuthToken
 import com.kikidan.domain.model.auth.Job
-import com.kikidan.domain.model.auth.LoginResult
-import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.model.auth.OnboardingToken
 import com.kikidan.domain.model.auth.RelationshipStatus
-import com.kikidan.domain.model.auth.SignupSubmission
 import com.kikidan.domain.model.onboarding.OnboardingTerm
 import com.kikidan.domain.model.onboarding.UserName
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
-import com.kikidan.domain.repository.AuthRepository
-import com.kikidan.domain.repository.TokenRepository
 import com.kikidan.domain.usecase.SignUpUseCase
+import com.kikidan.onboarding.fake.FakeAuthRepository
+import com.kikidan.onboarding.fake.FakeTokenRepository
 import com.kikidan.onboarding.model.OnboardingDialog
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
@@ -23,8 +19,6 @@ import com.kikidan.onboarding.model.OnboardingStep
 import com.kikidan.onboarding.model.TermsAgreementUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -220,7 +214,7 @@ class OnboardingViewModelTest {
         }
 
     @Test
-    fun `마지막 스텝에서 다음을 누르면 완료 다이얼로그를 거쳐 홈으로 이동한다`() =
+    fun `마지막 스텝에서 다음을 누르면 완료 단계로 넘어간다`() =
         runTest {
             val initial =
                 OnboardingState(
@@ -236,12 +230,8 @@ class OnboardingViewModelTest {
             viewModel().test(this, initialState = initial) {
                 containerHost.onCompleteConfirmed(onboardingToken)
                 expectState { copy(isSubmitting = true) }
-                expectState { copy(isSubmitting = false, dialog = OnboardingDialog.SIGN_UP_COMPLETE) }
+                expectState { copy(isSubmitting = false, step = OnboardingStep.COMPLETE) }
                 expectSideEffect(OnboardingSideEffect.PermissionRequest)
-
-                containerHost.onSignUpCompleteConfirmed()
-                expectState { copy(dialog = null) }
-                expectSideEffect(OnboardingSideEffect.NavigateToHome)
             }
         }
 
@@ -290,33 +280,4 @@ class OnboardingViewModelTest {
                 expectSideEffect(OnboardingSideEffect.Failure(error))
             }
         }
-
-    private class FakeAuthRepository : AuthRepository {
-        var signupResult: Result<AuthToken> = Result.success(AuthToken("access", "refresh"))
-        var signupCallCount = 0
-
-        override suspend fun login(credential: OAuthCredential): Result<LoginResult> = error("not used")
-
-        override suspend fun signup(
-            signupSubmission: SignupSubmission,
-            onboardingToken: OnboardingToken,
-        ): Result<AuthToken> {
-            signupCallCount++
-            return signupResult
-        }
-
-        override suspend fun refresh(refreshToken: String): Result<AuthToken> = error("not used")
-    }
-
-    private class FakeTokenRepository : TokenRepository {
-        var saveResult: Result<Unit> = Result.success(Unit)
-
-        override fun observeLoginState(): Flow<Result<Boolean>> = flowOf()
-
-        override suspend fun getToken(): Result<AuthToken?> = error("not used")
-
-        override suspend fun saveToken(token: AuthToken): Result<Unit> = saveResult
-
-        override suspend fun clearToken(): Result<Unit> = error("not used")
-    }
 }

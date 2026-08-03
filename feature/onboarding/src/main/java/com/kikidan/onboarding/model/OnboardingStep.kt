@@ -13,10 +13,16 @@ enum class OnboardingStep(
     NAME(1f / 3f),
     BIRTH_INFO(2f / 3f),
     EXTRA_QUESTION(1f),
+
+    COMPLETE(null),
     ;
 
     val previous: OnboardingStep?
-        get() = entries.getOrNull(ordinal - 1)
+        get() =
+            when (this) {
+                COMPLETE -> null
+                else -> entries.getOrNull(ordinal - 1)
+            }
 
     val next: OnboardingStep?
         get() = entries.getOrNull(ordinal + 1)

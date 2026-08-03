@@ -75,18 +75,12 @@ class OnboardingViewModel
                     signupSubmission = signupSubmission,
                     onboardingToken = onboardingToken,
                 ).onSuccess {
-                    reduce { state.copy(isSubmitting = false) }
+                    reduce { state.copy(isSubmitting = false, step = OnboardingStep.COMPLETE) }
                     postSideEffect(OnboardingSideEffect.PermissionRequest)
                 }.onFailure { e ->
                     reduce { state.copy(isSubmitting = false) }
                     postSideEffect(OnboardingSideEffect.Failure(e))
                 }
-            }
-
-        fun onSignUpCompleteConfirmed() =
-            intent {
-                reduce { state.copy(dialog = null) }
-                postSideEffect(OnboardingSideEffect.NavigateToHome)
             }
 
         fun onTermChange(term: OnboardingTerm) =

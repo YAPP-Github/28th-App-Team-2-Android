@@ -18,7 +18,6 @@ enum class OnboardingSheet {
 
 enum class OnboardingDialog {
     EXIT_CONFIRM,
-    SIGN_UP_COMPLETE,
 }
 
 @Immutable
@@ -56,6 +55,10 @@ data class OnboardingState(
 
                 OnboardingStep.EXTRA_QUESTION -> {
                     lifeStage != null && relationshipStatus != null
+                }
+
+                OnboardingStep.COMPLETE -> {
+                    false
                 }
             }
 }
