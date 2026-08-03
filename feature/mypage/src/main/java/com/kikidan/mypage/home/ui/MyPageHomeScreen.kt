@@ -37,6 +37,7 @@ import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.model.user.User
 import com.kikidan.mypage.home.model.MyPageHomeUiModel
 import com.kikidan.mypage.home.model.MyPageHomeUiState
+import com.kikidan.mypage.home.model.MyPageMenuType
 import com.kikidan.mypage.home.ui.component.MyPageHomeHeader
 import com.kikidan.mypage.home.ui.component.MyPageMenuItem
 import com.kikidan.mypage.home.ui.component.ProfileCard
@@ -48,11 +49,7 @@ fun MyPageHomeScreen(
     modifier: Modifier = Modifier,
     onEditClick: () -> Unit = {},
     onViewMansaeryeokClick: () -> Unit = {},
-    onSajuInfoClick: () -> Unit = {},
-    onNotificationSettingClick: () -> Unit = {},
-    onAppSettingClick: () -> Unit = {},
-    onInquiryClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {},
+    onMenuItemClick: (MyPageMenuType) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -70,11 +67,7 @@ fun MyPageHomeScreen(
                     model = uiState.model,
                     onEditClick = onEditClick,
                     onViewMansaeryeokClick = onViewMansaeryeokClick,
-                    onSajuInfoClick = onSajuInfoClick,
-                    onNotificationSettingClick = onNotificationSettingClick,
-                    onAppSettingClick = onAppSettingClick,
-                    onInquiryClick = onInquiryClick,
-                    onLogoutClick = onLogoutClick,
+                    onMenuItemClick = onMenuItemClick,
                     modifier = Modifier.weight(1f),
                 )
         }
@@ -100,11 +93,7 @@ private fun MyPageHomeContent(
     model: MyPageHomeUiModel,
     onEditClick: () -> Unit,
     onViewMansaeryeokClick: () -> Unit,
-    onSajuInfoClick: () -> Unit,
-    onNotificationSettingClick: () -> Unit,
-    onAppSettingClick: () -> Unit,
-    onInquiryClick: () -> Unit,
-    onLogoutClick: () -> Unit,
+    onMenuItemClick: (MyPageMenuType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -119,39 +108,17 @@ private fun MyPageHomeContent(
         Spacer(modifier = Modifier.height(24.dp))
         TodakunDivider(type = TodakunDividerType.Section)
 
-        MyPageMenuItem(
-            painter = painterResource(R.drawable.ic_manage_saju_info),
-            label = stringResource(R.string.mypage_menu_saju_info),
-            onClick = onSajuInfoClick,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-        MyPageMenuItem(
-            painter = painterResource(R.drawable.ic_bell),
-            label = stringResource(R.string.mypage_menu_notification_setting),
-            onClick = onNotificationSettingClick,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-        MyPageMenuItem(
-            painter = painterResource(R.drawable.ic_setting),
-            label = stringResource(R.string.mypage_menu_app_setting),
-            onClick = onAppSettingClick,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-        MyPageMenuItem(
-            painter = painterResource(R.drawable.ic_mail),
-            label = stringResource(R.string.mypage_menu_inquiry),
-            onClick = onInquiryClick,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-        MyPageMenuItem(
-            painter = painterResource(R.drawable.ic_logout),
-            label = stringResource(R.string.mypage_menu_logout),
-            onClick = onLogoutClick,
-            showChevron = false,
-            textColor = TodakunColor.gray600,
-            iconTint = TodakunColor.gray500,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
+        MyPageMenuType.entries.forEach { menuType ->
+            MyPageMenuItem(
+                painter = painterResource(menuType.iconRes),
+                label = stringResource(menuType.labelRes),
+                onClick = { onMenuItemClick(menuType) },
+                showChevron = menuType.showChevron,
+                iconTint = menuType.iconTint,
+                textColor = menuType.textColor,
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
