@@ -47,4 +47,25 @@
     <string name="bottom_nav_todak">토닥이</string>
     <string name="bottom_nav_lucky_action">행운 액션</string>
     <string name="bottom_nav_my">마이</string>
+
+    <!-- MyPage -->
+    <string name="mypage_home_title">My page</string>
+    <string name="mypage_menu_saju_info">사주 정보 관리</string>
+    <string name="mypage_menu_notification_setting">알림 설정</string>
+    <string name="mypage_menu_app_setting">앱 설정</string>
+    <string name="mypage_menu_inquiry">1:1 문의</string>
+    <string name="mypage_menu_logout">로그아웃</string>
+    <string name="mypage_app_version_label">앱 버전</string>
+    <string name="mypage_app_version_value">v1.0.0 (최신 버전)</string>
+    <string name="mypage_view_mansaeryeok_button">만세력 보기</string>
+    <string name="mypage_edit_button">수정</string>
+
+    <!-- Common -->
+    <string name="separator_dot">·</string>
+    <string name="gender_male">남성</string>
+    <string name="gender_female">여성</string>
+    <string name="date_type_solar">양력</string>
+    <string name="date_type_lunar">음력</string>
+    <string name="birth_time_format">%1$d시 %2$02d분</string>
+    <string name="saju_card_label_format">-%1$s, %2$s</string>
 </resources>
