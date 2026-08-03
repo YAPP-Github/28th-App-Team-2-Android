@@ -10,6 +10,4 @@ sealed interface LoginSideEffect {
     data class LoginFailed(
         val throwable: Throwable,
     ) : LoginSideEffect
-
-    data object AlreadyAuthenticated : LoginSideEffect
 }

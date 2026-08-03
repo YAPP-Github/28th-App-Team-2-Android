@@ -1,17 +1,9 @@
 package com.kikidan.auth.model
 
 sealed interface LoginState {
-    val step: LoginStep
+    data object Loading : LoginState
 
-    data class Loading(
-        override val step: LoginStep,
-    ) : LoginState
+    data object Success : LoginState
 
-    data class Success(
-        override val step: LoginStep,
-    ) : LoginState
-
-    data class Failure(
-        override val step: LoginStep,
-    ) : LoginState
+    data object Failure : LoginState
 }
