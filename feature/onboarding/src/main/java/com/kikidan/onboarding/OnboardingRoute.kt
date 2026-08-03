@@ -1,13 +1,21 @@
 package com.kikidan.onboarding
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.designsystem.component.dialog.TodakunDialog
 import com.kikidan.designsystem.component.wheelpicker.BirthDateState
@@ -20,6 +28,7 @@ import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingStep
 import com.kikidan.onboarding.screen.BirthInfoScreen
+import com.kikidan.onboarding.screen.CompleteScreen
 import com.kikidan.onboarding.screen.ExtraQuestionScreen
 import com.kikidan.onboarding.screen.NameScreen
 import com.kikidan.onboarding.screen.TermsScreen
@@ -36,6 +45,16 @@ fun OnboardingRoute(
     viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
+    var permissionHandled by remember {
+        mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+    }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) {
+            // 권한을 허락하지 않더라도 앱 진입
+            permissionHandled = true
+        }
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
@@ -45,6 +64,12 @@ fun OnboardingRoute(
 
             OnboardingSideEffect.Exit -> {
                 onExit()
+            }
+
+            OnboardingSideEffect.PermissionRequest -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
 
             else -> { /* TODO 에러 처리 스낵바 또는 다이얼로그 */ }
@@ -113,6 +138,14 @@ fun OnboardingRoute(
                 modifier = modifier,
             )
         }
+
+        OnboardingStep.COMPLETE -> {
+            if (permissionHandled) {
+                CompleteScreen(
+                    modifier = modifier,
+                )
+            }
+        }
     }
 
     OnboardingSheetHost(
@@ -139,10 +172,6 @@ private fun OnboardingSheetHost(
     onDismiss: () -> Unit,
 ) {
     when (sheet) {
-        null -> {
-            Unit
-        }
-
         OnboardingSheet.BIRTH_DATE -> {
             // 휠을 굴리는 동안의 값은 시트 안에서만 유효하고, 저장할 때 비로소 상태에 반영한다.
             var draft by remember(birthDate) {
@@ -176,6 +205,10 @@ private fun OnboardingSheetHost(
                 onDismissRequest = onDismiss,
             )
         }
+
+        null -> {
+            Unit
+        }
     }
 }
 
@@ -186,10 +219,6 @@ private fun OnboardingDialogHost(
     onDismiss: () -> Unit,
 ) {
     when (dialog) {
-        null -> {
-            Unit
-        }
-
         OnboardingDialog.EXIT_CONFIRM -> {
             TodakunDialog(
                 title = stringResource(id = R.string.onboarding_terms_exit_title),
@@ -201,14 +230,8 @@ private fun OnboardingDialogHost(
             )
         }
 
-        OnboardingDialog.SIGN_UP_COMPLETE -> {
-            TodakunDialog(
-                title = stringResource(id = R.string.onboarding_complete_title),
-                description = stringResource(id = R.string.onboarding_complete_description),
-                confirmText = stringResource(id = R.string.onboarding_confirm),
-                onConfirm = { },
-                onDismiss = { },
-            )
+        null -> {
+            Unit
         }
     }
 }

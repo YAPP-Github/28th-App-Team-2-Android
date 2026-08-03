@@ -13,7 +13,6 @@ enum class OnboardingStep(
     NAME(1f / 3f),
     BIRTH_INFO(2f / 3f),
     EXTRA_QUESTION(1f),
-
     COMPLETE(null),
     ;
 
