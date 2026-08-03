@@ -7,8 +7,8 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 
 enum class MyPageMenuType(
-    @DrawableRes val iconRes: Int,
-    @StringRes val labelRes: Int,
+    @param:DrawableRes val iconRes: Int,
+    @param:StringRes val labelRes: Int,
     val showChevron: Boolean = true,
     val iconTint: Color = TodakunColor.gray975,
     val textColor: Color = TodakunColor.black,
