@@ -24,15 +24,15 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.kikidan.designsystem.R as DesignR
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
+import com.kikidan.designsystem.R as DesignR
 
 /**
  * 최초 진입 시 3초간 떴다가 페이드아웃되는 그리팅 말풍선 (Figma 3112:29138).
@@ -51,24 +51,26 @@ internal fun ChatGreetingOverlay(
     val body = parts.getOrNull(1)?.trim() ?: greeting
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(TodakunColor.blackOpacity30)   // Figma 40%, 근접 토큰 (설계 2-5)
-            // 오버레이 아래 입력창/칩이 눌리지 않도록 터치를 흡수한다.
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-            ) {},
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(TodakunColor.blackOpacity30) // Figma 40%, 근접 토큰 (설계 2-5)
+                // 오버레이 아래 입력창/칩이 눌리지 않도록 터치를 흡수한다.
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) {},
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             // 말풍선 카드
             Box(
-                modifier = Modifier
-                    .widthIn(max = ChatGreetingDefaults.CardMaxWidth)
-                    .clip(ChatGreetingDefaults.CardShape)
-                    .background(TodakunColor.white)
-                    .padding(ChatGreetingDefaults.CardPadding),
+                modifier =
+                    Modifier
+                        .widthIn(max = ChatGreetingDefaults.CardMaxWidth)
+                        .clip(ChatGreetingDefaults.CardShape)
+                        .background(TodakunColor.white)
+                        .padding(ChatGreetingDefaults.CardPadding),
             ) {
                 Column(modifier = Modifier.padding(end = ChatGreetingDefaults.CloseIconSize + 4.dp)) {
                     if (title != null) {
@@ -89,10 +91,11 @@ internal fun ChatGreetingOverlay(
                     painter = painterResource(id = DesignR.drawable.ic_close),
                     contentDescription = stringResource(R.string.chat_greeting_close_description),
                     tint = TodakunColor.coolGray600,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .size(ChatGreetingDefaults.CloseIconSize)
-                        .clickable(onClick = onCloseClick),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .size(ChatGreetingDefaults.CloseIconSize)
+                            .clickable(onClick = onCloseClick),
                 )
             }
             // 말풍선 꼬리. Shape 클래스를 새로 만들지 않고 GenericShape 한 개로 끝낸다.
@@ -110,7 +113,11 @@ internal fun ChatGreetingOverlay(
 
 // 말풍선 꼬리 삼각형. Shape 클래스를 새로 만들지 않고 Outline.Generic 한 개로 끝낸다.
 private object BubbleTail : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline =
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Outline =
         Outline.Generic(
             Path().apply {
                 moveTo(0f, 0f)

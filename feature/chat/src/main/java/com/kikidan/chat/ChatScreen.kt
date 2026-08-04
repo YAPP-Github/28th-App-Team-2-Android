@@ -122,14 +122,16 @@ internal fun ChatScreen(
     }
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(TodakunColor.white),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(TodakunColor.white),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeDrawingPadding(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .safeDrawingPadding(),
         ) {
             TodakunChatHeader(
                 title = stringResource(R.string.chat_header_title),
@@ -171,9 +173,10 @@ internal fun ChatScreen(
 
         SnackbarHost(
             hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .safeDrawingPadding(),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .safeDrawingPadding(),
         ) { data ->
             TodakunSnackbar(text = data.visuals.message)
         }
@@ -198,10 +201,11 @@ private fun ChatEntryContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = ChatScreenDefaults.ContentHorizontalPadding)
-            .padding(top = ChatScreenDefaults.EntryTopPadding, bottom = ChatScreenDefaults.EntryBottomPadding),
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = ChatScreenDefaults.ContentHorizontalPadding)
+                .padding(top = ChatScreenDefaults.EntryTopPadding, bottom = ChatScreenDefaults.EntryBottomPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(ChatScreenDefaults.EntryItemSpacing),
     ) {
@@ -233,36 +237,43 @@ private fun ChatMessageList(
 ) {
     val listState = rememberLazyListState()
 
-    // 새 메시지 또는 스트리밍 텍스트 변화 시 마지막 항목으로 자동 스크롤한다.
+    // 새 메시지 또는 스트리밍 텍스트 변화 시 마지막 항목으로 스크롤한다.
+    // streamingText가 16ms 틱마다 바뀌므로 animateScrollToItem을 쓰면 애니메이션이
+    // 매 틱 재시작돼 덜컹거린다. scrollToItem(애니메이션 없음)으로 잔상 없이 따라간다.
     LaunchedEffect(state.messages.size, state.streamingText) {
         if (listState.layoutInfo.totalItemsCount > 0) {
-            listState.animateScrollToItem(listState.layoutInfo.totalItemsCount - 1)
+            listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
         }
     }
 
     LazyColumn(
         state = listState,
         modifier = modifier,
-        contentPadding = PaddingValues(
-            horizontal = ChatScreenDefaults.ContentHorizontalPadding,
-            vertical = ChatScreenDefaults.MessageListVerticalPadding,
-        ),
+        contentPadding =
+            PaddingValues(
+                horizontal = ChatScreenDefaults.ContentHorizontalPadding,
+                vertical = ChatScreenDefaults.MessageListVerticalPadding,
+            ),
         verticalArrangement = Arrangement.spacedBy(ChatScreenDefaults.MessageItemSpacing),
     ) {
         items(state.messages, key = { it.id }) { message ->
             when (message.role) {
-                MessageRole.USER -> Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    TodakunChatUserInputBubble(text = message.content)
+                MessageRole.USER -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        TodakunChatUserInputBubble(text = message.content)
+                    }
                 }
 
-                else -> Text(
-                    text = message.content,
-                    style = TodakunTypography.body2Regular,
-                    color = TodakunColor.coolGray900,
-                )
+                else -> {
+                    Text(
+                        text = message.content,
+                        style = TodakunTypography.body2Regular,
+                        color = TodakunColor.coolGray900,
+                    )
+                }
             }
         }
 
@@ -270,15 +281,23 @@ private fun ChatMessageList(
         if (state.phase != ChatPhase.IDLE) {
             item {
                 when (state.phase) {
-                    ChatPhase.THINKING -> ThinkingIndicator(
-                        modifier = Modifier.padding(vertical = ChatScreenDefaults.IndicatorVerticalPadding),
-                    )
-                    ChatPhase.TYPING -> Text(
-                        text = state.streamingText,
-                        style = TodakunTypography.body2Regular,
-                        color = TodakunColor.coolGray900,
-                    )
-                    ChatPhase.IDLE -> Unit  // 도달하지 않는다
+                    ChatPhase.THINKING -> {
+                        ThinkingIndicator(
+                            modifier = Modifier.padding(vertical = ChatScreenDefaults.IndicatorVerticalPadding),
+                        )
+                    }
+
+                    ChatPhase.TYPING -> {
+                        Text(
+                            text = state.streamingText,
+                            style = TodakunTypography.body2Regular,
+                            color = TodakunColor.coolGray900,
+                        )
+                    }
+
+                    ChatPhase.IDLE -> {
+                        Unit
+                    } // 도달하지 않는다
                 }
             }
         }
@@ -293,15 +312,16 @@ internal fun CharacterAvatar(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(TodakunColor.primary100),
+        modifier =
+            modifier
+                .size(size)
+                .clip(CircleShape)
+                .background(TodakunColor.primary100),
     )
 }
 
 private object ChatScreenDefaults {
-    const val GREETING_DURATION_MILLIS = 3_000L  // ponytail: 실기기에서 3초가 짧으면 늘린다
+    const val GREETING_DURATION_MILLIS = 3_000L // ponytail: 실기기에서 3초가 짧으면 늘린다
     val ContentHorizontalPadding = 16.dp
     val EntryTopPadding = 40.dp
     val EntryBottomPadding = 20.dp
@@ -315,41 +335,48 @@ private object ChatScreenDefaults {
 
 // ──────────────── Preview ────────────────
 
-private val previewSuggestions = listOf(
-    ChatSuggestion(emoji = "📅", label = "중요한 일정 잡기 좋은 날인지 궁금해", seedPrompt = "오늘 중요한 일정 잡기 좋은 날인지 알려줘", category = "schedule"),
-    ChatSuggestion(emoji = "💼", label = "커리어 운세가 궁금해", seedPrompt = "오늘 커리어 운세를 알려줘", category = "career"),
-    ChatSuggestion(emoji = "💕", label = "오늘 연애운이 궁금해", seedPrompt = "오늘 연애운을 알려줘", category = "love"),
-    ChatSuggestion(emoji = "💰", label = "재물운이 어떤지 알고 싶어", seedPrompt = "오늘 재물운을 알려줘", category = "money"),
-    ChatSuggestion(emoji = "🏥", label = "건강 관리에 좋은 날인지 궁금해", seedPrompt = "오늘 건강운을 알려줘", category = "health"),
-    ChatSuggestion(emoji = "🎓", label = "공부하기 좋은 날인지 알고 싶어", seedPrompt = "오늘 학업운을 알려줘", category = "study"),
-)
+private val previewSuggestions =
+    listOf(
+        ChatSuggestion(
+            emoji = "📅",
+            label = "중요한 일정 잡기 좋은 날인지 궁금해",
+            seedPrompt = "오늘 중요한 일정 잡기 좋은 날인지 알려줘",
+            category = "schedule",
+        ),
+        ChatSuggestion(emoji = "💼", label = "커리어 운세가 궁금해", seedPrompt = "오늘 커리어 운세를 알려줘", category = "career"),
+        ChatSuggestion(emoji = "💕", label = "오늘 연애운이 궁금해", seedPrompt = "오늘 연애운을 알려줘", category = "love"),
+        ChatSuggestion(emoji = "💰", label = "재물운이 어떤지 알고 싶어", seedPrompt = "오늘 재물운을 알려줘", category = "money"),
+        ChatSuggestion(emoji = "🏥", label = "건강 관리에 좋은 날인지 궁금해", seedPrompt = "오늘 건강운을 알려줘", category = "health"),
+        ChatSuggestion(emoji = "🎓", label = "공부하기 좋은 날인지 알고 싶어", seedPrompt = "오늘 학업운을 알려줘", category = "study"),
+    )
 
-private val previewMessages = listOf(
-    ChatMessage(
-        id = "1",
-        role = MessageRole.USER,
-        content = "오늘 운세가 궁금해",
-        status = MessageStatus.COMPLETED,
-        action = null,
-        createdAt = Instant.EPOCH,
-    ),
-    ChatMessage(
-        id = "2",
-        role = MessageRole.ASSISTANT,
-        content = "오늘의 운세를 알아볼게요! 대체로 긍정적인 에너지가 흐르는 날입니다.",
-        status = MessageStatus.COMPLETED,
-        action = null,
-        createdAt = Instant.EPOCH,
-    ),
-    ChatMessage(
-        id = "3",
-        role = MessageRole.USER,
-        content = "더 자세히 알려줄 수 있어?",
-        status = MessageStatus.COMPLETED,
-        action = null,
-        createdAt = Instant.EPOCH,
-    ),
-)
+private val previewMessages =
+    listOf(
+        ChatMessage(
+            id = "1",
+            role = MessageRole.USER,
+            content = "오늘 운세가 궁금해",
+            status = MessageStatus.COMPLETED,
+            action = null,
+            createdAt = Instant.EPOCH,
+        ),
+        ChatMessage(
+            id = "2",
+            role = MessageRole.ASSISTANT,
+            content = "오늘의 운세를 알아볼게요! 대체로 긍정적인 에너지가 흐르는 날입니다.",
+            status = MessageStatus.COMPLETED,
+            action = null,
+            createdAt = Instant.EPOCH,
+        ),
+        ChatMessage(
+            id = "3",
+            role = MessageRole.USER,
+            content = "더 자세히 알려줄 수 있어?",
+            status = MessageStatus.COMPLETED,
+            action = null,
+            createdAt = Instant.EPOCH,
+        ),
+    )
 
 @Preview(showBackground = true, name = "진입 상태")
 @Composable
@@ -374,10 +401,11 @@ private fun ChatScreenEntryPreview() {
 private fun ChatScreenGreetingWithTitlePreview() {
     TodakunTheme {
         ChatScreen(
-            state = ChatState(
-                suggestions = previewSuggestions,
-                greeting = "성취운을 알려줄게!\n커리어, 학업, 목표 등 궁금한 점이나 고민은 전부 물어봐줘.",
-            ),
+            state =
+                ChatState(
+                    suggestions = previewSuggestions,
+                    greeting = "성취운을 알려줄게!\n커리어, 학업, 목표 등 궁금한 점이나 고민은 전부 물어봐줘.",
+                ),
             isNewConversation = true,
             snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
@@ -395,10 +423,11 @@ private fun ChatScreenGreetingWithTitlePreview() {
 private fun ChatScreenGreetingNoTitlePreview() {
     TodakunTheme {
         ChatScreen(
-            state = ChatState(
-                suggestions = previewSuggestions,
-                greeting = "오늘도 좋은 하루 되세요! 궁금한 것들을 물어봐줘.",
-            ),
+            state =
+                ChatState(
+                    suggestions = previewSuggestions,
+                    greeting = "오늘도 좋은 하루 되세요! 궁금한 것들을 물어봐줘.",
+                ),
             isNewConversation = true,
             snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
@@ -416,10 +445,11 @@ private fun ChatScreenGreetingNoTitlePreview() {
 private fun ChatScreenThinkingPreview() {
     TodakunTheme {
         ChatScreen(
-            state = ChatState(
-                messages = previewMessages.take(1),
-                phase = ChatPhase.THINKING,
-            ),
+            state =
+                ChatState(
+                    messages = previewMessages.take(1),
+                    phase = ChatPhase.THINKING,
+                ),
             isNewConversation = false,
             snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
@@ -437,11 +467,12 @@ private fun ChatScreenThinkingPreview() {
 private fun ChatScreenTypingPreview() {
     TodakunTheme {
         ChatScreen(
-            state = ChatState(
-                messages = previewMessages.take(1),
-                phase = ChatPhase.TYPING,
-                streamingText = "오늘의 운세를 알아볼게요! 대체로 긍정",
-            ),
+            state =
+                ChatState(
+                    messages = previewMessages.take(1),
+                    phase = ChatPhase.TYPING,
+                    streamingText = "오늘의 운세를 알아볼게요! 대체로 긍정",
+                ),
             isNewConversation = false,
             snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
@@ -459,11 +490,12 @@ private fun ChatScreenTypingPreview() {
 private fun ChatScreenConversationPreview() {
     TodakunTheme {
         ChatScreen(
-            state = ChatState(
-                messages = previewMessages,
-                phase = ChatPhase.IDLE,
-                quota = ChatQuota(used = 1, limit = 3),
-            ),
+            state =
+                ChatState(
+                    messages = previewMessages,
+                    phase = ChatPhase.IDLE,
+                    quota = ChatQuota(used = 1, limit = 3),
+                ),
             isNewConversation = false,
             snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
