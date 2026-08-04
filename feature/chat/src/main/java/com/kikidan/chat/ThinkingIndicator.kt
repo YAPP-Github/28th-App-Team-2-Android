@@ -38,18 +38,21 @@ internal fun ThinkingIndicator(modifier: Modifier = Modifier) {
     ) {
         repeat(ThinkingIndicatorDefaults.DOT_COUNT) { index ->
             val alpha by transition.animateFloat(
-                initialValue = ThinkingIndicatorDefaults.MinAlpha,
+                initialValue = ThinkingIndicatorDefaults.MIN_ALPHA,
                 targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(
-                        durationMillis = ThinkingIndicatorDefaults.CycleMillis,
-                        easing = LinearEasing,
+                animationSpec =
+                    infiniteRepeatable(
+                        animation =
+                            tween(
+                                durationMillis = ThinkingIndicatorDefaults.CYCLE_MILLIS,
+                                easing = LinearEasing,
+                            ),
+                        repeatMode = RepeatMode.Reverse,
+                        initialStartOffset =
+                            StartOffset(
+                                index * ThinkingIndicatorDefaults.CYCLE_MILLIS / ThinkingIndicatorDefaults.DOT_COUNT,
+                            ),
                     ),
-                    repeatMode = RepeatMode.Reverse,
-                    initialStartOffset = StartOffset(
-                        index * ThinkingIndicatorDefaults.CycleMillis / ThinkingIndicatorDefaults.DOT_COUNT,
-                    ),
-                ),
                 label = "dot$index",
             )
             Box(
@@ -64,8 +67,8 @@ internal fun ThinkingIndicator(modifier: Modifier = Modifier) {
 
 private object ThinkingIndicatorDefaults {
     const val DOT_COUNT = 3
-    const val MinAlpha = 0.2f
-    const val CycleMillis = 600
+    const val MIN_ALPHA = 0.2f
+    const val CYCLE_MILLIS = 600
     val DotSize = 8.dp
     val DotSpacing = 6.dp
 }
