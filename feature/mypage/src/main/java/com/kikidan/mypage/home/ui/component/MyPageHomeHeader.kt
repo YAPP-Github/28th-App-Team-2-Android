@@ -11,9 +11,7 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
-internal fun MyPageHomeHeader(
-    modifier: Modifier = Modifier,
-) {
+internal fun MyPageHomeHeader(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(R.string.mypage_home_title),
         style = TodakunTypography.heading4Bold,

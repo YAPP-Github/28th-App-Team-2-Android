@@ -60,9 +60,15 @@ fun MyPageHomeScreen(
         MyPageHomeHeader(modifier = Modifier.fillMaxWidth())
 
         when (uiState) {
-            is MyPageHomeUiState.Loading -> MyPageHomeLoading(modifier = Modifier.weight(1f))
-            is MyPageHomeUiState.Fail -> MyPageHomeError(modifier = Modifier.weight(1f))
-            is MyPageHomeUiState.Success ->
+            is MyPageHomeUiState.Loading -> {
+                MyPageHomeLoading(modifier = Modifier.weight(1f))
+            }
+
+            is MyPageHomeUiState.Fail -> {
+                MyPageHomeError(modifier = Modifier.weight(1f))
+            }
+
+            is MyPageHomeUiState.Success -> {
                 MyPageHomeContent(
                     model = uiState.model,
                     onEditClick = onEditClick,
@@ -70,23 +76,22 @@ fun MyPageHomeScreen(
                     onMenuItemClick = onMenuItemClick,
                     modifier = Modifier.weight(1f),
                 )
+            }
         }
     }
 }
 
 @Composable
 private fun MyPageHomeLoading(modifier: Modifier = Modifier) {
-    //로딩 요구사항 없음
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-
+    // 로딩 요구사항 없음
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     }
 }
 
 @Composable
 private fun MyPageHomeError(modifier: Modifier = Modifier) {
-    //에러 요구사항 없음
+    // 에러 요구사항 없음
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-
     }
 }
 

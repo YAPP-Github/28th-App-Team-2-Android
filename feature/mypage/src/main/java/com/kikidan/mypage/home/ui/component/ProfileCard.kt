@@ -61,13 +61,13 @@ internal fun ProfileCard(
                     Text(
                         text = user.name,
                         style = TodakunTypography.heading3Bold,
-                        color = TodakunColor.gray975
+                        color = TodakunColor.gray975,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = stringResource(R.string.separator_dot),
                         style = TodakunTypography.body2Regular,
-                        color = TodakunColor.gray700
+                        color = TodakunColor.gray700,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
@@ -96,9 +96,7 @@ internal fun ProfileCard(
 }
 
 @Composable
-private fun UserBirthDateTime(
-    birth: Birth
-) {
+private fun UserBirthDateTime(birth: Birth) {
     val dateText = "${birth.date.format(BirthDateFormatter)} ${birth.dateType.displayName()}"
 
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -112,12 +110,12 @@ private fun UserBirthDateTime(
                 text = stringResource(R.string.separator_dot),
                 style = TodakunTypography.body3Medium,
                 color = TodakunColor.gray700,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp),
             )
             Text(
                 text = birth.time.displayText(),
                 style = TodakunTypography.body3Medium,
-                color = TodakunColor.gray700
+                color = TodakunColor.gray700,
             )
         }
     }
@@ -126,18 +124,22 @@ private fun UserBirthDateTime(
 @Composable
 @Preview(showBackground = true)
 private fun UserBirthDateTimePreview() {
-    val birth = Birth(
-        dateType = DateType.SOLAR,
-        date = LocalDate.of(1999, 2, 13),
-        time = BirthTime.SIN,
-    )
+    val birth =
+        Birth(
+            dateType = DateType.SOLAR,
+            date = LocalDate.of(1999, 2, 13),
+            time = BirthTime.SIN,
+        )
     UserBirthDateTime(
-        birth = birth
+        birth = birth,
     )
 }
 
 @Composable
-private fun EditButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun EditButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier =
             modifier
@@ -145,16 +147,15 @@ private fun EditButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
                 .border(
                     1.dp,
                     TodakunColor.primary500,
-                    RoundedCornerShape(8.dp)
-                )
-                .clickable(onClick = onClick)
+                    RoundedCornerShape(8.dp),
+                ).clickable(onClick = onClick)
                 .background(TodakunColor.white)
                 .padding(horizontal = 19.dp, vertical = 8.dp),
     ) {
         Text(
             text = stringResource(R.string.mypage_edit_button),
             style = TodakunTypography.caption1SemiBold,
-            color = TodakunColor.primary700
+            color = TodakunColor.primary700,
         )
     }
 }

@@ -22,7 +22,7 @@ import com.kikidan.domain.model.saju.SajuPillar
 @Composable
 internal fun SajuPaljaGrid(
     sajuPalja: SajuPalja,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val pillars: List<SajuPillar> =
         listOfNotNull(sajuPalja.yearPillar, sajuPalja.monthPillar, sajuPalja.dayPillar, sajuPalja.hourPillar)

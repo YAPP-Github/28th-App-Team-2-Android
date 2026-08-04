@@ -43,12 +43,12 @@ internal fun SajuCard(
         Text(
             text = hanja,
             style = TodakunTypography.body1Bold,
-            color = TodakunColor.gray975
+            color = TodakunColor.gray975,
         )
         Text(
             text = stringResource(R.string.saju_card_label_format, reading, ohaeng.hanja),
             style = TodakunTypography.caption3Regular,
-            color = TodakunColor.gray975
+            color = TodakunColor.gray975,
         )
     }
 }
