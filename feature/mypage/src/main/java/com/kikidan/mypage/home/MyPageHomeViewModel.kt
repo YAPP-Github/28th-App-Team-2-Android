@@ -8,11 +8,8 @@ import com.kikidan.mypage.home.model.MyPageHomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.syntax.Syntax
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
-
-private typealias MyPageHomeSyntax = Syntax<MyPageHomeUiState, MyPageHomeSideEffect>
 
 @HiltViewModel
 class MyPageHomeViewModel
@@ -37,12 +34,4 @@ class MyPageHomeViewModel
                         reduce { MyPageHomeUiState.Fail(throwable) }
                     }
             }
-
-        private suspend fun MyPageHomeSyntax.reduceIfSuccess(
-            reducer: MyPageHomeUiState.Success.() -> MyPageHomeUiState,
-        ) {
-            reduce {
-                (state as? MyPageHomeUiState.Success)?.reducer() ?: state
-            }
-        }
     }
