@@ -22,6 +22,6 @@ sealed interface ChatStreamEvent {
 
     data class Error(
         val code: String,
-        val message: String
+        val message: String,
     )
 }

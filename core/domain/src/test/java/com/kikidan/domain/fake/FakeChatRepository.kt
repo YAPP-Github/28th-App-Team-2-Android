@@ -14,8 +14,7 @@ class FakeChatRepository : ChatRepository {
     var sendMessageCallCount: Int = 0
     var streamEvents: List<Result<ChatStreamEvent>> = emptyList()
 
-    override suspend fun getChatEntry(): Result<ChatEntry> =
-        Result.failure(NotImplementedError())
+    override suspend fun getChatEntry(): Result<ChatEntry> = Result.failure(NotImplementedError())
 
     override fun sendMessage(
         conversationId: String?,
@@ -27,8 +26,7 @@ class FakeChatRepository : ChatRepository {
         return streamEvents.asFlow()
     }
 
-    override suspend fun getConversations(): Result<List<ConversationSummary>> =
-        Result.failure(NotImplementedError())
+    override suspend fun getConversations(): Result<List<ConversationSummary>> = Result.failure(NotImplementedError())
 
     override suspend fun getConversationDetail(conversationId: String): Result<Conversation> =
         Result.failure(NotImplementedError())
