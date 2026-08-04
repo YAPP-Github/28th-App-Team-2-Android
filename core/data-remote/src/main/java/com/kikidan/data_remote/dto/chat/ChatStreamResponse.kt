@@ -25,6 +25,6 @@ data class ChatStreamDoneResponse(
 
 @Serializable
 data class ChatStreamErrorResponse(
-    val code: String? = null,
-    val message: String? = null,
+    val code: String,
+    val message: String,
 )
