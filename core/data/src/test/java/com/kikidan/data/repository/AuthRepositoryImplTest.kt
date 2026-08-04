@@ -64,4 +64,32 @@ class AuthRepositoryImplTest {
             // when
             sut.login(credential)
         }
+
+    @Test
+    fun `refresh가_성공하면_DataSource의_AuthToken이_그대로_Result_success로_반환된다`() =
+        runTest {
+            // given
+            val expected = AuthToken("new-access", "new-refresh")
+            fakeRemoteAuthDataSource.refreshResult = expected
+
+            // when
+            val result = sut.refresh("old-refresh")
+
+            // then
+            assertEquals(expected, result.getOrNull())
+        }
+
+    @Test
+    fun `DataSource의_refresh가_예외를_throw하면_Result_failure로_반환되고_예외가_누수되지_않는다`() =
+        runTest {
+            // given
+            fakeRemoteAuthDataSource.throwOnRefresh = IOException("network error")
+
+            // when
+            val result = sut.refresh("old-refresh")
+
+            // then
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is IOException)
+        }
 }

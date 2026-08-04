@@ -1,6 +1,7 @@
 package com.kikidan.data.repository
 
 import com.kikidan.data.datasource.RemoteAuthDataSource
+import com.kikidan.domain.model.auth.AuthToken
 import com.kikidan.domain.model.auth.LoginResult
 import com.kikidan.domain.model.auth.OAuthCredential
 import com.kikidan.domain.repository.AuthRepository
@@ -15,5 +16,10 @@ class AuthRepositoryImpl
         override suspend fun login(credential: OAuthCredential): Result<LoginResult> =
             runCatchingCancellable {
                 remoteAuthDataSource.postLogin(credential)
+            }
+
+        override suspend fun refresh(refreshToken: String): Result<AuthToken> =
+            runCatchingCancellable {
+                remoteAuthDataSource.postRefresh(refreshToken)
             }
     }
