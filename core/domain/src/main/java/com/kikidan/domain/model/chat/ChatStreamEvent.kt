@@ -19,9 +19,9 @@ sealed interface ChatStreamEvent {
     data class Done(
         val assistantMessageId: String,
     ) : ChatStreamEvent
-}
 
-class ChatStreamException(
-    val code: String?,
-    override val message: String,
-) : Exception(message)
+    data class Error(
+        val code: String,
+        val message: String
+    )
+}
