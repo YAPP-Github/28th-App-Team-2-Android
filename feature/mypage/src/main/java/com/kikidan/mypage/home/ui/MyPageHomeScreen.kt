@@ -76,6 +76,7 @@ fun MyPageHomeScreen(
 
 @Composable
 private fun MyPageHomeLoading(modifier: Modifier = Modifier) {
+    //로딩 요구사항 없음
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
 
     }
@@ -83,6 +84,7 @@ private fun MyPageHomeLoading(modifier: Modifier = Modifier) {
 
 @Composable
 private fun MyPageHomeError(modifier: Modifier = Modifier) {
+    //에러 요구사항 없음
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
     }
