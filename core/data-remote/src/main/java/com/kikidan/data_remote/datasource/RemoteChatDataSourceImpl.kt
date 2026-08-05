@@ -74,7 +74,6 @@ class RemoteChatDataSourceImpl
             private const val CHAT_MESSAGES_URL = "api/v1/chat/messages"
             private const val CONVERSATIONS_URL = "api/v1/chat/conversations"
 
-            private fun conversationUrl(conversationId: String): String =
-                "$CONVERSATIONS_URL/$conversationId"
+            private fun conversationUrl(conversationId: String): String = "$CONVERSATIONS_URL/$conversationId"
         }
     }

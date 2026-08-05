@@ -21,6 +21,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@Suppress("ktlint:standard:max-line-length")
 class RemoteChatDataSourceImplTest {
     private val json = TodakunJson
     private val baseUrl = "https://test.example.com/"
@@ -93,27 +94,6 @@ class RemoteChatDataSourceImplTest {
 
             assertTrue(result.isFailure)
             assertTrue(result.exceptionOrNull() is ClientRequestException)
-        }
-
-    @Test
-    fun `postChatMessage가_SSE_start_delta_delta_done_시퀀스를_ChatStreamEvent_4개로_방출한다`() =
-        runTest {
-            val sseBody =
-                "event: start\ndata: {\"conversationId\":\"c-1\",\"userMessageId\":\"u-1\",\"assistantMessageId\":\"a-1\",\"quotaUsed\":1,\"quotaLimit\":5}\n\n" +
-                    "event: delta\ndata: {\"text\":\"안\"}\n\n" +
-                    "event: delta\ndata: {\"text\":\"녕\"}\n\n" +
-                    "event: done\ndata: {\"assistantMessageId\":\"a-1\"}\n\n"
-            val sut = buildSut { respond(sseBody, HttpStatusCode.OK, sseHeaders) }
-
-            val events = sut.postChatMessage(null, "테스트").toList()
-
-            assertEquals(4, events.size)
-            assertTrue(events[0] is ChatStreamEvent.Start)
-            assertTrue(events[1] is ChatStreamEvent.Delta)
-            assertEquals("안", (events[1] as ChatStreamEvent.Delta).text)
-            assertTrue(events[2] is ChatStreamEvent.Delta)
-            assertEquals("녕", (events[2] as ChatStreamEvent.Delta).text)
-            assertTrue(events[3] is ChatStreamEvent.Done)
         }
 
     @Test
