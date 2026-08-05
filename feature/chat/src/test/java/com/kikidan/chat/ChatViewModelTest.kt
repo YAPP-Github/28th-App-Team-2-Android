@@ -145,10 +145,10 @@ class ChatViewModelTest {
                 assertTrue("TYPING 상태가 존재해야 함", typingStates.isNotEmpty())
                 for (i in 1 until typingStates.size) {
                     val chatState = typingStates[i - 1].streamingChatState as StreamingChatState.Typing
-                    val currentChatState =  typingStates[i].streamingChatState as StreamingChatState.Typing
+                    val currentChatState = typingStates[i].streamingChatState as StreamingChatState.Typing
                     assertTrue(
-                        "streamingText 단조 증가 실패: '${chatState}' → '${chatState}'",
-                            currentChatState.streamingText.startsWith(chatState.streamingText),
+                        "streamingText 단조 증가 실패: '$chatState' → '$chatState'",
+                        currentChatState.streamingText.startsWith(chatState.streamingText),
                     )
                 }
             }
@@ -467,5 +467,4 @@ class ChatViewModelTest {
         action = null,
         createdAt = Instant.now(),
     )
-
 }
