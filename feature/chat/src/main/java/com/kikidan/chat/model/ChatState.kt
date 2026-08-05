@@ -12,7 +12,7 @@ data class ChatState(
     val quota: ChatQuota? = null,
     val messages: List<ChatMessage> = emptyList(),
     val input: String = "",
-    val streamingChatState: StreamingChatState = StreamingChatState.Idle
+    val streamingChatState: StreamingChatState = StreamingChatState.Idle,
 )
 
 sealed interface StreamingChatState {
@@ -21,7 +21,6 @@ sealed interface StreamingChatState {
     data object Thinking : StreamingChatState
 
     data class Typing(
-        val streamingText: String = ""
+        val streamingText: String = "",
     ) : StreamingChatState
 }
-
