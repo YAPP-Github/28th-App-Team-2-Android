@@ -56,7 +56,6 @@
     <string name="mypage_menu_inquiry">1:1 문의</string>
     <string name="mypage_menu_logout">로그아웃</string>
     <string name="mypage_app_version_label">앱 버전</string>
-    <string name="mypage_app_version_value">v1.0.0 (최신 버전)</string>
     <string name="mypage_view_mansaeryeok_button">만세력 보기</string>
     <string name="mypage_edit_button">수정</string>
 
