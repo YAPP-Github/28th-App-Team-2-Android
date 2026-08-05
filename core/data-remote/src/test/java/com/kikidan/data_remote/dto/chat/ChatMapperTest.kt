@@ -1,19 +1,18 @@
 package com.kikidan.data_remote.dto.chat
 
+import com.kikidan.domain.model.chat.ChatActionType
 import com.kikidan.domain.model.chat.ChatStreamEvent
-import com.kikidan.domain.model.chat.ChatStreamException
 import com.kikidan.domain.model.chat.MessageRole
-import com.kikidan.domain.model.chat.MessageStatus
 import io.ktor.sse.ServerSentEvent
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
+@Suppress("ktlint:standard:max-line-length")
 class ChatMapperTest {
     @Test
     fun `ChatEntryResponse가_ChatEntry_도메인으로_변환된다`() {
@@ -47,12 +46,6 @@ class ChatMapperTest {
     }
 
     @Test
-    fun `ChatMessageResponse_status가_알_수_없는_값이면_MessageStatus_UNKNOWN으로_변환된다`() {
-        val result = buildMessageResponse(status = "WEIRD_NEW_VALUE").toDomain()
-        assertEquals(MessageStatus.UNKNOWN, result.status)
-    }
-
-    @Test
     fun `createdAt이_오프셋_포함_ISO_8601이면_Instant로_파싱된다`() {
         val result = buildMessageResponse(createdAt = "2026-08-03T12:00:00Z").toDomain()
         assertEquals(Instant.parse("2026-08-03T12:00:00Z"), result.createdAt)
@@ -62,7 +55,8 @@ class ChatMapperTest {
     fun `createdAt이_오프셋_없는_LocalDateTime이면_KST_기준_Instant로_파싱된다`() {
         val result = buildMessageResponse(createdAt = "2026-08-03T12:00:00").toDomain()
         val expected =
-            LocalDateTime.parse("2026-08-03T12:00:00")
+            LocalDateTime
+                .parse("2026-08-03T12:00:00")
                 .atZone(ZoneId.of("Asia/Seoul"))
                 .toInstant()
         assertEquals(expected, result.createdAt)
@@ -73,7 +67,10 @@ class ChatMapperTest {
         val event =
             ServerSentEvent(
                 event = "start",
-                data = """{"conversationId":"c-1","userMessageId":"u-1","assistantMessageId":"a-1","quotaUsed":1,"quotaLimit":5}""",
+                data =
+                    """
+                    {"conversationId":"c-1","userMessageId":"u-1","assistantMessageId":"a-1","quotaUsed":1,"quotaLimit":5}
+                    """.trimIndent(),
             )
 
         val result = event.toChatStreamEventOrNull() as ChatStreamEvent.Start
@@ -96,15 +93,12 @@ class ChatMapperTest {
     }
 
     @Test
-    fun `SSE_error_이벤트가_ChatStreamException을_throw한다`() {
+    fun `SSE_error_이벤트가__ChatStreamEvent_Error로_변환된다`() {
         val event = ServerSentEvent(event = "error", data = """{"code":"QUOTA","message":"초과"}""")
 
-        val thrown = runCatching { event.toChatStreamEventOrNull() }.exceptionOrNull()
+        val result = event.toChatStreamEventOrNull()
 
-        assertTrue(thrown is ChatStreamException)
-        val ex = thrown as ChatStreamException
-        assertEquals("QUOTA", ex.code)
-        assertEquals("초과", ex.message)
+        assertEquals(ChatStreamEvent.Error("QUOTA", "초과"), result)
     }
 
     @Test
@@ -121,12 +115,12 @@ class ChatMapperTest {
         val event =
             ServerSentEvent(
                 event = "action",
-                data = """{"type":"CALENDAR","label":"일정 추가","category":"SCHEDULE","date":"2026-08-10"}""",
+                data = """{"type":"CALENDAR_ADD","label":"일정 추가","category":"SCHEDULE","date":"2026-08-10"}""",
             )
 
         val result = event.toChatStreamEventOrNull() as ChatStreamEvent.Action
 
-        assertEquals("CALENDAR", result.action.type)
+        assertEquals(ChatActionType.CALENDAR_ADD, result.action.type)
         assertEquals("일정 추가", result.action.label)
         assertEquals("SCHEDULE", result.action.category)
         assertEquals(LocalDate.of(2026, 8, 10), result.action.date)

@@ -3,7 +3,6 @@ package com.kikidan.data.repository
 import com.kikidan.data.fake.FakeRemoteChatDataSource
 import com.kikidan.domain.model.chat.ChatQuota
 import com.kikidan.domain.model.chat.ChatStreamEvent
-import com.kikidan.domain.model.chat.ChatStreamException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -81,20 +80,6 @@ class ChatRepositoryImplTest {
             assertTrue(results[1].isSuccess)
             assertTrue(results[2].isFailure)
             assertTrue(results[2].exceptionOrNull() is IOException)
-        }
-
-    @Test
-    fun `sendMessage가_ChatStreamException을_throw하면_Result_failure로_방출되고_code와_message가_보존된다`() =
-        runTest {
-            fake.streamThrowable = ChatStreamException("QUOTA", "초과")
-
-            val results = sut.sendMessage(null, "test").toList()
-
-            assertEquals(1, results.size)
-            assertTrue(results[0].isFailure)
-            val thrown = results[0].exceptionOrNull() as? ChatStreamException
-            assertEquals("QUOTA", thrown?.code)
-            assertEquals("초과", thrown?.message)
         }
 
     @Test
