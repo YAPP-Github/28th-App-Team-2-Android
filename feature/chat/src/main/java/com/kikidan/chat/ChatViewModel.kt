@@ -86,10 +86,6 @@ class ChatViewModel
         // 전송 진입점이 여러 개이므로 가드를 여기 한 곳에만 둔다 (설계 2-7).
         private suspend fun Syntax<ChatState, ChatSideEffect>.send(content: String) {
             if (state.streamingChatState !is StreamingChatState.Idle) return
-            if (state.quota?.let { it.remaining <= 0 } == true) {
-                postSideEffect(ChatSideEffect.ShowStreamingErrorMessage(QUOTA_EXHAUSTED_MESSAGE))
-                return
-            }
 
             val conversationId = state.conversationId
             val placeholder = localUserMessage(content)
@@ -107,30 +103,11 @@ class ChatViewModel
             try {
                 sendChatMessage(conversationId, content)
                     .transform { result ->
-                        // 모든 실패를 예외 한 채널로 되돌린다 (설계 2-3).
                         when (val event = result.getOrElse { throw it }) {
                             is ChatStreamEvent.Start -> {
-                                streamConversationId = event.conversationId
-                                assistantMessageId = event.assistantMessageId
-                                // transform 람다의 수신자는 FlowCollector이므로,
-                                // reduce/state는 외부 SimpleSyntax 수신자로 해석된다 (설계 2, 주의 1).
-                                reduce {
-                                    state.copy(
-                                        // 낙관적 메시지의 로컬 id를 서버가 준 진짜 id로 교체 (설계 2-6).
-                                        messages =
-                                            state.messages.map { msg ->
-                                                if (msg.id == placeholder.id) {
-                                                    msg.copy(
-                                                        id = event.userMessageId,
-                                                        status = MessageStatus.COMPLETED,
-                                                    )
-                                                } else {
-                                                    msg
-                                                }
-                                            },
-                                        quota = event.quota,
-                                    )
-                                }
+                                val result = onStreamingStart(placeholder, event)
+                                streamConversationId = result.first
+                                assistantMessageId = result.second
                             }
 
                             is ChatStreamEvent.Delta -> {
@@ -158,25 +135,11 @@ class ChatViewModel
                         }
                     }
 
-                // typewriter가 완료된 = 버퍼가 다 비워진 시점 (설계 2-2).
-                reduce {
-                    val currentStreamingState = state.streamingChatState
-                    state.copy(
-                        conversationId = streamConversationId,
-                        messages =
-                            if (currentStreamingState is StreamingChatState.Typing) {
-                                state.messages +
-                                    assistantMessage(
-                                        id = assistantMessageId,
-                                        content = currentStreamingState.streamingText,
-                                        action = pendingAction,
-                                    )
-                            } else {
-                                state.messages
-                            },
-                        streamingChatState = StreamingChatState.Idle,
-                    )
-                }
+                onSteamingDone(
+                    streamConversationId,
+                    assistantMessageId,
+                    pendingAction,
+                )
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
@@ -189,8 +152,53 @@ class ChatViewModel
             }
         }
 
-        private companion object {
-            const val QUOTA_EXHAUSTED_MESSAGE = "오늘 무료 채팅을 모두 사용했어요."
+        private suspend fun Syntax<ChatState, ChatSideEffect>.onStreamingStart(
+            placeholder: ChatMessage,
+            event: ChatStreamEvent.Start,
+        ): Pair<String, String> {
+            reduce {
+                state.copy(
+                    // 낙관적 메시지의 로컬 id를 서버가 준 진짜 id로 교체.
+                    messages =
+                        state.messages.map { msg ->
+                            if (msg.id == placeholder.id) {
+                                msg.copy(
+                                    id = event.userMessageId,
+                                    status = MessageStatus.COMPLETED,
+                                )
+                            } else {
+                                msg
+                            }
+                        },
+                    quota = event.quota,
+                )
+            }
+            return event.conversationId to event.assistantMessageId
+        }
+
+        private suspend fun Syntax<ChatState, ChatSideEffect>.onSteamingDone(
+            streamConversationId: String?,
+            assistantMessageId: String?,
+            pendingAction: ChatAction?,
+        ) {
+            reduce {
+                val currentStreamingState = state.streamingChatState
+                state.copy(
+                    conversationId = streamConversationId,
+                    messages =
+                        if (currentStreamingState is StreamingChatState.Typing) {
+                            state.messages +
+                                assistantMessage(
+                                    id = assistantMessageId,
+                                    content = currentStreamingState.streamingText,
+                                    action = pendingAction,
+                                )
+                        } else {
+                            state.messages
+                        },
+                    streamingChatState = StreamingChatState.Idle,
+                )
+            }
         }
     }
 
