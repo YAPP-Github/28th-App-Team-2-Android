@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.asFlow
 
 class FakeChatRepository : ChatRepository {
     var chatEntryResult: Result<ChatEntry> = Result.failure(NotImplementedError("chatEntryResult 미설정"))
-    var conversationDetailResult: Result<Conversation> = Result.failure(NotImplementedError("conversationDetailResult 미설정"))
+    var conversationDetailResult: Result<Conversation> =
+        Result.failure(
+            NotImplementedError("conversationDetailResult 미설정"),
+        )
     var streamEvents: List<Result<ChatStreamEvent>> = emptyList()
 
     var lastSentConversationId: String? = null
@@ -29,11 +32,9 @@ class FakeChatRepository : ChatRepository {
         return streamEvents.asFlow()
     }
 
-    override suspend fun getConversations(): Result<List<ConversationSummary>> =
-        Result.failure(NotImplementedError())
+    override suspend fun getConversations(): Result<List<ConversationSummary>> = Result.failure(NotImplementedError())
 
-    override suspend fun getConversationDetail(conversationId: String): Result<Conversation> =
-        conversationDetailResult
+    override suspend fun getConversationDetail(conversationId: String): Result<Conversation> = conversationDetailResult
 
     override suspend fun deleteConversation(conversationId: String): Result<Unit> =
         Result.failure(NotImplementedError())

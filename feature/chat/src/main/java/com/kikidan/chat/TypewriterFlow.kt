@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 // 실기기에서 조정할 튜닝 노브. 체감 속도는 서버가 보내는 청크 크기에 좌우된다.
-internal const val TYPING_TICK_MS = 16L          // 60fps 프레임 간격
-private const val CATCH_UP_DIVISOR = 12          // 남은 글자의 1/12를 매 틱 추가 방출
+internal const val TYPING_TICK_MS = 16L // 60fps 프레임 간격
+private const val CATCH_UP_DIVISOR = 12 // 남은 글자의 1/12를 매 틱 추가 방출
 
 /**
  * 도착 속도(네트워크)와 표시 속도(화면)를 분리한다.
@@ -33,13 +33,20 @@ internal fun Flow<String>.typewriter(tickMillis: Long = TYPING_TICK_MS): Flow<St
             val full = buffered.value
             when {
                 shown < full.length -> {
-                    shown = (shown + 1 + (full.length - shown) / CATCH_UP_DIVISOR)
-                        .coerceAtMost(full.length)
+                    shown =
+                        (shown + 1 + (full.length - shown) / CATCH_UP_DIVISOR)
+                            .coerceAtMost(full.length)
                     // ponytail: 틱마다 substring이라 전체 O(n^2). 수천 자 답변까지는 무시 가능.
                     send(full.substring(0, shown))
                 }
-                upstreamDone -> return@channelFlow
-                else -> Unit
+
+                upstreamDone -> {
+                    return@channelFlow
+                }
+
+                else -> {
+                    Unit
+                }
             }
             delay(tickMillis)
         }

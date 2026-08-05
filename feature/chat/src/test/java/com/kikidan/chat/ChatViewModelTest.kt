@@ -1,6 +1,7 @@
 package com.kikidan.chat
 
 import com.kikidan.domain.model.chat.ChatAction
+import com.kikidan.domain.model.chat.ChatActionType
 import com.kikidan.domain.model.chat.ChatEntry
 import com.kikidan.domain.model.chat.ChatQuota
 import com.kikidan.domain.model.chat.ChatStreamEvent
@@ -21,13 +22,8 @@ import org.junit.Test
 import org.orbitmvi.orbit.test.test
 import java.time.Instant
 
-/**
- * Orbit 11의 이벤트 루프는 Dispatchers.Default를 사용하므로 Dispatchers.setMain()으로
- * 제어할 수 없다. orbit-test의 ContainerHost.test {} 를 사용해야 이벤트 루프가
- * 테스트 디스패처로 대체된다.
- */
+@Suppress("ktlint:standard:max-line-length")
 class ChatViewModelTest {
-
     private fun makeVm(fakeRepo: FakeChatRepository): ChatViewModel =
         ChatViewModel(
             getChatEntry = GetChatEntryUseCase(fakeRepo),
@@ -35,11 +31,12 @@ class ChatViewModelTest {
             sendChatMessage = SendChatMessageUseCase(fakeRepo),
         )
 
-    private val defaultEntry = ChatEntry(
-        greeting = "안녕하세요",
-        suggestions = listOf(ChatSuggestion("😊", "label", "seed", "cat")),
-        quota = ChatQuota(used = 1, limit = 10),
-    )
+    private val defaultEntry =
+        ChatEntry(
+            greeting = "안녕하세요",
+            suggestions = listOf(ChatSuggestion("😊", "label", "seed", "cat")),
+            quota = ChatQuota(used = 1, limit = 10),
+        )
 
     private fun makeConversation(
         id: String,
@@ -62,371 +59,413 @@ class ChatViewModelTest {
     // ─── load() ─────────────────────────────────────────────────────────────
 
     @Test
-    fun `load null + entry 성공 시 suggestions quota greeting 반영, isLoading = false`() = runTest {
-        val fakeRepo = FakeChatRepository().apply { chatEntryResult = Result.success(defaultEntry) }
-        val vm = makeVm(fakeRepo)
+    fun `load null + entry 성공 시 suggestions quota greeting 반영, isLoading = false`() =
+        runTest {
+            val fakeRepo = FakeChatRepository().apply { chatEntryResult = Result.success(defaultEntry) }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.load(null)
-            // 첫 reduce: copy(conversationId=null, isLoading=true) → 초기 상태와 동일, 미방출
-            // getChatEntry 성공 → copy(greeting, suggestions, quota) 변경
-            val s1 = awaitState()
-            assertEquals(defaultEntry.greeting, s1.greeting)
-            assertEquals(defaultEntry.suggestions, s1.suggestions)
-            assertEquals(defaultEntry.quota, s1.quota)
-            assertTrue(s1.isLoading)
-            // 최종 reduce: isLoading=false
-            val s2 = awaitState()
-            assertFalse(s2.isLoading)
-            assertNull(s2.conversationId)
+            vm.test(this) {
+                containerHost.load(null)
+                // 첫 reduce: copy(conversationId=null, isLoading=true) → 초기 상태와 동일, 미방출
+                // getChatEntry 성공 → copy(greeting, suggestions, quota) 변경
+                val s1 = awaitState()
+                assertEquals(defaultEntry.greeting, s1.greeting)
+                assertEquals(defaultEntry.suggestions, s1.suggestions)
+                assertEquals(defaultEntry.quota, s1.quota)
+                assertTrue(s1.isLoading)
+                // 최종 reduce: isLoading=false
+                val s2 = awaitState()
+                assertFalse(s2.isLoading)
+                assertNull(s2.conversationId)
+            }
         }
-    }
 
     @Test
-    fun `load null + entry 실패 시 ShowMessage 사이드이펙트, isLoading = false`() = runTest {
-        val fakeRepo = FakeChatRepository()
-        val vm = makeVm(fakeRepo)
+    fun `load null + entry 실패 시 Error 사이드이펙트, isLoading = false`() =
+        runTest {
+            val fakeRepo = FakeChatRepository()
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.load(null)
-            // onFailure → postSideEffect(SE), then reduce isLoading=false
-            val se = awaitSideEffect()
-            assertTrue(se is ChatSideEffect.ShowMessage)
-            val s = awaitState()
-            assertFalse(s.isLoading)
+            vm.test(this) {
+                containerHost.load(null)
+                // onFailure → postSideEffect(SE), then reduce isLoading=false
+                val se = awaitSideEffect()
+                assertTrue(se is ChatSideEffect.Error)
+                val s = awaitState()
+                assertFalse(s.isLoading)
+            }
         }
-    }
 
     @Test
-    fun `load 기존 conversationId 시 detail 메시지가 messages에 채워진다`() = runTest {
-        val msgs = listOf(makeMsg("m1", "hi"), makeMsg("m2", "hello", MessageRole.ASSISTANT))
-        val fakeRepo = FakeChatRepository().apply {
-            chatEntryResult = Result.success(defaultEntry)
-            conversationDetailResult = Result.success(makeConversation("c-1", msgs))
-        }
-        val vm = makeVm(fakeRepo)
+    fun `load 기존 conversationId 시 detail 메시지가 messages에 채워진다`() =
+        runTest {
+            val msgs = listOf(makeMsg("m1", "hi"), makeMsg("m2", "hello", MessageRole.ASSISTANT))
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    chatEntryResult = Result.success(defaultEntry)
+                    conversationDetailResult = Result.success(makeConversation("c-1", msgs))
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.load("c-1")
-            // 1: conversationId="c-1" 설정 (변경)
-            val s1 = awaitState()
-            assertEquals("c-1", s1.conversationId)
-            // 2: getChatEntry 성공
-            awaitState()
-            // 3: getConversationDetail 성공 → messages
-            awaitState()
-            // 4: isLoading=false
-            val s4 = awaitState()
-            assertFalse(s4.isLoading)
-            assertEquals("c-1", s4.conversationId)
-            assertEquals(msgs, s4.messages)
+            vm.test(this) {
+                containerHost.load("c-1")
+                // 1: conversationId="c-1" 설정 (변경)
+                val s1 = awaitState()
+                assertEquals("c-1", s1.conversationId)
+                // 2: getChatEntry 성공
+                awaitState()
+                // 3: getConversationDetail 성공 → messages
+                awaitState()
+                // 4: isLoading=false
+                val s4 = awaitState()
+                assertFalse(s4.isLoading)
+                assertEquals("c-1", s4.conversationId)
+                assertEquals(msgs, s4.messages)
+            }
         }
-    }
 
     // ─── send() / 전송 파이프라인 ─────────────────────────────────────────────
 
     @Test
-    fun `send 후 사용자 메시지가 즉시 messages에 추가되고 phase = THINKING`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
-                Result.success(ChatStreamEvent.Done("a1")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `send 후 사용자 메시지가 즉시 messages에 추가되고 phase = THINKING`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("안녕")
-            // 첫 상태: THINKING + user msg PENDING
-            val s1 = awaitState()
-            assertEquals(ChatPhase.THINKING, s1.phase)
-            assertTrue(s1.messages.isNotEmpty())
-            assertEquals("안녕", s1.messages.first().content)
-            assertEquals(MessageRole.USER, s1.messages.first().role)
-            assertEquals(MessageStatus.PENDING, s1.messages.first().status)
-            cancelAndIgnoreRemainingItems()
+            vm.test(this) {
+                containerHost.onSuggestionClick("안녕")
+                // 첫 상태: THINKING + user msg Completed
+                val s1 = awaitState()
+                assertEquals(ChatPhase.THINKING, s1.phase)
+                assertTrue(s1.messages.isNotEmpty())
+                assertEquals("안녕", s1.messages.first().content)
+                assertEquals(MessageRole.USER, s1.messages.first().role)
+                assertEquals(MessageStatus.COMPLETED, s1.messages.first().status)
+                cancelAndIgnoreRemainingItems()
+            }
         }
-    }
 
     @Test
-    fun `Delta 수신 시 phase = TYPING, streamingText 가 단조 증가한다`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
-                Result.success(ChatStreamEvent.Delta("안녕하세요")),
-                Result.success(ChatStreamEvent.Done("a1")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `Delta 수신 시 phase = TYPING, streamingText 가 단조 증가한다`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
+                            Result.success(ChatStreamEvent.Delta("안녕하세요")),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("질문")
-            val typingStates = mutableListOf<ChatState>()
-            var s = awaitState()
-            while (s.phase != ChatPhase.IDLE) {
-                if (s.phase == ChatPhase.TYPING) typingStates.add(s)
+            vm.test(this) {
+                containerHost.onSuggestionClick("질문")
+                val typingStates = mutableListOf<ChatState>()
+                var s = awaitState()
+                while (s.phase != ChatPhase.IDLE) {
+                    if (s.phase == ChatPhase.TYPING) typingStates.add(s)
+                    s = awaitState()
+                }
+                assertTrue("TYPING 상태가 존재해야 함", typingStates.isNotEmpty())
+                for (i in 1 until typingStates.size) {
+                    assertTrue(
+                        "streamingText 단조 증가 실패: '${typingStates[i - 1].streamingText}' → '${typingStates[i].streamingText}'",
+                        typingStates[i].streamingText.startsWith(typingStates[i - 1].streamingText),
+                    )
+                }
+            }
+        }
+
+    @Test
+    fun `Done 수신 시 messages 마지막이 assistantMessageId로 COMPLETED 상태의 ASSISTANT 메시지, streamingText = empty, phase = IDLE`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(
+                                ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota),
+                            ),
+                            Result.success(ChatStreamEvent.Delta("응답 텍스트")),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
+
+            vm.test(this) {
+                containerHost.onSuggestionClick("질문")
+                var s = awaitState()
+                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                assertEquals(ChatPhase.IDLE, s.phase)
+                assertEquals("", s.streamingText)
+                val assistant = s.messages.last()
+                assertEquals("a1", assistant.id)
+                assertEquals(MessageRole.ASSISTANT, assistant.role)
+                assertEquals(MessageStatus.COMPLETED, assistant.status)
+                assertEquals("응답 텍스트", assistant.content)
+            }
+        }
+
+    @Test
+    fun `Start의 conversationId가 저장되어 두 번째 send 시 Fake에 전달된다`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c-from-server", "u1", "a1", defaultEntry.quota)),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
+
+            vm.test(this) {
+                containerHost.onSuggestionClick("첫 번째")
+                var s = awaitState()
+                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                assertEquals("c-from-server", s.conversationId)
+
+                fakeRepo.streamEvents =
+                    listOf(
+                        Result.success(ChatStreamEvent.Start("c-from-server", "u2", "a2", defaultEntry.quota)),
+                        Result.success(ChatStreamEvent.Done("a2")),
+                    )
+
+                containerHost.onSuggestionClick("두 번째")
                 s = awaitState()
-            }
-            assertTrue("TYPING 상태가 존재해야 함", typingStates.isNotEmpty())
-            for (i in 1 until typingStates.size) {
-                assertTrue(
-                    "streamingText 단조 증가 실패: '${typingStates[i - 1].streamingText}' → '${typingStates[i].streamingText}'",
-                    typingStates[i].streamingText.startsWith(typingStates[i - 1].streamingText),
-                )
+                while (s.phase != ChatPhase.IDLE) s = awaitState()
+
+                assertEquals("c-from-server", fakeRepo.lastSentConversationId)
+                assertEquals(2, fakeRepo.sendCallCount)
             }
         }
-    }
 
     @Test
-    fun `Done 수신 시 messages 마지막이 assistantMessageId로 COMPLETED 상태의 ASSISTANT 메시지, streamingText = empty, phase = IDLE`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
-                Result.success(ChatStreamEvent.Delta("응답 텍스트")),
-                Result.success(ChatStreamEvent.Done("a1")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `Start의 userMessageId로 낙관적 사용자 메시지 id 가 교체되고 status = COMPLETED`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "real-user-id", "a1", defaultEntry.quota)),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("질문")
-            var s = awaitState()
-            while (s.phase != ChatPhase.IDLE) s = awaitState()
-            assertEquals(ChatPhase.IDLE, s.phase)
-            assertEquals("", s.streamingText)
-            val assistant = s.messages.last()
-            assertEquals("a1", assistant.id)
-            assertEquals(MessageRole.ASSISTANT, assistant.role)
-            assertEquals(MessageStatus.COMPLETED, assistant.status)
-            assertEquals("응답 텍스트", assistant.content)
+            vm.test(this) {
+                containerHost.onSuggestionClick("안녕")
+                val s1 = awaitState()
+                assertEquals(MessageStatus.COMPLETED, s1.messages.first().status)
+                // S2: Start 수신 → id가 real-user-id로 교체, COMPLETED
+                val s2 = awaitState()
+                assertTrue(s2.messages.any { it.id == "real-user-id" && it.status == MessageStatus.COMPLETED })
+                cancelAndIgnoreRemainingItems()
+            }
         }
-    }
 
     @Test
-    fun `Start의 conversationId가 저장되어 두 번째 send 시 Fake에 전달된다`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c-from-server", "u1", "a1", defaultEntry.quota)),
-                Result.success(ChatStreamEvent.Done("a1")),
-            )
+    fun `Start 수신 직후 quota 가 즉시 반영된다`() =
+        runTest {
+            val updatedQuota = ChatQuota(used = 2, limit = 10)
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "u1", "a1", updatedQuota)),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
+
+            vm.test(this) {
+                containerHost.onSuggestionClick("안녕")
+                // S1: THINKING/PENDING
+                awaitState()
+                // S2: Start 수신 → quota 즉시 반영
+                val s2 = awaitState()
+                assertEquals(updatedQuota, s2.quota)
+                cancelAndIgnoreRemainingItems()
+            }
         }
-        val vm = makeVm(fakeRepo)
-
-        vm.test(this) {
-            containerHost.onSuggestionClick("첫 번째")
-            var s = awaitState()
-            while (s.phase != ChatPhase.IDLE) s = awaitState()
-            assertEquals("c-from-server", s.conversationId)
-
-            fakeRepo.streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c-from-server", "u2", "a2", defaultEntry.quota)),
-                Result.success(ChatStreamEvent.Done("a2")),
-            )
-
-            containerHost.onSuggestionClick("두 번째")
-            s = awaitState()
-            while (s.phase != ChatPhase.IDLE) s = awaitState()
-
-            assertEquals("c-from-server", fakeRepo.lastSentConversationId)
-            assertEquals(2, fakeRepo.sendCallCount)
-        }
-    }
 
     @Test
-    fun `Start의 userMessageId로 낙관적 사용자 메시지 id 가 교체되고 status = COMPLETED`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c1", "real-user-id", "a1", defaultEntry.quota)),
-                Result.success(ChatStreamEvent.Done("a1")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `Action 이벤트의 action 이 최종 어시스턴트 메시지에 포함된다`() =
+        runTest {
+            val action =
+                ChatAction(type = ChatActionType.CALENDAR_ADD, label = "일기 쓰기", category = "record", date = null)
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
+                            Result.success(ChatStreamEvent.Delta("텍스트")),
+                            Result.success(ChatStreamEvent.Action(action)),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("안녕")
-            // S1: THINKING/PENDING (로컬 placeholder id)
-            val s1 = awaitState()
-            assertEquals(MessageStatus.PENDING, s1.messages.first().status)
-            // S2: Start 수신 → id가 real-user-id로 교체, COMPLETED
-            val s2 = awaitState()
-            assertTrue(s2.messages.any { it.id == "real-user-id" && it.status == MessageStatus.COMPLETED })
-            cancelAndIgnoreRemainingItems()
+            vm.test(this) {
+                containerHost.onSuggestionClick("안녕")
+                var s = awaitState()
+                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                val assistant = s.messages.last()
+                assertEquals(action, assistant.action)
+            }
         }
-    }
 
     @Test
-    fun `Start 수신 직후 quota 가 즉시 반영된다`() = runTest {
-        val updatedQuota = ChatQuota(used = 2, limit = 10)
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c1", "u1", "a1", updatedQuota)),
-                Result.success(ChatStreamEvent.Done("a1")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `Start 없이 Delta만 오고 스트림 종료 시 local-assistant 폴백 id 로 어시스턴트 메시지가 추가된다`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Delta("텍스트만")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("안녕")
-            // S1: THINKING/PENDING
-            awaitState()
-            // S2: Start 수신 → quota 즉시 반영
-            val s2 = awaitState()
-            assertEquals(updatedQuota, s2.quota)
-            cancelAndIgnoreRemainingItems()
+            vm.test(this) {
+                containerHost.onSuggestionClick("안녕")
+                var s = awaitState()
+                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                val assistant = s.messages.find { it.role == MessageRole.ASSISTANT }
+                assertNotNull(assistant)
+                assertTrue("폴백 id 사용: ${assistant!!.id}", assistant.id.startsWith("local-assistant-"))
+                assertEquals("텍스트만", assistant.content)
+            }
         }
-    }
 
     @Test
-    fun `Action 이벤트의 action 이 최종 어시스턴트 메시지에 포함된다`() = runTest {
-        val action = ChatAction(type = "diary", label = "일기 쓰기", category = "record", date = null)
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
-                Result.success(ChatStreamEvent.Delta("텍스트")),
-                Result.success(ChatStreamEvent.Action(action)),
-                Result.success(ChatStreamEvent.Done("a1")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `스트림이 Result failure 방출 시 ShowMessage, phase = IDLE, streamingText = empty`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
+                            Result.failure(IllegalStateException()),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("안녕")
-            var s = awaitState()
-            while (s.phase != ChatPhase.IDLE) s = awaitState()
-            val assistant = s.messages.last()
-            assertEquals(action, assistant.action)
+            vm.test(this) {
+                containerHost.onSuggestionClick("안녕")
+                awaitState() // S1: THINKING/PENDING
+                awaitState() // S2: Start 수신 후 THINKING/COMPLETED
+                // catch 블록: reduce(IDLE) → SE 순서
+                val s = awaitState()
+                assertEquals(ChatPhase.IDLE, s.phase)
+                assertEquals("", s.streamingText)
+                val se = awaitSideEffect()
+                assertEquals(IllegalStateException::class, (se as ChatSideEffect.Error).e::class)
+            }
         }
-    }
 
     @Test
-    fun `Start 없이 Delta만 오고 스트림 종료 시 local-assistant 폴백 id 로 어시스턴트 메시지가 추가된다`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Delta("텍스트만")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `스트리밍 중 send 재호출은 무시된다 - Fake 호출 횟수 1 유지`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Delta("텍스트")),
+                        )
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("안녕")
-            var s = awaitState()
-            while (s.phase != ChatPhase.IDLE) s = awaitState()
-            val assistant = s.messages.find { it.role == MessageRole.ASSISTANT }
-            assertNotNull(assistant)
-            assertTrue("폴백 id 사용: ${assistant!!.id}", assistant.id.startsWith("local-assistant-"))
-            assertEquals("텍스트만", assistant.content)
+            vm.test(this) {
+                containerHost.onSuggestionClick("첫 번째")
+                // 첫 상태: THINKING (phase != IDLE)
+                val s1 = awaitState()
+                assertTrue("THINKING 상태여야 함", s1.phase != ChatPhase.IDLE)
+
+                // 스트리밍 중 두 번째 send → phase != IDLE이므로 send() 가드에서 즉시 return
+                containerHost.onSuggestionClick("두 번째")
+
+                // 나머지 상태 소비
+                var s = awaitState()
+                while (s.phase != ChatPhase.IDLE) s = awaitState()
+
+                // sendChatMessage 호출은 첫 번째 1회뿐
+                assertEquals(1, fakeRepo.sendCallCount)
+            }
         }
-    }
 
     @Test
-    fun `스트림이 Result failure 방출 시 ShowMessage, phase = IDLE, streamingText = empty`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
-                Result.failure(com.kikidan.domain.model.chat.ChatStreamException("ERR", "서버 오류")),
-            )
-        }
-        val vm = makeVm(fakeRepo)
+    fun `quota remaining = 0 에서 send 시 전송 없이 ShowMessage`() =
+        runTest {
+            val exhaustedQuota = ChatQuota(used = 10, limit = 10) // remaining = 0
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    chatEntryResult = Result.success(ChatEntry("", emptyList(), exhaustedQuota))
+                }
+            val vm = makeVm(fakeRepo)
 
-        vm.test(this) {
-            containerHost.onSuggestionClick("안녕")
-            awaitState()  // S1: THINKING/PENDING
-            awaitState()  // S2: Start 수신 후 THINKING/COMPLETED
-            // catch 블록: reduce(IDLE) → SE 순서
-            val s = awaitState()
-            assertEquals(ChatPhase.IDLE, s.phase)
-            assertEquals("", s.streamingText)
-            val se = awaitSideEffect()
-            assertEquals("서버 오류", (se as ChatSideEffect.ShowMessage).message)
+            vm.test(this) {
+                containerHost.load(null)
+                awaitState() // quota 설정
+                val s2 = awaitState() // isLoading=false
+                assertEquals(0, s2.quota!!.remaining)
+
+                containerHost.onSuggestionClick("안녕")
+                val se = awaitSideEffect()
+                assertTrue(se is ChatSideEffect.ShowStreamingErrorMessage)
+                assertEquals(0, fakeRepo.sendCallCount)
+            }
         }
-    }
 
     @Test
-    fun `스트리밍 중 send 재호출은 무시된다 - Fake 호출 횟수 1 유지`() = runTest {
-        val fakeRepo = FakeChatRepository().apply {
-            streamEvents = listOf(
-                Result.success(ChatStreamEvent.Delta("텍스트")),
-            )
+    fun `onInputChange에 501자 입력 시 input length = 500`() =
+        runTest {
+            val fakeRepo = FakeChatRepository()
+            val vm = makeVm(fakeRepo)
+
+            vm.test(this) {
+                containerHost.onInputChange("a".repeat(501))
+                val s = awaitState()
+                assertEquals(500, s.input.length)
+            }
         }
-        val vm = makeVm(fakeRepo)
-
-        vm.test(this) {
-            containerHost.onSuggestionClick("첫 번째")
-            // 첫 상태: THINKING (phase != IDLE)
-            val s1 = awaitState()
-            assertTrue("THINKING 상태여야 함", s1.phase != ChatPhase.IDLE)
-
-            // 스트리밍 중 두 번째 send → phase != IDLE이므로 send() 가드에서 즉시 return
-            containerHost.onSuggestionClick("두 번째")
-
-            // 나머지 상태 소비
-            var s = awaitState()
-            while (s.phase != ChatPhase.IDLE) s = awaitState()
-
-            // sendChatMessage 호출은 첫 번째 1회뿐
-            assertEquals(1, fakeRepo.sendCallCount)
-        }
-    }
 
     @Test
-    fun `quota remaining = 0 에서 send 시 전송 없이 ShowMessage`() = runTest {
-        val exhaustedQuota = ChatQuota(used = 10, limit = 10)  // remaining = 0
-        val fakeRepo = FakeChatRepository().apply {
-            chatEntryResult = Result.success(ChatEntry("", emptyList(), exhaustedQuota))
+    fun `startNewConversation 호출 시 conversationId = null, messages 비워짐, suggestions 유지`() =
+        runTest {
+            val msgs = listOf(makeMsg("m1", "hi"))
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    chatEntryResult = Result.success(defaultEntry)
+                    conversationDetailResult = Result.success(makeConversation("c-1", msgs))
+                }
+            val vm = makeVm(fakeRepo)
+
+            vm.test(this) {
+                containerHost.load("c-1")
+                awaitState() // conversationId 설정
+                awaitState() // entry 로드
+                awaitState() // messages 로드
+                val afterLoad = awaitState() // isLoading=false
+                assertEquals("c-1", afterLoad.conversationId)
+                assertEquals(msgs, afterLoad.messages)
+                assertEquals(defaultEntry.suggestions, afterLoad.suggestions)
+
+                containerHost.startNewConversation()
+                val afterNew = awaitState()
+                assertNull(afterNew.conversationId)
+                assertTrue(afterNew.messages.isEmpty())
+                assertEquals(ChatPhase.IDLE, afterNew.phase)
+                assertEquals("", afterNew.streamingText)
+                assertEquals(defaultEntry.suggestions, afterNew.suggestions)
+            }
         }
-        val vm = makeVm(fakeRepo)
-
-        vm.test(this) {
-            containerHost.load(null)
-            awaitState()           // quota 설정
-            val s2 = awaitState()  // isLoading=false
-            assertEquals(0, s2.quota!!.remaining)
-
-            containerHost.onSuggestionClick("안녕")
-            val se = awaitSideEffect()
-            assertTrue(se is ChatSideEffect.ShowMessage)
-            assertEquals(0, fakeRepo.sendCallCount)
-        }
-    }
-
-    @Test
-    fun `onInputChange에 501자 입력 시 input length = 500`() = runTest {
-        val fakeRepo = FakeChatRepository()
-        val vm = makeVm(fakeRepo)
-
-        vm.test(this) {
-            containerHost.onInputChange("a".repeat(501))
-            val s = awaitState()
-            assertEquals(500, s.input.length)
-        }
-    }
-
-    @Test
-    fun `startNewConversation 호출 시 conversationId = null, messages 비워짐, suggestions 유지`() = runTest {
-        val msgs = listOf(makeMsg("m1", "hi"))
-        val fakeRepo = FakeChatRepository().apply {
-            chatEntryResult = Result.success(defaultEntry)
-            conversationDetailResult = Result.success(makeConversation("c-1", msgs))
-        }
-        val vm = makeVm(fakeRepo)
-
-        vm.test(this) {
-            containerHost.load("c-1")
-            awaitState()  // conversationId 설정
-            awaitState()  // entry 로드
-            awaitState()  // messages 로드
-            val afterLoad = awaitState()  // isLoading=false
-            assertEquals("c-1", afterLoad.conversationId)
-            assertEquals(msgs, afterLoad.messages)
-            assertEquals(defaultEntry.suggestions, afterLoad.suggestions)
-
-            containerHost.startNewConversation()
-            val afterNew = awaitState()
-            assertNull(afterNew.conversationId)
-            assertTrue(afterNew.messages.isEmpty())
-            assertEquals(ChatPhase.IDLE, afterNew.phase)
-            assertEquals("", afterNew.streamingText)
-            assertEquals(defaultEntry.suggestions, afterNew.suggestions)
-        }
-    }
 }

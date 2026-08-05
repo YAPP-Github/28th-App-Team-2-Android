@@ -20,9 +20,15 @@ data class ChatState(
 enum class ChatPhase {
     IDLE,
     THINKING, // 전송했고 첫 delta 전
-    TYPING,   // delta 수신 중
+    TYPING, // delta 수신 중
 }
 
 sealed interface ChatSideEffect {
-    data class ShowMessage(val message: String) : ChatSideEffect
+    data class ShowStreamingErrorMessage(
+        val message: String,
+    ) : ChatSideEffect
+
+    data class Error(
+        val e: Throwable,
+    ) : ChatSideEffect
 }
