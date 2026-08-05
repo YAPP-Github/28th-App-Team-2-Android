@@ -1,4 +1,4 @@
-package com.kikidan.chat
+package com.kikidan.chat.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -40,6 +40,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.chat.ChatGreetingOverlay
+import com.kikidan.chat.R
+import com.kikidan.chat.ThinkingIndicator
+import com.kikidan.chat.model.ChatSideEffect
+import com.kikidan.chat.model.ChatState
+import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.designsystem.component.TodakunSnackbar
 import com.kikidan.designsystem.component.bottomnavigation.TodakunBottomNavigation
 import com.kikidan.designsystem.component.bottomnavigation.TodakunNavItem
@@ -51,7 +57,6 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.chat.ChatMessage
-import com.kikidan.domain.model.chat.ChatQuota
 import com.kikidan.domain.model.chat.ChatSuggestion
 import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
@@ -59,42 +64,6 @@ import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.Instant
-
-@Composable
-fun ChatScreen(
-    conversationId: String?,
-    onCloseClick: () -> Unit,
-    onNavigateToHistory: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: ChatViewModel = hiltViewModel(),
-) {
-    val state by viewModel.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    // 컴포지션당 정확히 1회 (설계 2-3)
-    LaunchedEffect(Unit) { viewModel.load(conversationId) }
-
-    viewModel.collectSideEffect { effect ->
-        when (effect) {
-            is ChatSideEffect.ShowMessage -> snackbarHostState.showSnackbar(effect.message)
-        }
-    }
-
-    ChatScreen(
-        state = state,
-        // 신규 대화 진입일 때만 그리팅이 성립한다. state.conversationId는 첫 전송 후 값이 바뀌므로
-        // 진입 인자를 쓴다 (설계 2-5).
-        isNewConversation = conversationId == null,
-        snackbarHostState = snackbarHostState,
-        onInputChange = viewModel::onInputChange,
-        onSendClick = viewModel::onSendClick,
-        onSuggestionClick = viewModel::onSuggestionClick,
-        onNewConversationClick = viewModel::startNewConversation,
-        onCloseClick = onCloseClick,
-        onHistoryClick = onNavigateToHistory,
-        modifier = modifier,
-    )
-}
 
 // 상태 없는 오버로드. @Preview와 (도입 시) UI 테스트가 이쪽을 쓴다.
 @Composable
@@ -143,7 +112,7 @@ internal fun ChatScreen(
             )
 
             Box(modifier = Modifier.weight(1f)) {
-                if (state.messages.isEmpty() && state.phase == ChatPhase.IDLE) {
+                if (state.messages.isEmpty() && state.streamingChatState is StreamingChatState.Idle) {
                     ChatEntryContent(
                         suggestions = state.suggestions,
                         onSuggestionClick = onSuggestionClick,
@@ -240,7 +209,7 @@ private fun ChatMessageList(
     // 새 메시지 또는 스트리밍 텍스트 변화 시 마지막 항목으로 스크롤한다.
     // streamingText가 16ms 틱마다 바뀌므로 animateScrollToItem을 쓰면 애니메이션이
     // 매 틱 재시작돼 덜컹거린다. scrollToItem(애니메이션 없음)으로 잔상 없이 따라간다.
-    LaunchedEffect(state.messages.size, state.streamingText) {
+    LaunchedEffect(state.messages.size, state.streamingChatState) {
         if (listState.layoutInfo.totalItemsCount > 0) {
             listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
         }
@@ -278,24 +247,24 @@ private fun ChatMessageList(
         }
 
         // THINKING / TYPING 인디케이터를 마지막 슬롯에 표시한다 (설계 2-4).
-        if (state.phase != ChatPhase.IDLE) {
+        if (state.streamingChatState !is StreamingChatState.Idle) {
             item {
-                when (state.phase) {
-                    ChatPhase.THINKING -> {
+                when (state.streamingChatState) {
+                    is StreamingChatState.Thinking -> {
                         ThinkingIndicator(
                             modifier = Modifier.padding(vertical = ChatScreenDefaults.IndicatorVerticalPadding),
                         )
                     }
 
-                    ChatPhase.TYPING -> {
+                    is StreamingChatState.Typing -> {
                         Text(
-                            text = state.streamingText,
+                            text = state.streamingChatState.streamingText,
                             style = TodakunTypography.body2Regular,
                             color = TodakunColor.coolGray900,
                         )
                     }
 
-                    ChatPhase.IDLE -> {
+                    is StreamingChatState.Idle -> {
                         Unit
                     } // 도달하지 않는다
                 }
@@ -320,6 +289,7 @@ internal fun CharacterAvatar(
     )
 }
 
+
 private object ChatScreenDefaults {
     const val GREETING_DURATION_MILLIS = 3_000L // ponytail: 실기기에서 3초가 짧으면 늘린다
     val ContentHorizontalPadding = 16.dp
@@ -332,8 +302,6 @@ private object ChatScreenDefaults {
     val MessageItemSpacing = 12.dp
     val IndicatorVerticalPadding = 8.dp
 }
-
-// ──────────────── Preview ────────────────
 
 private val previewSuggestions =
     listOf(
@@ -448,7 +416,6 @@ private fun ChatScreenThinkingPreview() {
             state =
                 ChatState(
                     messages = previewMessages.take(1),
-                    phase = ChatPhase.THINKING,
                 ),
             isNewConversation = false,
             snackbarHostState = remember { SnackbarHostState() },
@@ -470,8 +437,7 @@ private fun ChatScreenTypingPreview() {
             state =
                 ChatState(
                     messages = previewMessages.take(1),
-                    phase = ChatPhase.TYPING,
-                    streamingText = "오늘의 운세를 알아볼게요! 대체로 긍정",
+                    streamingChatState = StreamingChatState.Typing("오늘의 운세를 알아볼게요! 대체로 긍정"),
                 ),
             isNewConversation = false,
             snackbarHostState = remember { SnackbarHostState() },
@@ -493,8 +459,7 @@ private fun ChatScreenConversationPreview() {
             state =
                 ChatState(
                     messages = previewMessages,
-                    phase = ChatPhase.IDLE,
-                    quota = ChatQuota(used = 1, limit = 3),
+                    streamingChatState = StreamingChatState.Idle,
                 ),
             isNewConversation = false,
             snackbarHostState = remember { SnackbarHostState() },
