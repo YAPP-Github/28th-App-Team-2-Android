@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import com.kikidan.domain.model.chat.ChatAction
 import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatStreamEvent
-import com.kikidan.domain.model.chat.ChatStreamException
 import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
 import com.kikidan.domain.usecase.GetChatEntryUseCase
@@ -44,12 +43,12 @@ class ChatViewModel
                                 quota = entry.quota,
                             )
                         }
-                    }.onFailure { postSideEffect(ChatSideEffect.ShowMessage(it.toUserMessage())) }
+                    }.onFailure { postSideEffect(ChatSideEffect.Error(it)) }
 
                 if (conversationId != null) {
                     getConversationDetail(conversationId)
                         .onSuccess { reduce { state.copy(messages = it.messages) } }
-                        .onFailure { postSideEffect(ChatSideEffect.ShowMessage(it.toUserMessage())) }
+                        .onFailure { postSideEffect(ChatSideEffect.Error(it)) }
                 }
 
                 reduce { state.copy(isLoading = false) }
@@ -86,7 +85,7 @@ class ChatViewModel
         private suspend fun Syntax<ChatState, ChatSideEffect>.send(content: String) {
             if (state.phase != ChatPhase.IDLE) return
             if (state.quota?.let { it.remaining <= 0 } == true) {
-                postSideEffect(ChatSideEffect.ShowMessage(QUOTA_EXHAUSTED_MESSAGE))
+                postSideEffect(ChatSideEffect.ShowStreamingErrorMessage(QUOTA_EXHAUSTED_MESSAGE))
                 return
             }
 
@@ -132,9 +131,22 @@ class ChatViewModel
                                     )
                                 }
                             }
-                            is ChatStreamEvent.Delta -> emit(event.text)
-                            is ChatStreamEvent.Action -> pendingAction = event.action
-                            is ChatStreamEvent.Done -> assistantMessageId = event.assistantMessageId
+
+                            is ChatStreamEvent.Delta -> {
+                                emit(event.text)
+                            }
+
+                            is ChatStreamEvent.Action -> {
+                                pendingAction = event.action
+                            }
+
+                            is ChatStreamEvent.Done -> {
+                                assistantMessageId = event.assistantMessageId
+                            }
+
+                            is ChatStreamEvent.Error -> {
+                                postSideEffect(ChatSideEffect.ShowStreamingErrorMessage(event.message))
+                            }
                         }
                     }.typewriter()
                     .collect { shown ->
@@ -160,7 +172,7 @@ class ChatViewModel
                 throw e
             } catch (e: Throwable) {
                 reduce { state.copy(streamingText = "", phase = ChatPhase.IDLE) }
-                postSideEffect(ChatSideEffect.ShowMessage(e.toUserMessage()))
+                postSideEffect(ChatSideEffect.Error(e))
             }
         }
 
@@ -169,15 +181,12 @@ class ChatViewModel
         }
     }
 
-private fun Throwable.toUserMessage(): String =
-    (this as? ChatStreamException)?.message ?: "답변을 받지 못했어요. 잠시 후 다시 시도해 주세요."
-
 private fun localUserMessage(content: String) =
     ChatMessage(
         id = "local-user-${System.currentTimeMillis()}",
         role = MessageRole.USER,
         content = content,
-        status = MessageStatus.PENDING,
+        status = MessageStatus.COMPLETED,
         action = null,
         createdAt = Instant.now(),
     )
