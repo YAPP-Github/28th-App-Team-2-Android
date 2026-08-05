@@ -10,7 +10,7 @@ data class ChatSuggestion(
     val emoji: String,
     val label: String,
     val seedPrompt: String,
-    val category: String,
+    val category: String?,
 )
 
 data class ChatQuota(
