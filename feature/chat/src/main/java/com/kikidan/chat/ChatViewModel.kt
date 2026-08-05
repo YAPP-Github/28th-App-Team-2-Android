@@ -85,7 +85,7 @@ class ChatViewModel
 
         // 전송 진입점이 여러 개이므로 가드를 여기 한 곳에만 둔다 (설계 2-7).
         private suspend fun Syntax<ChatState, ChatSideEffect>.send(content: String) {
-            if (state.streamingChatState is StreamingChatState.Idle) return
+            if (state.streamingChatState !is StreamingChatState.Idle) return
             if (state.quota?.let { it.remaining <= 0 } == true) {
                 postSideEffect(ChatSideEffect.ShowStreamingErrorMessage(QUOTA_EXHAUSTED_MESSAGE))
                 return
