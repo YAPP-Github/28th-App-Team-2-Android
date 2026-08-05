@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 카카오 말풍선 마크. 브랜드 자산이라 색을 고정한다. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="21dp"
+    android:height="20dp"
+    android:viewportWidth="21"
+    android:viewportHeight="20">
+    <path
+        android:fillColor="#391B1B"
+        android:pathData="M0,8.6743a10.5004,8.6743 0 1,0 21.0008,0a10.5004,8.6743 0 1,0 -21.0008,0z" />
+    <path
+        android:fillColor="#391B1B"
+        android:pathData="M4.0404,19.8411L8.3588,17.093C8.494,17.007 8.479,16.8051 8.3325,16.74L4.7993,15.1696C4.6804,15.1168 4.5433,15.1892 4.5201,15.3173L3.7349,19.6357C3.7035,19.8081 3.8925,19.9352 4.0404,19.8411Z" />
+</vector>
