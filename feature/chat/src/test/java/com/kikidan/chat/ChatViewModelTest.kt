@@ -1,8 +1,12 @@
 package com.kikidan.chat
 
+import com.kikidan.chat.model.ChatSideEffect
+import com.kikidan.chat.model.ChatState
+import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.domain.model.chat.ChatAction
 import com.kikidan.domain.model.chat.ChatActionType
 import com.kikidan.domain.model.chat.ChatEntry
+import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatQuota
 import com.kikidan.domain.model.chat.ChatStreamEvent
 import com.kikidan.domain.model.chat.ChatSuggestion
@@ -24,45 +28,11 @@ import java.time.Instant
 
 @Suppress("ktlint:standard:max-line-length")
 class ChatViewModelTest {
-    private fun makeVm(fakeRepo: FakeChatRepository): ChatViewModel =
-        ChatViewModel(
-            getChatEntry = GetChatEntryUseCase(fakeRepo),
-            getConversationDetail = GetConversationDetailUseCase(fakeRepo),
-            sendChatMessage = SendChatMessageUseCase(fakeRepo),
-        )
-
-    private val defaultEntry =
-        ChatEntry(
-            greeting = "안녕하세요",
-            suggestions = listOf(ChatSuggestion("😊", "label", "seed", "cat")),
-            quota = ChatQuota(used = 1, limit = 10),
-        )
-
-    private fun makeConversation(
-        id: String,
-        messages: List<com.kikidan.domain.model.chat.ChatMessage>,
-    ) = Conversation(id = id, title = "대화", messages = messages)
-
-    private fun makeMsg(
-        id: String,
-        content: String,
-        role: MessageRole = MessageRole.USER,
-    ) = com.kikidan.domain.model.chat.ChatMessage(
-        id = id,
-        role = role,
-        content = content,
-        status = MessageStatus.COMPLETED,
-        action = null,
-        createdAt = Instant.now(),
-    )
-
-    // ─── load() ─────────────────────────────────────────────────────────────
-
     @Test
-    fun `load null + entry 성공 시 suggestions quota greeting 반영, isLoading = false`() =
+    fun `load null + entry 성공 시 suggestions quota greeting 반영된다`() =
         runTest {
             val fakeRepo = FakeChatRepository().apply { chatEntryResult = Result.success(defaultEntry) }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.load(null)
@@ -84,7 +54,7 @@ class ChatViewModelTest {
     fun `load null + entry 실패 시 Error 사이드이펙트, isLoading = false`() =
         runTest {
             val fakeRepo = FakeChatRepository()
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.load(null)
@@ -99,13 +69,13 @@ class ChatViewModelTest {
     @Test
     fun `load 기존 conversationId 시 detail 메시지가 messages에 채워진다`() =
         runTest {
-            val msgs = listOf(makeMsg("m1", "hi"), makeMsg("m2", "hello", MessageRole.ASSISTANT))
+            val msgs = listOf(message("m1", "hi"), message("m2", "hello", MessageRole.ASSISTANT))
             val fakeRepo =
                 FakeChatRepository().apply {
                     chatEntryResult = Result.success(defaultEntry)
-                    conversationDetailResult = Result.success(makeConversation("c-1", msgs))
+                    conversationDetailResult = Result.success(conversation("c-1", msgs))
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.load("c-1")
@@ -124,10 +94,8 @@ class ChatViewModelTest {
             }
         }
 
-    // ─── send() / 전송 파이프라인 ─────────────────────────────────────────────
-
     @Test
-    fun `send 후 사용자 메시지가 즉시 messages에 추가되고 phase = THINKING`() =
+    fun `send 후 사용자 메시지가 즉시 messages에 추가된다`() =
         runTest {
             val fakeRepo =
                 FakeChatRepository().apply {
@@ -137,13 +105,13 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Done("a1")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("안녕")
                 // 첫 상태: THINKING + user msg Completed
                 val s1 = awaitState()
-                assertEquals(ChatPhase.THINKING, s1.phase)
+                assertEquals(StreamingChatState.Thinking, s1.streamingChatState)
                 assertTrue(s1.messages.isNotEmpty())
                 assertEquals("안녕", s1.messages.first().content)
                 assertEquals(MessageRole.USER, s1.messages.first().role)
@@ -153,7 +121,7 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `Delta 수신 시 phase = TYPING, streamingText 가 단조 증가한다`() =
+    fun `Delta 수신 시, streamingText 가 단조 증가한다`() =
         runTest {
             val fakeRepo =
                 FakeChatRepository().apply {
@@ -164,28 +132,30 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Done("a1")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("질문")
                 val typingStates = mutableListOf<ChatState>()
                 var s = awaitState()
-                while (s.phase != ChatPhase.IDLE) {
-                    if (s.phase == ChatPhase.TYPING) typingStates.add(s)
+                while (s.streamingChatState != StreamingChatState.Idle) {
+                    if (s.streamingChatState is StreamingChatState.Typing) typingStates.add(s)
                     s = awaitState()
                 }
                 assertTrue("TYPING 상태가 존재해야 함", typingStates.isNotEmpty())
                 for (i in 1 until typingStates.size) {
+                    val chatState = typingStates[i - 1].streamingChatState as StreamingChatState.Typing
+                    val currentChatState =  typingStates[i].streamingChatState as StreamingChatState.Typing
                     assertTrue(
-                        "streamingText 단조 증가 실패: '${typingStates[i - 1].streamingText}' → '${typingStates[i].streamingText}'",
-                        typingStates[i].streamingText.startsWith(typingStates[i - 1].streamingText),
+                        "streamingText 단조 증가 실패: '${chatState}' → '${chatState}'",
+                            currentChatState.streamingText.startsWith(chatState.streamingText),
                     )
                 }
             }
         }
 
     @Test
-    fun `Done 수신 시 messages 마지막이 assistantMessageId로 COMPLETED 상태의 ASSISTANT 메시지, streamingText = empty, phase = IDLE`() =
+    fun `Done 수신 시 messages 마지막이 assistantMessageId로 COMPLETED 상태의 ASSISTANT 메시지가 된다`() =
         runTest {
             val fakeRepo =
                 FakeChatRepository().apply {
@@ -198,14 +168,13 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Done("a1")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("질문")
                 var s = awaitState()
-                while (s.phase != ChatPhase.IDLE) s = awaitState()
-                assertEquals(ChatPhase.IDLE, s.phase)
-                assertEquals("", s.streamingText)
+                while (s.streamingChatState != StreamingChatState.Idle) s = awaitState()
+                assertEquals(StreamingChatState.Idle, s.streamingChatState)
                 val assistant = s.messages.last()
                 assertEquals("a1", assistant.id)
                 assertEquals(MessageRole.ASSISTANT, assistant.role)
@@ -225,12 +194,12 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Done("a1")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("첫 번째")
                 var s = awaitState()
-                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                while (s.streamingChatState != StreamingChatState.Idle) s = awaitState()
                 assertEquals("c-from-server", s.conversationId)
 
                 fakeRepo.streamEvents =
@@ -241,7 +210,7 @@ class ChatViewModelTest {
 
                 containerHost.onSuggestionClick("두 번째")
                 s = awaitState()
-                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
 
                 assertEquals("c-from-server", fakeRepo.lastSentConversationId)
                 assertEquals(2, fakeRepo.sendCallCount)
@@ -249,7 +218,7 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `Start의 userMessageId로 낙관적 사용자 메시지 id 가 교체되고 status = COMPLETED`() =
+    fun `Start의 userMessageId로 낙관적 사용자 메시지 id 가 교체된다`() =
         runTest {
             val fakeRepo =
                 FakeChatRepository().apply {
@@ -259,7 +228,7 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Done("a1")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("안녕")
@@ -284,7 +253,7 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Done("a1")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("안녕")
@@ -312,12 +281,12 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Done("a1")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("안녕")
                 var s = awaitState()
-                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
                 val assistant = s.messages.last()
                 assertEquals(action, assistant.action)
             }
@@ -333,12 +302,12 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Delta("텍스트만")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("안녕")
                 var s = awaitState()
-                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
                 val assistant = s.messages.find { it.role == MessageRole.ASSISTANT }
                 assertNotNull(assistant)
                 assertTrue("폴백 id 사용: ${assistant!!.id}", assistant.id.startsWith("local-assistant-"))
@@ -347,7 +316,7 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `스트림이 Result failure 방출 시 ShowMessage, phase = IDLE, streamingText = empty`() =
+    fun `스트림이 Result failure 방출 시 ShowMessage 이벤트가 방출된다`() =
         runTest {
             val fakeRepo =
                 FakeChatRepository().apply {
@@ -357,7 +326,7 @@ class ChatViewModelTest {
                             Result.failure(IllegalStateException()),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("안녕")
@@ -365,15 +334,14 @@ class ChatViewModelTest {
                 awaitState() // S2: Start 수신 후 THINKING/COMPLETED
                 // catch 블록: reduce(IDLE) → SE 순서
                 val s = awaitState()
-                assertEquals(ChatPhase.IDLE, s.phase)
-                assertEquals("", s.streamingText)
+                assertEquals(StreamingChatState.Idle, s.streamingChatState)
                 val se = awaitSideEffect()
                 assertEquals(IllegalStateException::class, (se as ChatSideEffect.Error).e::class)
             }
         }
 
     @Test
-    fun `스트리밍 중 send 재호출은 무시된다 - Fake 호출 횟수 1 유지`() =
+    fun `스트리밍 중 send 재호출은 무시되며 Fake 호출 횟수가 1을 유지한다`() =
         runTest {
             val fakeRepo =
                 FakeChatRepository().apply {
@@ -382,20 +350,20 @@ class ChatViewModelTest {
                             Result.success(ChatStreamEvent.Delta("텍스트")),
                         )
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onSuggestionClick("첫 번째")
                 // 첫 상태: THINKING (phase != IDLE)
                 val s1 = awaitState()
-                assertTrue("THINKING 상태여야 함", s1.phase != ChatPhase.IDLE)
+                assertTrue("THINKING 상태여야 함", s1.streamingChatState != StreamingChatState.Idle)
 
                 // 스트리밍 중 두 번째 send → phase != IDLE이므로 send() 가드에서 즉시 return
                 containerHost.onSuggestionClick("두 번째")
 
                 // 나머지 상태 소비
                 var s = awaitState()
-                while (s.phase != ChatPhase.IDLE) s = awaitState()
+                while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
 
                 // sendChatMessage 호출은 첫 번째 1회뿐
                 assertEquals(1, fakeRepo.sendCallCount)
@@ -403,14 +371,14 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `quota remaining = 0 에서 send 시 전송 없이 ShowMessage`() =
+    fun `quota remaining = 0 에서 send 시 전송 없이 ShowStreamingErrorMessage 이벤트가 방출된다`() =
         runTest {
             val exhaustedQuota = ChatQuota(used = 10, limit = 10) // remaining = 0
             val fakeRepo =
                 FakeChatRepository().apply {
                     chatEntryResult = Result.success(ChatEntry("", emptyList(), exhaustedQuota))
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.load(null)
@@ -426,10 +394,10 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `onInputChange에 501자 입력 시 input length = 500`() =
+    fun `onInputChange에 501자 입력 시 input length가 500으로 제한된다`() =
         runTest {
             val fakeRepo = FakeChatRepository()
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.onInputChange("a".repeat(501))
@@ -441,13 +409,13 @@ class ChatViewModelTest {
     @Test
     fun `startNewConversation 호출 시 conversationId = null, messages 비워짐, suggestions 유지`() =
         runTest {
-            val msgs = listOf(makeMsg("m1", "hi"))
+            val msgs = listOf(message("m1", "hi"))
             val fakeRepo =
                 FakeChatRepository().apply {
                     chatEntryResult = Result.success(defaultEntry)
-                    conversationDetailResult = Result.success(makeConversation("c-1", msgs))
+                    conversationDetailResult = Result.success(conversation("c-1", msgs))
                 }
-            val vm = makeVm(fakeRepo)
+            val vm = viewModel(fakeRepo)
 
             vm.test(this) {
                 containerHost.load("c-1")
@@ -463,9 +431,41 @@ class ChatViewModelTest {
                 val afterNew = awaitState()
                 assertNull(afterNew.conversationId)
                 assertTrue(afterNew.messages.isEmpty())
-                assertEquals(ChatPhase.IDLE, afterNew.phase)
-                assertEquals("", afterNew.streamingText)
+                assertEquals(StreamingChatState.Idle, afterNew.streamingChatState)
                 assertEquals(defaultEntry.suggestions, afterNew.suggestions)
             }
         }
+
+    private fun viewModel(fakeRepo: FakeChatRepository): ChatViewModel =
+        ChatViewModel(
+            getChatEntry = GetChatEntryUseCase(fakeRepo),
+            getConversationDetail = GetConversationDetailUseCase(fakeRepo),
+            sendChatMessage = SendChatMessageUseCase(fakeRepo),
+        )
+
+    private val defaultEntry =
+        ChatEntry(
+            greeting = "안녕하세요",
+            suggestions = listOf(ChatSuggestion("😊", "label", "seed", "cat")),
+            quota = ChatQuota(used = 1, limit = 10),
+        )
+
+    private fun conversation(
+        id: String,
+        messages: List<ChatMessage>,
+    ) = Conversation(id = id, title = "대화", messages = messages)
+
+    private fun message(
+        id: String,
+        content: String,
+        role: MessageRole = MessageRole.USER,
+    ) = ChatMessage(
+        id = id,
+        role = role,
+        content = content,
+        status = MessageStatus.COMPLETED,
+        action = null,
+        createdAt = Instant.now(),
+    )
+
 }
