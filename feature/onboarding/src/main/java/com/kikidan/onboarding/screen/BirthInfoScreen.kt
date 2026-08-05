@@ -39,6 +39,7 @@ internal fun BirthInfoScreen(
     calendarType: DateType?,
     birthDate: LocalDate?,
     birthTime: BirthTime?,
+    isBirthDateError: Boolean,
     openedSheet: OnboardingSheet?,
     canProceed: Boolean,
     onGenderSelect: (Gender) -> Unit,
@@ -110,6 +111,8 @@ internal fun BirthInfoScreen(
                     placeholder = stringResource(id = R.string.onboarding_birth_date_placeholder),
                     expanded = openedSheet == OnboardingSheet.BIRTH_DATE,
                     onClear = onBirthDateClear,
+                    isError = isBirthDateError,
+                    errorMessage = stringResource(R.string.onboarding_birth_date_under_age_errror),
                 )
             }
 
@@ -203,6 +206,7 @@ private fun BirthInfoScreenPreview() {
             onBirthTimeUnknownChange = {},
             onNextClick = {},
             onBackClick = {},
+            isBirthDateError = false,
         )
     }
 }

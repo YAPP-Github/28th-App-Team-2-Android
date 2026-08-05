@@ -46,11 +46,6 @@ class OnboardingViewModel
                 }
             }
 
-        fun moveToStep(step: OnboardingStep) =
-            intent {
-                reduce { state.copy(step = step) }
-            }
-
         fun onDialogDismiss() =
             intent {
                 reduce { state.copy(dialog = null) }

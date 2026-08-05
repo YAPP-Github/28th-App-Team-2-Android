@@ -42,6 +42,7 @@
     <string name="onboarding_birth_date_label">생년월일</string>
     <string name="onboarding_birth_date_placeholder">생년월일 선택</string>
     <string name="onboarding_birth_date_format">%1$d년 %2$d월 %3$d일</string>
+    <string name="onboarding_birth_date_under_age_errror">토닥운은 만 14세부터 가입할 수 있어요</string>
     <string name="onboarding_birth_time_label">태어난 시간</string>
     <string name="onboarding_birth_time_placeholder">태어난 시간 선택</string>
     <string name="onboarding_birth_time_unknown">시간 모름</string>

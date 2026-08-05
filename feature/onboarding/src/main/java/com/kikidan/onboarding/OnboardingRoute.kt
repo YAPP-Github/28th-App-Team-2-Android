@@ -109,6 +109,7 @@ fun OnboardingRoute(
                 birthTime = state.birthTime,
                 openedSheet = state.sheet,
                 canProceed = state.canProceed,
+                isBirthDateError = state.isUnderAge,
                 onGenderSelect = viewModel::onGenderSelect,
                 onCalendarTypeSelect = viewModel::onCalendarTypeSelect,
                 onSheetOpen = viewModel::onSheetOpen,
