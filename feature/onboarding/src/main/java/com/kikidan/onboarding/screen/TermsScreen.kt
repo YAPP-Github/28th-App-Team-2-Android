@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -43,6 +44,7 @@ internal fun TermsScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val uriHandler = LocalUriHandler.current
     OnboardingScaffold(
         progress = OnboardingStep.TERMS.progress,
         progressLabel = stringResource(id = R.string.onboarding_terms_progress_label),
@@ -63,6 +65,7 @@ internal fun TermsScreen(
                     checked = termsAgreement.isAgreed(term),
                     textStyleEmphasized = false,
                     onCheckedChange = { onTermChange(term) },
+                    onMoreDetailClick = { uriHandler.openUri(term.link) },
                 )
             }
         }
@@ -87,7 +90,7 @@ private fun TermRow(
     textStyleEmphasized: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    onMoreDetailClick: () -> Unit = { /* TODO 외부 링크 열기  */ },
+    onMoreDetailClick: () -> Unit = {},
 ) {
     Row(
         modifier =
