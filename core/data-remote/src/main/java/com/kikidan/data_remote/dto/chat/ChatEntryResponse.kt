@@ -17,7 +17,7 @@ data class ChatSuggestionResponse(
     val emoji: String,
     val label: String,
     val seedPrompt: String,
-    val category: String,
+    val category: String?,
 )
 
 @Serializable
