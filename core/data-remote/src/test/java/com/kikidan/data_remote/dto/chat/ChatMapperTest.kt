@@ -19,7 +19,7 @@ class ChatMapperTest {
         val response =
             ChatEntryResponse(
                 greeting = "안녕하세요",
-                suggestions = listOf(ChatSuggestionResponse("🌟", "테스트", "seed", "CAREER")),
+                suggestions = listOf(ChatSuggestionResponse("🌟", "테스트", "seed", "LOVE")),
                 quota = ChatQuotaResponse(used = 2, limit = 5),
             )
 

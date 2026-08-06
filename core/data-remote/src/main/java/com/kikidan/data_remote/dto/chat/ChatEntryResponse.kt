@@ -1,5 +1,6 @@
 package com.kikidan.data_remote.dto.chat
 
+import com.kikidan.domain.model.chat.ChatCategory
 import com.kikidan.domain.model.chat.ChatEntry
 import com.kikidan.domain.model.chat.ChatQuota
 import com.kikidan.domain.model.chat.ChatSuggestion
@@ -34,6 +35,11 @@ internal fun ChatEntryResponse.toDomain(): ChatEntry =
     )
 
 internal fun ChatSuggestionResponse.toDomain(): ChatSuggestion =
-    ChatSuggestion(emoji = emoji, label = label, seedPrompt = seedPrompt, category = category)
+    ChatSuggestion(
+        emoji = emoji,
+        label = label,
+        seedPrompt = seedPrompt,
+        category = if (category == null) null else ChatCategory.valueOf(category),
+    )
 
 internal fun ChatQuotaResponse.toDomain(): ChatQuota = ChatQuota(used = used, limit = limit)
