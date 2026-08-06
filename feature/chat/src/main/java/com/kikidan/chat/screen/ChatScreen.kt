@@ -233,8 +233,9 @@ private fun ChatMessageList(
                     }
                 }
 
-                else -> {
+                MessageRole.ASSISTANT -> {
                     Column {
+                        Spacer(modifier = Modifier.height(24.dp))
                         Text(
                             text = message.content,
                             style = TodakunTypography.body2Regular,
@@ -257,11 +258,10 @@ private fun ChatMessageList(
         // THINKING / TYPING 인디케이터를 마지막 슬롯에 표시
         if (state.streamingChatState !is StreamingChatState.Idle) {
             item {
+                Spacer(modifier = Modifier.height(24.dp))
                 when (state.streamingChatState) {
                     is StreamingChatState.Thinking -> {
-                        ThinkingIndicator(
-                            modifier = Modifier.padding(vertical = 8.dp),
-                        )
+                        ThinkingIndicator()
                     }
 
                     is StreamingChatState.Typing -> {
