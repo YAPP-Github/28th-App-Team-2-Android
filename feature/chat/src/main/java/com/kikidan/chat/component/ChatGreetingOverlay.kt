@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.kikidan.chat.util.toCharacterResourceId
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
@@ -134,15 +135,6 @@ private fun SpeechBubble(
         }
     }
 }
-
-private fun ChatCategory.toCharacterResourceId() =
-    when (this) {
-        ChatCategory.LOVE -> R.drawable.img_todak_love_luck
-        ChatCategory.MONEY -> R.drawable.img_todak_money_luck
-        ChatCategory.ACHIEVEMENT -> R.drawable.img_todak_achievement_luck
-        ChatCategory.HEALTH -> R.drawable.img_todak_health_luck
-        ChatCategory.RELATIONSHIP -> R.drawable.img_todak_relationship_luck
-    }
 
 @Composable
 private fun ChatCategory.toTitle() =
