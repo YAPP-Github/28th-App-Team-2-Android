@@ -10,7 +10,7 @@ data class ChatSuggestion(
     val emoji: String,
     val label: String,
     val seedPrompt: String,
-    val category: String?,
+    val category: ChatCategory?,
 )
 
 data class ChatQuota(
@@ -18,4 +18,12 @@ data class ChatQuota(
     val limit: Int,
 ) {
     val remaining: Int get() = (limit - used).coerceAtLeast(0)
+}
+
+enum class ChatCategory {
+    RELATIONSHIP,
+    LOVE,
+    ACHIEVEMENT,
+    MONEY,
+    HEALTH,
 }
