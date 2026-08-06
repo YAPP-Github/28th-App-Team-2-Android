@@ -1,5 +1,6 @@
 package com.kikidan.chat
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
@@ -11,6 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TypewriterFlowTest {
     @Test
     fun `단일 청크를 받으면 여러 번 나눠 방출하고 마지막 값이 전체 텍스트와 같다`() =

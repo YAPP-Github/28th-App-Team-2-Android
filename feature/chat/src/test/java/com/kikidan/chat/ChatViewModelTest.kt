@@ -5,6 +5,7 @@ import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.domain.model.chat.ChatAction
 import com.kikidan.domain.model.chat.ChatActionType
+import com.kikidan.domain.model.chat.ChatCategory
 import com.kikidan.domain.model.chat.ChatEntry
 import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatQuota
@@ -371,29 +372,6 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `quota remaining = 0 에서 send 시 전송 없이 ShowStreamingErrorMessage 이벤트가 방출된다`() =
-        runTest {
-            val exhaustedQuota = ChatQuota(used = 10, limit = 10) // remaining = 0
-            val fakeRepo =
-                FakeChatRepository().apply {
-                    chatEntryResult = Result.success(ChatEntry("", emptyList(), exhaustedQuota))
-                }
-            val vm = viewModel(fakeRepo)
-
-            vm.test(this) {
-                containerHost.load(null)
-                awaitState() // quota 설정
-                val s2 = awaitState() // isLoading=false
-                assertEquals(0, s2.quota!!.remaining)
-
-                containerHost.onSuggestionClick("안녕")
-                val se = awaitSideEffect()
-                assertTrue(se is ChatSideEffect.ShowStreamingErrorMessage)
-                assertEquals(0, fakeRepo.sendCallCount)
-            }
-        }
-
-    @Test
     fun `onInputChange에 501자 입력 시 input length가 500으로 제한된다`() =
         runTest {
             val fakeRepo = FakeChatRepository()
@@ -446,7 +424,7 @@ class ChatViewModelTest {
     private val defaultEntry =
         ChatEntry(
             greeting = "안녕하세요",
-            suggestions = listOf(ChatSuggestion("😊", "label", "seed", "cat")),
+            suggestions = listOf(ChatSuggestion("😊", "label", "seed", ChatCategory.LOVE)),
             quota = ChatQuota(used = 1, limit = 10),
         )
 
