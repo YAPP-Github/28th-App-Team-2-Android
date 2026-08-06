@@ -31,7 +31,6 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 
-// 점 3개가 좌→우 순서로 튀어 오르며 옅은 색에서 primary700로 짙어진다 (Figma node 2292:21555). designsystem에 없어 이 화면 전용으로 만든다.
 @Composable
 internal fun ThinkingIndicator(modifier: Modifier = Modifier) {
     val description = stringResource(R.string.chat_thinking_description)

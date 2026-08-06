@@ -55,6 +55,7 @@ import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.chat.util.toCharacterResourceId
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.chat.TodakunChatActionCard
 import com.kikidan.designsystem.component.chat.TodakunChatExampleChip
 import com.kikidan.designsystem.component.chat.TodakunChatHeader
 import com.kikidan.designsystem.component.chat.TodakunChatInputField
@@ -62,6 +63,8 @@ import com.kikidan.designsystem.component.chat.TodakunChatUserInputBubble
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
+import com.kikidan.domain.model.chat.ChatAction
+import com.kikidan.domain.model.chat.ChatActionType
 import com.kikidan.domain.model.chat.ChatCategory
 import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatSuggestion
@@ -69,6 +72,9 @@ import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
 import kotlinx.coroutines.delay
 import java.time.Instant
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -81,6 +87,7 @@ internal fun ChatScreen(
     onCloseClick: () -> Unit,
     onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onActionClick: (ChatAction) -> Unit = {},
 ) {
     val density = LocalDensity.current
     var inputFieldHeight by remember { mutableStateOf(0.dp) }
@@ -121,6 +128,7 @@ internal fun ChatScreen(
                 },
                 inputFieldHeight = inputFieldHeight,
                 selectedCategory = selectedCategory,
+                onActionClick = onActionClick,
             )
         }
         TodakunChatInputField(
@@ -161,6 +169,7 @@ private fun ChatMessageList(
     state: ChatState,
     suggestions: List<ChatSuggestion>,
     onSuggestionClick: (ChatSuggestion) -> Unit,
+    onActionClick: (ChatAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // 상위에서 selectedCatgeory가 null이 되도 이전 캐릭터 유지
@@ -225,11 +234,22 @@ private fun ChatMessageList(
                 }
 
                 else -> {
-                    Text(
-                        text = message.content,
-                        style = TodakunTypography.body2Regular,
-                        color = TodakunColor.coolGray900,
-                    )
+                    Column {
+                        Text(
+                            text = message.content,
+                            style = TodakunTypography.body2Regular,
+                            color = TodakunColor.coolGray900,
+                        )
+                        message.action?.let { action ->
+                            Spacer(modifier = Modifier.height(12.dp))
+                            TodakunChatActionCard(
+                                category = action.category,
+                                dateText = action.date?.toActionDateText().orEmpty(),
+                                buttonLabel = action.label,
+                                onButtonClick = { onActionClick(action) },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -297,6 +317,11 @@ private object ChatScreenDefaults {
     const val GREETING_DURATION_MILLIS = 3_000L
 }
 
+private fun LocalDate.toActionDateText(): String = ActionDateFormatter.format(this)
+
+private val ActionDateFormatter: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("yyyy . M . d (E)", Locale.KOREA)
+
 private val previewSuggestions =
     listOf(
         ChatSuggestion(
@@ -341,7 +366,13 @@ private val previewMessages =
             role = MessageRole.ASSISTANT,
             content = "오늘의 운세를 알아볼게요! 대체로 긍정적인 에너지가 흐르는 날입니다.",
             status = MessageStatus.COMPLETED,
-            action = null,
+            action =
+                ChatAction(
+                    type = ChatActionType.CALENDAR_ADD,
+                    label = "내 캘린더에 추가하기",
+                    category = "계약 · 이사",
+                    date = LocalDate.of(2026, 7, 25),
+                ),
             createdAt = Instant.EPOCH,
         ),
         ChatMessage(
