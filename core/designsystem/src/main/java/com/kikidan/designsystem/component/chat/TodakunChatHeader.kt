@@ -99,7 +99,7 @@ fun TodakunChatHeader(
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
-                            onClick = onChatIconClick
+                            onClick = onChatIconClick,
                         ),
             )
             Icon(
@@ -113,7 +113,7 @@ fun TodakunChatHeader(
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() },
-                            onClick = onNotesIconClick
+                            onClick = onNotesIconClick,
                         ),
             )
         }

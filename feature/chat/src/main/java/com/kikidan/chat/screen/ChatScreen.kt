@@ -241,7 +241,7 @@ private fun ChatMessageList(
                             color = TodakunColor.coolGray900,
                         )
                         message.action?.let { action ->
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
                             TodakunChatActionCard(
                                 category = action.category,
                                 dateText = action.date?.toActionDateText().orEmpty(),

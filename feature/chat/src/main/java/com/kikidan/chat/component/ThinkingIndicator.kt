@@ -68,8 +68,7 @@ internal fun ThinkingIndicator(modifier: Modifier = Modifier) {
                             .size(ThinkingIndicatorDefaults.DotSize)
                             .graphicsLayer {
                                 translationY = -ThinkingIndicatorDefaults.BounceHeight.toPx() * bounceProgress
-                            }
-                            .clip(CircleShape)
+                            }.clip(CircleShape)
                             .background(
                                 lerp(TodakunColor.primary300, TodakunColor.primary700, bounceProgress),
                             ),
