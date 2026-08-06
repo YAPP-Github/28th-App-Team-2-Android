@@ -1,27 +1,18 @@
 package com.kikidan.chat
 
-import android.window.SplashScreen
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.chat.model.ChatSideEffect
-import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.screen.ChatScreen
 import com.kikidan.chat.screen.ChatSplashScreen
-import com.kikidan.designsystem.theme.TodakunTheme
-import com.kikidan.domain.model.chat.ChatMessage
-import com.kikidan.domain.model.chat.ChatSuggestion
-import com.kikidan.domain.model.chat.MessageRole
-import com.kikidan.domain.model.chat.MessageStatus
+import com.kikidan.designsystem.R
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import java.time.Instant
 
 @Composable
 fun ChatRoute(

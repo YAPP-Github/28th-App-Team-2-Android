@@ -52,6 +52,7 @@
     <string name="chat_header_title">토닥이</string>
     <string name="chat_entry_question">오늘은 어떤게 궁금해?</string>
     <string name="chat_thinking_description">토닥이가 생각하고 있어요</string>
+    <string name="chat_thinking_label">생각 중</string>
     <string name="chat_greeting_close_description">그리팅 닫기</string>
     <string name="chat_default_error">알 수 없는 에러가 발생했어요. 잠시 후 다시 시도해주세요</string>
     <string name="chat_charactor_content_description">토닥이 사진</string>
