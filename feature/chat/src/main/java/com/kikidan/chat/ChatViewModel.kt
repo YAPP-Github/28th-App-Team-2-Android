@@ -88,7 +88,7 @@ class ChatViewModel
             if (state.streamingChatState !is StreamingChatState.Idle) return
 
             val conversationId = state.conversationId
-            val placeholder = localUserMessage(content)
+            val placeholder = localUserMessage(content.trim())
             reduce {
                 state.copy(
                     messages = state.messages + placeholder,
