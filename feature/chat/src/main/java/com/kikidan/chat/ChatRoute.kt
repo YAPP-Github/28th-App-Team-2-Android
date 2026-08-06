@@ -1,5 +1,6 @@
 package com.kikidan.chat
 
+import android.window.SplashScreen
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.model.ChatState
-import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.chat.screen.ChatScreen
+import com.kikidan.chat.screen.ChatSplashScreen
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatSuggestion
@@ -33,6 +34,7 @@ fun ChatRoute(
 ) {
     val state by viewModel.collectAsState()
     val defaultErrorMessage = stringResource(R.string.chat_default_error)
+    val showSplash = state.quota == null
 
     LaunchedEffect(Unit) { viewModel.load(conversationId) }
 
@@ -43,14 +45,18 @@ fun ChatRoute(
         }
     }
 
-    ChatScreen(
-        state = state,
-        onInputChange = viewModel::onInputChange,
-        onSendClick = viewModel::onSendClick,
-        onSuggestionClick = viewModel::onSuggestionClick,
-        onNewConversationClick = viewModel::startNewConversation,
-        onCloseClick = onCloseClick,
-        onHistoryClick = onNavigateToHistory,
-        modifier = modifier,
-    )
+    if (showSplash) {
+        ChatSplashScreen()
+    } else {
+        ChatScreen(
+            state = state,
+            onInputChange = viewModel::onInputChange,
+            onSendClick = viewModel::onSendClick,
+            onSuggestionClick = viewModel::onSuggestionClick,
+            onNewConversationClick = viewModel::startNewConversation,
+            onCloseClick = onCloseClick,
+            onHistoryClick = onNavigateToHistory,
+            modifier = modifier,
+        )
+    }
 }
