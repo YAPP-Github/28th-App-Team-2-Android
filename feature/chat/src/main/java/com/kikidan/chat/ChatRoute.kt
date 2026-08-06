@@ -27,27 +27,24 @@ fun ChatRoute(
     conversationId: String?,
     onCloseClick: () -> Unit,
     onNavigateToHistory: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
     val defaultErrorMessage = stringResource(R.string.chat_default_error)
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    // 컴포지션당 정확히 1회 (설계 2-3)
     LaunchedEffect(Unit) { viewModel.load(conversationId) }
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
             is ChatSideEffect.ShowStreamingErrorMessage -> snackbarHostState.showSnackbar(effect.message)
-            is ChatSideEffect.Error -> snackbarHostState.showSnackbar(defaultErrorMessage )
+            is ChatSideEffect.Error -> snackbarHostState.showSnackbar(defaultErrorMessage)
         }
     }
 
     ChatScreen(
         state = state,
-        isNewConversation = conversationId == null,
-        snackbarHostState = snackbarHostState,
         onInputChange = viewModel::onInputChange,
         onSendClick = viewModel::onSendClick,
         onSuggestionClick = viewModel::onSuggestionClick,

@@ -3,26 +3,31 @@ package com.kikidan.chat.screen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,20 +40,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.kikidan.chat.ChatGreetingOverlay
-import com.kikidan.chat.R
-import com.kikidan.chat.ThinkingIndicator
-import com.kikidan.chat.model.ChatSideEffect
+import com.kikidan.chat.component.ChatGreetingOverlay
+import com.kikidan.chat.component.ThinkingIndicator
 import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
-import com.kikidan.designsystem.component.TodakunSnackbar
-import com.kikidan.designsystem.component.bottomnavigation.TodakunBottomNavigation
-import com.kikidan.designsystem.component.bottomnavigation.TodakunNavItem
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.chat.TodakunChatExampleChip
 import com.kikidan.designsystem.component.chat.TodakunChatHeader
 import com.kikidan.designsystem.component.chat.TodakunChatInputField
@@ -56,21 +59,18 @@ import com.kikidan.designsystem.component.chat.TodakunChatUserInputBubble
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
+import com.kikidan.domain.model.chat.ChatCategory
 import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatSuggestion
 import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
 import kotlinx.coroutines.delay
-import org.orbitmvi.orbit.compose.collectAsState
-import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.Instant
 
-// 상태 없는 오버로드. @Preview와 (도입 시) UI 테스트가 이쪽을 쓴다.
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ChatScreen(
     state: ChatState,
-    isNewConversation: Boolean,
-    snackbarHostState: SnackbarHostState,
     onInputChange: (String) -> Unit,
     onSendClick: () -> Unit,
     onSuggestionClick: (String) -> Unit,
@@ -79,14 +79,14 @@ internal fun ChatScreen(
     onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var greetingDismissed by rememberSaveable { mutableStateOf(false) }
-    val showGreeting = isNewConversation && state.greeting.isNotBlank() && !greetingDismissed
+    val density = LocalDensity.current
+    var inputFieldHeight by remember { mutableStateOf(0.dp) }
+    var selectedCategory: ChatCategory? by remember { mutableStateOf(null) }
 
-    // 3초 뒤 자동 종료. X 탭도 같은 플래그를 세우므로 타이머를 따로 취소할 필요가 없다 (설계 2-5).
-    LaunchedEffect(showGreeting) {
-        if (showGreeting) {
+    LaunchedEffect(selectedCategory) {
+        if (selectedCategory != null) {
             delay(ChatScreenDefaults.GREETING_DURATION_MILLIS)
-            greetingDismissed = true
+            selectedCategory = null
         }
     }
 
@@ -94,92 +94,97 @@ internal fun ChatScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(TodakunColor.white),
+                .background(TodakunColor.white)
+                .systemBarsPadding()
+                .imePadding(),
     ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .safeDrawingPadding(),
-        ) {
+        Column {
             TodakunChatHeader(
                 title = stringResource(R.string.chat_header_title),
-                freeChatUsed = state.quota?.used ?: 0,
+                freeChatUsed = state.quota?.remaining ?: 0,
                 freeChatTotal = state.quota?.limit ?: 0,
                 onCloseClick = onCloseClick,
                 onChatIconClick = onNewConversationClick,
                 onNotesIconClick = onHistoryClick,
             )
 
-            Box(modifier = Modifier.weight(1f)) {
+            Box(
+                modifier = Modifier.weight(1f),
+            ) {
                 if (state.messages.isEmpty() && state.streamingChatState is StreamingChatState.Idle) {
                     ChatEntryContent(
                         suggestions = state.suggestions,
-                        onSuggestionClick = onSuggestionClick,
+                        onSuggestionClick = { suggestion ->
+                            selectedCategory = suggestion.category
+                            onSuggestionClick(suggestion.seedPrompt)
+                        },
                         modifier = Modifier.fillMaxSize(),
+                        inputFieldHeight = inputFieldHeight,
                     )
                 } else {
                     ChatMessageList(
                         state = state,
                         modifier = Modifier.fillMaxSize(),
+                        inputFieldHeight = inputFieldHeight,
                     )
                 }
             }
-
-            TodakunChatInputField(
-                value = state.input,
-                onValueChange = onInputChange,
-                onSendClick = onSendClick,
-                modifier = Modifier.padding(horizontal = ChatScreenDefaults.ContentHorizontalPadding),
-            )
-
-            // 바텀 네비게이션. 나머지 탭 화면이 없어 onItemSelect는 no-op (설계 2-6).
-            TodakunBottomNavigation(
-                selectedItem = TodakunNavItem.TODAK_CHAT,
-                onItemSelect = {},
-            )
         }
-
-        SnackbarHost(
-            hostState = snackbarHostState,
+        TodakunChatInputField(
+            value = state.input,
+            onValueChange = onInputChange,
+            onSendClick = onSendClick,
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .safeDrawingPadding(),
-        ) { data ->
-            TodakunSnackbar(text = data.visuals.message)
-        }
+                    .onPlaced { placeable ->
+                        inputFieldHeight =
+                            with(density) {
+                                placeable.size.height.toDp()
+                            }
+                    }.padding(20.dp),
+        )
 
         AnimatedVisibility(
-            visible = showGreeting,
+            visible = selectedCategory != null,
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
-            ChatGreetingOverlay(
-                greeting = state.greeting,
-                onCloseClick = { greetingDismissed = true },
-            )
+            selectedCategory?.let {
+                ChatGreetingOverlay(
+                    category = it,
+                    onCloseClick = { selectedCategory = null },
+                )
+            }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatEntryContent(
+    inputFieldHeight: Dp,
     suggestions: List<ChatSuggestion>,
-    onSuggestionClick: (String) -> Unit,
+    onSuggestionClick: (ChatSuggestion) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val entryScrollState = rememberScrollState()
+    val imeBottom = WindowInsets.ime.getBottom(LocalDensity.current)
+
+    LaunchedEffect(imeBottom) {
+        entryScrollState.scrollTo(entryScrollState.maxValue)
+    }
+
     Column(
         modifier =
             modifier
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = ChatScreenDefaults.ContentHorizontalPadding)
-                .padding(top = ChatScreenDefaults.EntryTopPadding, bottom = ChatScreenDefaults.EntryBottomPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(ChatScreenDefaults.EntryItemSpacing),
+                .verticalScroll(entryScrollState)
+                .padding(20.dp)
+                .padding(bottom = inputFieldHeight),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // 캐릭터 이미지 asset 미확보. 크기·위치만 잡아 두고 에셋 반입 시 Image로 교체한다 (설계 2-7).
-        CharacterAvatar(size = ChatScreenDefaults.EntryAvatarSize)
+        ProfileCharacterImage(size = 60.dp)
 
         Text(
             text = stringResource(R.string.chat_entry_question),
@@ -187,29 +192,29 @@ private fun ChatEntryContent(
             color = TodakunColor.coolGray900,
         )
 
-        Spacer(Modifier.height(ChatScreenDefaults.EntryChipTopSpacing))
-
         suggestions.forEach { suggestion ->
             TodakunChatExampleChip(
                 text = "${suggestion.emoji} ${suggestion.label}",
-                onClick = { onSuggestionClick(suggestion.seedPrompt) },
-                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    onSuggestionClick(suggestion)
+                },
             )
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatMessageList(
+    inputFieldHeight: Dp,
     state: ChatState,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
+    val imeBottom = WindowInsets.ime.getBottom(LocalDensity.current)
 
-    // 새 메시지 또는 스트리밍 텍스트 변화 시 마지막 항목으로 스크롤한다.
-    // streamingText가 16ms 틱마다 바뀌므로 animateScrollToItem을 쓰면 애니메이션이
-    // 매 틱 재시작돼 덜컹거린다. scrollToItem(애니메이션 없음)으로 잔상 없이 따라간다.
-    LaunchedEffect(state.messages.size, state.streamingChatState) {
+    // 키보드가 열리고 닫히는 애니메이션 프레임마다 마지막 아이템으로 재스크롤해 입력창에 가려지지 않게 한다.
+    LaunchedEffect(state.messages.size, state.streamingChatState, imeBottom) {
         if (listState.layoutInfo.totalItemsCount > 0) {
             listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
         }
@@ -220,10 +225,12 @@ private fun ChatMessageList(
         modifier = modifier,
         contentPadding =
             PaddingValues(
-                horizontal = ChatScreenDefaults.ContentHorizontalPadding,
-                vertical = ChatScreenDefaults.MessageListVerticalPadding,
+                start = 20.dp,
+                end = 20.dp,
+                top = 12.dp,
+                bottom = inputFieldHeight,
             ),
-        verticalArrangement = Arrangement.spacedBy(ChatScreenDefaults.MessageItemSpacing),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(state.messages, key = { it.id }) { message ->
             when (message.role) {
@@ -247,12 +254,12 @@ private fun ChatMessageList(
         }
 
         // THINKING / TYPING 인디케이터를 마지막 슬롯에 표시한다 (설계 2-4).
-        if (state.streamingChatState !is StreamingChatState.Idle) {
+        if (state.streamingChatState !is StreamingChatState.Thinking) {
             item {
                 when (state.streamingChatState) {
                     is StreamingChatState.Thinking -> {
                         ThinkingIndicator(
-                            modifier = Modifier.padding(vertical = ChatScreenDefaults.IndicatorVerticalPadding),
+                            modifier = Modifier.padding(vertical = 8.dp),
                         )
                     }
 
@@ -260,7 +267,7 @@ private fun ChatMessageList(
                         Text(
                             text = state.streamingChatState.streamingText,
                             style = TodakunTypography.body2Regular,
-                            color = TodakunColor.coolGray900,
+                            color = TodakunColor.black,
                         )
                     }
 
@@ -273,34 +280,23 @@ private fun ChatMessageList(
     }
 }
 
-// 캐릭터 이미지 asset 미확보. 크기·위치만 잡아 두고 에셋 반입 시 Image로 교체한다 (설계 2-7).
-// ChatGreetingOverlay와 공유하므로 internal.
 @Composable
-internal fun CharacterAvatar(
+private fun ProfileCharacterImage(
     size: Dp,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    Image(
         modifier =
             modifier
                 .size(size)
-                .clip(CircleShape)
-                .background(TodakunColor.primary100),
+                .clip(CircleShape),
+        painter = painterResource(R.drawable.img_todak_default_pose),
+        contentDescription = stringResource(R.string.chat_charactor_content_description),
     )
 }
 
-
 private object ChatScreenDefaults {
-    const val GREETING_DURATION_MILLIS = 3_000L // ponytail: 실기기에서 3초가 짧으면 늘린다
-    val ContentHorizontalPadding = 16.dp
-    val EntryTopPadding = 40.dp
-    val EntryBottomPadding = 20.dp
-    val EntryItemSpacing = 16.dp
-    val EntryChipTopSpacing = 4.dp
-    val EntryAvatarSize = 60.dp
-    val MessageListVerticalPadding = 12.dp
-    val MessageItemSpacing = 12.dp
-    val IndicatorVerticalPadding = 8.dp
+    const val GREETING_DURATION_MILLIS = 3_000L
 }
 
 private val previewSuggestions =
@@ -309,13 +305,27 @@ private val previewSuggestions =
             emoji = "📅",
             label = "중요한 일정 잡기 좋은 날인지 궁금해",
             seedPrompt = "오늘 중요한 일정 잡기 좋은 날인지 알려줘",
-            category = "schedule",
+            category = ChatCategory.LOVE,
         ),
-        ChatSuggestion(emoji = "💼", label = "커리어 운세가 궁금해", seedPrompt = "오늘 커리어 운세를 알려줘", category = "career"),
-        ChatSuggestion(emoji = "💕", label = "오늘 연애운이 궁금해", seedPrompt = "오늘 연애운을 알려줘", category = "love"),
-        ChatSuggestion(emoji = "💰", label = "재물운이 어떤지 알고 싶어", seedPrompt = "오늘 재물운을 알려줘", category = "money"),
-        ChatSuggestion(emoji = "🏥", label = "건강 관리에 좋은 날인지 궁금해", seedPrompt = "오늘 건강운을 알려줘", category = "health"),
-        ChatSuggestion(emoji = "🎓", label = "공부하기 좋은 날인지 알고 싶어", seedPrompt = "오늘 학업운을 알려줘", category = "study"),
+        ChatSuggestion(
+            emoji = "💼",
+            label = "커리어 운세가 궁금해",
+            seedPrompt = "오늘 커리어 운세를 알려줘",
+            category = ChatCategory.ACHIEVEMENT,
+        ),
+        ChatSuggestion(emoji = "💕", label = "오늘 연애운이 궁금해", seedPrompt = "오늘 연애운을 알려줘", category = ChatCategory.LOVE),
+        ChatSuggestion(
+            emoji = "💰",
+            label = "재물운이 어떤지 알고 싶어",
+            seedPrompt = "오늘 재물운을 알려줘",
+            category = ChatCategory.MONEY,
+        ),
+        ChatSuggestion(
+            emoji = "🏥",
+            label = "건강 관리에 좋은 날인지 궁금해",
+            seedPrompt = "오늘 건강운을 알려줘",
+            category = ChatCategory.HEALTH,
+        ),
     )
 
 private val previewMessages =
@@ -352,8 +362,6 @@ private fun ChatScreenEntryPreview() {
     TodakunTheme {
         ChatScreen(
             state = ChatState(suggestions = previewSuggestions),
-            isNewConversation = true,
-            snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
             onSendClick = {},
             onSuggestionClick = {},
@@ -374,8 +382,6 @@ private fun ChatScreenGreetingWithTitlePreview() {
                     suggestions = previewSuggestions,
                     greeting = "성취운을 알려줄게!\n커리어, 학업, 목표 등 궁금한 점이나 고민은 전부 물어봐줘.",
                 ),
-            isNewConversation = true,
-            snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
             onSendClick = {},
             onSuggestionClick = {},
@@ -396,8 +402,6 @@ private fun ChatScreenGreetingNoTitlePreview() {
                     suggestions = previewSuggestions,
                     greeting = "오늘도 좋은 하루 되세요! 궁금한 것들을 물어봐줘.",
                 ),
-            isNewConversation = true,
-            snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
             onSendClick = {},
             onSuggestionClick = {},
@@ -417,8 +421,6 @@ private fun ChatScreenThinkingPreview() {
                 ChatState(
                     messages = previewMessages.take(1),
                 ),
-            isNewConversation = false,
-            snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
             onSendClick = {},
             onSuggestionClick = {},
@@ -439,8 +441,6 @@ private fun ChatScreenTypingPreview() {
                     messages = previewMessages.take(1),
                     streamingChatState = StreamingChatState.Typing("오늘의 운세를 알아볼게요! 대체로 긍정"),
                 ),
-            isNewConversation = false,
-            snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
             onSendClick = {},
             onSuggestionClick = {},
@@ -461,8 +461,6 @@ private fun ChatScreenConversationPreview() {
                     messages = previewMessages,
                     streamingChatState = StreamingChatState.Idle,
                 ),
-            isNewConversation = false,
-            snackbarHostState = remember { SnackbarHostState() },
             onInputChange = {},
             onSendClick = {},
             onSuggestionClick = {},
