@@ -40,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -51,6 +53,7 @@ import com.kikidan.chat.component.ChatGreetingOverlay
 import com.kikidan.chat.component.ThinkingIndicator
 import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
+import com.kikidan.chat.util.toCharacterResourceId
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.chat.TodakunChatExampleChip
 import com.kikidan.designsystem.component.chat.TodakunChatHeader
@@ -108,27 +111,17 @@ internal fun ChatScreen(
                 onNotesIconClick = onHistoryClick,
             )
 
-            Box(
-                modifier = Modifier.weight(1f),
-            ) {
-                if (state.messages.isEmpty() && state.streamingChatState is StreamingChatState.Idle) {
-                    ChatEntryContent(
-                        suggestions = state.suggestions,
-                        onSuggestionClick = { suggestion ->
-                            selectedCategory = suggestion.category
-                            onSuggestionClick(suggestion.seedPrompt)
-                        },
-                        modifier = Modifier.fillMaxSize(),
-                        inputFieldHeight = inputFieldHeight,
-                    )
-                } else {
-                    ChatMessageList(
-                        state = state,
-                        modifier = Modifier.fillMaxSize(),
-                        inputFieldHeight = inputFieldHeight,
-                    )
-                }
-            }
+            ChatMessageList(
+                state = state,
+                modifier = Modifier.fillMaxSize(),
+                suggestions = state.suggestions,
+                onSuggestionClick = { suggestion ->
+                    selectedCategory = suggestion.category
+                    onSuggestionClick(suggestion.seedPrompt)
+                },
+                inputFieldHeight = inputFieldHeight,
+                selectedCategory = selectedCategory,
+            )
         }
         TodakunChatInputField(
             value = state.input,
@@ -162,54 +155,18 @@ internal fun ChatScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ChatEntryContent(
+private fun ChatMessageList(
     inputFieldHeight: Dp,
+    selectedCategory: ChatCategory?,
+    state: ChatState,
     suggestions: List<ChatSuggestion>,
     onSuggestionClick: (ChatSuggestion) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val entryScrollState = rememberScrollState()
-    val imeBottom = WindowInsets.ime.getBottom(LocalDensity.current)
+    // 상위에서 selectedCatgeory가 null이 되도 이전 캐릭터 유지
+    var prevCategory by remember { mutableStateOf(selectedCategory) }
+    if (selectedCategory != null) prevCategory = selectedCategory
 
-    LaunchedEffect(imeBottom) {
-        entryScrollState.scrollTo(entryScrollState.maxValue)
-    }
-
-    Column(
-        modifier =
-            modifier
-                .verticalScroll(entryScrollState)
-                .padding(20.dp)
-                .padding(bottom = inputFieldHeight),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        ProfileCharacterImage(size = 60.dp)
-
-        Text(
-            text = stringResource(R.string.chat_entry_question),
-            style = TodakunTypography.body1Medium,
-            color = TodakunColor.coolGray900,
-        )
-
-        suggestions.forEach { suggestion ->
-            TodakunChatExampleChip(
-                text = "${suggestion.emoji} ${suggestion.label}",
-                onClick = {
-                    onSuggestionClick(suggestion)
-                },
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun ChatMessageList(
-    inputFieldHeight: Dp,
-    state: ChatState,
-    modifier: Modifier = Modifier,
-) {
     val listState = rememberLazyListState()
     val imeBottom = WindowInsets.ime.getBottom(LocalDensity.current)
 
@@ -232,6 +189,30 @@ private fun ChatMessageList(
             ),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        item {
+            ProfileCharacterImage(size = 60.dp, category = prevCategory)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = stringResource(R.string.chat_entry_question),
+                style = TodakunTypography.body1Medium,
+                color = TodakunColor.coolGray900,
+            )
+        }
+
+        if (state.messages.isEmpty() && state.streamingChatState is StreamingChatState.Idle) {
+            item {
+                suggestions.forEach { suggestion ->
+                    TodakunChatExampleChip(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        text = "${suggestion.emoji} ${suggestion.label}",
+                        onClick = {
+                            onSuggestionClick(suggestion)
+                        },
+                    )
+                }
+            }
+        }
+
         items(state.messages, key = { it.id }) { message ->
             when (message.role) {
                 MessageRole.USER -> {
@@ -253,8 +234,8 @@ private fun ChatMessageList(
             }
         }
 
-        // THINKING / TYPING 인디케이터를 마지막 슬롯에 표시한다 (설계 2-4).
-        if (state.streamingChatState !is StreamingChatState.Thinking) {
+        // THINKING / TYPING 인디케이터를 마지막 슬롯에 표시
+        if (state.streamingChatState !is StreamingChatState.Idle) {
             item {
                 when (state.streamingChatState) {
                     is StreamingChatState.Thinking -> {
@@ -282,17 +263,34 @@ private fun ChatMessageList(
 
 @Composable
 private fun ProfileCharacterImage(
+    category: ChatCategory?,
     size: Dp,
     modifier: Modifier = Modifier,
 ) {
-    Image(
+    Box(
         modifier =
             modifier
                 .size(size)
                 .clip(CircleShape),
-        painter = painterResource(R.drawable.img_todak_default_pose),
-        contentDescription = stringResource(R.string.chat_charactor_content_description),
-    )
+    ) {
+        Image(
+            painter = painterResource(category?.toCharacterResourceId() ?: R.drawable.img_todak_default_pose),
+            contentDescription = stringResource(R.string.chat_charactor_content_description),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (category != null) {
+                            Modifier.graphicsLayer {
+                                scaleX = 1.4f
+                                scaleY = 1.4f
+                            }
+                        } else {
+                            Modifier
+                        },
+                    ),
+        )
+    }
 }
 
 private object ChatScreenDefaults {
