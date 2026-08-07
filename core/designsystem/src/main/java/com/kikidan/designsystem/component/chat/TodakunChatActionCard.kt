@@ -38,7 +38,7 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 
 @Composable
-fun TodakunChatActionCard(
+fun TodakunChatCalenderActionCard(
     category: String,
     dateText: String,
     buttonLabel: String,
@@ -130,9 +130,9 @@ private fun CalendarActionButton(
 
 @Preview(showBackground = true)
 @Composable
-private fun TodakunChatActionCardPreview() {
+private fun TodakunChatCalenderActionCardPreview() {
     TodakunTheme {
-        TodakunChatActionCard(
+        TodakunChatCalenderActionCard(
             category = "계약 · 이사",
             dateText = "2026 . 7 . 25 (토)",
             buttonLabel = "내 캘린더에 추가하기",

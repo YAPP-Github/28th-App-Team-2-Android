@@ -1,5 +1,7 @@
 package com.kikidan.chat.screen
 
+import android.content.Intent
+import android.provider.CalendarContract
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,30 +21,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,7 +52,7 @@ import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.chat.util.toCharacterResourceId
 import com.kikidan.designsystem.R
-import com.kikidan.designsystem.component.chat.TodakunChatActionCard
+import com.kikidan.designsystem.component.chat.TodakunChatCalenderActionCard
 import com.kikidan.designsystem.component.chat.TodakunChatExampleChip
 import com.kikidan.designsystem.component.chat.TodakunChatHeader
 import com.kikidan.designsystem.component.chat.TodakunChatInputField
@@ -87,9 +84,9 @@ internal fun ChatScreen(
     onCloseClick: () -> Unit,
     onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onActionClick: (ChatAction) -> Unit = {},
 ) {
     val density = LocalDensity.current
+    val context = LocalContext.current
     var inputFieldHeight by remember { mutableStateOf(0.dp) }
     var selectedCategory: ChatCategory? by remember { mutableStateOf(null) }
 
@@ -128,7 +125,15 @@ internal fun ChatScreen(
                 },
                 inputFieldHeight = inputFieldHeight,
                 selectedCategory = selectedCategory,
-                onActionClick = onActionClick,
+                onActionClick = { action ->
+                    val intent = Intent(Intent.ACTION_INSERT).apply {
+                        data = CalendarContract.Events.CONTENT_URI
+                        putExtra(CalendarContract.Events.TITLE, action.category)
+                        putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, action.date)
+                        putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                    }
+                    context.startActivity(intent)
+                },
             )
         }
         TodakunChatInputField(
@@ -243,7 +248,7 @@ private fun ChatMessageList(
                         )
                         message.action?.let { action ->
                             Spacer(modifier = Modifier.height(20.dp))
-                            TodakunChatActionCard(
+                            TodakunChatCalenderActionCard(
                                 category = action.category,
                                 dateText = action.date?.toActionDateText().orEmpty(),
                                 buttonLabel = action.label,
