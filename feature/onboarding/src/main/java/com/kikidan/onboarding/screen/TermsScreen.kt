@@ -31,7 +31,6 @@ import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.onboarding.OnboardingTerm
 import com.kikidan.onboarding.R
 import com.kikidan.onboarding.component.OnboardingLayout
-import com.kikidan.onboarding.model.OnboardingStep
 import com.kikidan.onboarding.model.TermsAgreementUiModel
 
 @Composable
@@ -46,7 +45,7 @@ internal fun TermsScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     OnboardingLayout(
-        progress = OnboardingStep.TERMS.progress,
+        progress = null,
         progressLabel = stringResource(id = R.string.onboarding_terms_progress_label),
         title =
             buildAnnotatedString {

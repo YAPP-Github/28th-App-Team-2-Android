@@ -4,13 +4,11 @@ import androidx.lifecycle.ViewModel
 import com.kikidan.domain.model.auth.Job
 import com.kikidan.domain.model.auth.OnboardingToken
 import com.kikidan.domain.model.auth.RelationshipStatus
-import com.kikidan.domain.model.onboarding.OnboardingTerm
 import com.kikidan.domain.model.onboarding.UserName
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.SignUpUseCase
-import com.kikidan.onboarding.model.OnboardingDialog
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingState
@@ -40,21 +38,12 @@ class OnboardingViewModel
 
         fun clickBack() =
             intent {
-                when (state.step) {
-                    OnboardingStep.TERMS -> reduce { state.copy(dialog = OnboardingDialog.EXIT_CONFIRM) }
-                    else -> state.step.previous?.let { previous -> reduce { state.copy(step = previous) } }
+                val previous = state.step.previous
+                if (previous == null) {
+                    postSideEffect(OnboardingSideEffect.NavigateToTerms)
+                } else {
+                    reduce { state.copy(step = previous) }
                 }
-            }
-
-        fun dismissDialog() =
-            intent {
-                reduce { state.copy(dialog = null) }
-            }
-
-        fun confirmExit() =
-            intent {
-                reduce { OnboardingState() }
-                postSideEffect(OnboardingSideEffect.Exit)
             }
 
         fun confirmComplete(onboardingToken: OnboardingToken) =
@@ -76,17 +65,6 @@ class OnboardingViewModel
                     reduce { state.copy(isSubmitting = false) }
                     postSideEffect(OnboardingSideEffect.Failure(e))
                 }
-            }
-
-        fun changeTerm(term: OnboardingTerm) =
-            intent {
-                val updated = state.termsAgreement.toggle(term)
-                reduce { state.copy(termsAgreement = updated) }
-            }
-
-        fun changeAllTerms(agreed: Boolean) =
-            intent {
-                reduce { state.copy(termsAgreement = state.termsAgreement.withAll(agreed)) }
             }
 
         fun changeName(name: String) =

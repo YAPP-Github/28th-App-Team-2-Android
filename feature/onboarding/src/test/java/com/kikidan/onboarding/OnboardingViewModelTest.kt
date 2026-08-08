@@ -3,7 +3,6 @@ package com.kikidan.onboarding
 import com.kikidan.domain.model.auth.Job
 import com.kikidan.domain.model.auth.OnboardingToken
 import com.kikidan.domain.model.auth.RelationshipStatus
-import com.kikidan.domain.model.onboarding.OnboardingTerm
 import com.kikidan.domain.model.onboarding.UserName
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
@@ -11,15 +10,10 @@ import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.SignUpUseCase
 import com.kikidan.onboarding.fake.FakeAuthRepository
 import com.kikidan.onboarding.fake.FakeTokenRepository
-import com.kikidan.onboarding.model.OnboardingDialog
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingState
 import com.kikidan.onboarding.model.OnboardingStep
-import com.kikidan.onboarding.model.TermsAgreementUiModel
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentHashSet
-import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -56,79 +50,6 @@ class OnboardingViewModelTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
-
-    @Test
-    fun `필수 약관을 모두 동의해야 다음으로 넘어갈 수 있다`() =
-        runTest {
-            val initial = OnboardingState(step = OnboardingStep.TERMS)
-            viewModel().test(this, initialState = initial) {
-                containerHost.changeTerm(OnboardingTerm.SERVICE)
-                expectState { copy(termsAgreement = termsAgreement.toggle(OnboardingTerm.SERVICE)) }
-
-                containerHost.clickNext()
-                expectNoItems()
-
-                containerHost.changeTerm(OnboardingTerm.PRIVACY)
-                expectState { copy(termsAgreement = termsAgreement.toggle(OnboardingTerm.PRIVACY)) }
-                containerHost.changeTerm(OnboardingTerm.AI_DATA_TRANSFER)
-                expectState { copy(termsAgreement = termsAgreement.toggle(OnboardingTerm.AI_DATA_TRANSFER)) }
-
-                containerHost.clickNext()
-                expectState { copy(step = OnboardingStep.NAME) }
-            }
-        }
-
-    @Test
-    fun `선택 약관은 다음 단계 진행에 영향을 주지 않는다`() =
-        runTest {
-            val terms =
-                TermsAgreementUiModel(
-                    persistentSetOf(
-                        OnboardingTerm.SERVICE,
-                        OnboardingTerm.PRIVACY,
-                        OnboardingTerm.AI_DATA_TRANSFER,
-                    ),
-                )
-
-            assertTrue(OnboardingState(step = OnboardingStep.TERMS, termsAgreement = terms).canProceed)
-            assertFalse(
-                OnboardingState(
-                    step = OnboardingStep.TERMS,
-                    termsAgreement = terms.toggle(OnboardingTerm.PRIVACY),
-                ).canProceed,
-            )
-        }
-
-    @Test
-    fun `전체 동의를 켜면 모든 항목이 켜지고 끄면 모두 꺼진다`() =
-        runTest {
-            val initial = OnboardingState(step = OnboardingStep.TERMS)
-            viewModel().test(this, initialState = initial) {
-                containerHost.changeAllTerms(true)
-                expectState {
-                    copy(termsAgreement = TermsAgreementUiModel(OnboardingTerm.entries.toPersistentSet()))
-                }
-
-                containerHost.changeAllTerms(false)
-                expectState { copy(termsAgreement = TermsAgreementUiModel()) }
-            }
-        }
-
-    @Test
-    fun `항목 하나를 해제하면 전체 동의 상태가 풀린다`() =
-        runTest {
-            val initial = OnboardingState(step = OnboardingStep.TERMS)
-            viewModel().test(this, initialState = initial) {
-                containerHost.changeAllTerms(true)
-                skipItems(1)
-
-                containerHost.changeTerm(OnboardingTerm.MARKETING)
-                val state = awaitState()
-
-                assertFalse(state.termsAgreement.allSelected)
-                assertTrue(state.termsAgreement.allRequiredSelected)
-            }
-        }
 
     @Test
     fun `특수문자가 든 이름은 에러로 표시되고 다음으로 넘어갈 수 없다`() =
@@ -192,16 +113,12 @@ class OnboardingViewModelTest {
     }
 
     @Test
-    fun `약관 동의 스텝에서 뒤로가면 이탈 확인 다이얼로그가 뜬다`() =
+    fun `첫 스텝에서 뒤로가면 약관 화면으로 이동한다`() =
         runTest {
-            val initial = OnboardingState(step = OnboardingStep.TERMS)
+            val initial = OnboardingState(step = OnboardingStep.NAME)
             viewModel().test(this, initialState = initial) {
                 containerHost.clickBack()
-                expectState { copy(dialog = OnboardingDialog.EXIT_CONFIRM) }
-
-                containerHost.confirmExit()
-                expectState { OnboardingState() }
-                expectSideEffect(OnboardingSideEffect.Exit)
+                expectSideEffect(OnboardingSideEffect.NavigateToTerms)
             }
         }
 
