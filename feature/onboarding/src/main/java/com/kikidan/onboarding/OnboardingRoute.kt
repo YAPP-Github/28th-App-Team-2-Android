@@ -221,8 +221,8 @@ private fun OnboardingDialogHost(
             TodakunDialog(
                 title = stringResource(id = R.string.onboarding_terms_exit_title),
                 description = stringResource(id = R.string.onboarding_terms_exit_description),
-                confirmText = stringResource(id = R.string.onboarding_terms_exit_confirm),
-                dismissText = stringResource(id = R.string.onboarding_terms_exit_dismiss),
+                confirmText = stringResource(id = R.string.onboarding_terms_exit_dismiss),
+                dismissText = stringResource(id = R.string.onboarding_terms_exit_confirm),
                 onConfirm = onConfirmExit,
                 onDismiss = onDismiss,
             )
