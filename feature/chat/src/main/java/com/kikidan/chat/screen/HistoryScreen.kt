@@ -57,12 +57,12 @@ internal fun HistoryScreen(
             modifier
                 .fillMaxSize()
                 .background(TodakunColor.white)
-                .systemBarsPadding()
+                .systemBarsPadding(),
     ) {
         Column(
             modifier =
                 Modifier
-                    .fillMaxSize()
+                    .fillMaxSize(),
         ) {
             TodakunSubHeader(
                 title = stringResource(R.string.chat_history_title),
