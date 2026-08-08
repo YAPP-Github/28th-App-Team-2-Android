@@ -126,12 +126,13 @@ internal fun ChatScreen(
                 inputFieldHeight = inputFieldHeight,
                 selectedCategory = selectedCategory,
                 onActionClick = { action ->
-                    val intent = Intent(Intent.ACTION_INSERT).apply {
-                        data = CalendarContract.Events.CONTENT_URI
-                        putExtra(CalendarContract.Events.TITLE, action.category)
-                        putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, action.date)
-                        putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
-                    }
+                    val intent =
+                        Intent(Intent.ACTION_INSERT).apply {
+                            data = CalendarContract.Events.CONTENT_URI
+                            putExtra(CalendarContract.Events.TITLE, action.category)
+                            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, action.date)
+                            putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                        }
                     context.startActivity(intent)
                 },
             )
