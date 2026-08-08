@@ -31,14 +31,14 @@ class OnboardingViewModel
         ContainerHost<OnboardingState, OnboardingSideEffect> {
         override val container = container<OnboardingState, OnboardingSideEffect>(OnboardingState())
 
-        fun onNextClick() =
+        fun clickNext() =
             intent {
                 if (!state.canProceed) return@intent
                 val next = state.step.next
                 next?.let { reduce { state.copy(step = next) } }
             }
 
-        fun onBackClick() =
+        fun clickBack() =
             intent {
                 when (state.step) {
                     OnboardingStep.TERMS -> reduce { state.copy(dialog = OnboardingDialog.EXIT_CONFIRM) }
@@ -46,18 +46,18 @@ class OnboardingViewModel
                 }
             }
 
-        fun onDialogDismiss() =
+        fun dismissDialog() =
             intent {
                 reduce { state.copy(dialog = null) }
             }
 
-        fun onExitConfirmed() =
+        fun confirmExit() =
             intent {
                 reduce { OnboardingState() }
                 postSideEffect(OnboardingSideEffect.Exit)
             }
 
-        fun onCompleteConfirmed(onboardingToken: OnboardingToken) =
+        fun confirmComplete(onboardingToken: OnboardingToken) =
             intent {
                 if (state.isSubmitting) return@intent
                 val signupSubmission = state.toDomain()
@@ -78,63 +78,63 @@ class OnboardingViewModel
                 }
             }
 
-        fun onTermChange(term: OnboardingTerm) =
+        fun changeTerm(term: OnboardingTerm) =
             intent {
                 val updated = state.termsAgreement.toggle(term)
                 reduce { state.copy(termsAgreement = updated) }
             }
 
-        fun onAllTermsChange(agreed: Boolean) =
+        fun changeAllTerms(agreed: Boolean) =
             intent {
                 reduce { state.copy(termsAgreement = state.termsAgreement.withAll(agreed)) }
             }
 
-        fun onNameChange(name: String) =
+        fun changeName(name: String) =
             intent {
                 reduce { state.copy(username = UserName.from(name)) }
             }
 
-        fun onGenderSelect(gender: Gender) =
+        fun selectGender(gender: Gender) =
             intent {
                 reduce { state.copy(gender = gender) }
             }
 
-        fun onCalendarTypeSelect(calendarType: DateType) =
+        fun selectCalendarType(calendarType: DateType) =
             intent {
                 reduce { state.copy(calendarType = calendarType) }
             }
 
-        fun onSheetOpen(sheet: OnboardingSheet) =
+        fun openSheet(sheet: OnboardingSheet) =
             intent {
                 reduce { state.copy(sheet = sheet) }
             }
 
-        fun onSheetDismiss() =
+        fun dismissSheet() =
             intent {
                 reduce { state.copy(sheet = null) }
             }
 
-        fun onBirthDateChange(date: LocalDate) =
+        fun changeBirthDate(date: LocalDate) =
             intent {
                 reduce { state.copy(birthDate = date) }
             }
 
-        fun onBirthDateClear() =
+        fun clearBirthDate() =
             intent {
                 reduce { state.copy(birthDate = null) }
             }
 
-        fun onBirthTimeChange(birthTime: BirthTime) =
+        fun changeBirthTime(birthTime: BirthTime) =
             intent {
                 reduce { state.copy(birthTime = birthTime) }
             }
 
-        fun onBirthTimeClear() =
+        fun clearBirthTime() =
             intent {
                 reduce { state.copy(birthTime = null) }
             }
 
-        fun onBirthTimeUnknownChange(unknown: Boolean) =
+        fun changeBirthTimeUnknown(unknown: Boolean) =
             intent {
                 reduce {
                     state.copy(
@@ -144,12 +144,12 @@ class OnboardingViewModel
                 }
             }
 
-        fun onLifeStageSelect(lifeStage: Job) =
+        fun selectLifeStage(lifeStage: Job) =
             intent {
                 reduce { state.copy(lifeStage = lifeStage) }
             }
 
-        fun onRelationshipStatusSelect(relationshipStatus: RelationshipStatus) =
+        fun selectRelationshipStatus(relationshipStatus: RelationshipStatus) =
             intent {
                 reduce { state.copy(relationshipStatus = relationshipStatus) }
             }

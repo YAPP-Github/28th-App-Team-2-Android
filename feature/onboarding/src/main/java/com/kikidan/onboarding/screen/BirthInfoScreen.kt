@@ -27,7 +27,7 @@ import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.onboarding.R
-import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.component.OnboardingLayout
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingStep
 import java.time.LocalDate
@@ -60,7 +60,7 @@ internal fun BirthInfoScreen(
             }
             append(stringResource(R.string.onboarding_birth_title2))
         }
-    OnboardingScaffold(
+    OnboardingLayout(
         progress = OnboardingStep.BIRTH_INFO.progress,
         title = title,
         ctaText = stringResource(id = R.string.onboarding_next),

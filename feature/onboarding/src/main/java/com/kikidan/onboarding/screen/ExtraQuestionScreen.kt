@@ -22,7 +22,7 @@ import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.auth.Job
 import com.kikidan.domain.model.auth.RelationshipStatus
 import com.kikidan.onboarding.R
-import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.component.OnboardingLayout
 import com.kikidan.onboarding.model.OnboardingStep
 
 @Composable
@@ -36,7 +36,7 @@ internal fun ExtraQuestionScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    OnboardingScaffold(
+    OnboardingLayout(
         progress = OnboardingStep.EXTRA_QUESTION.progress,
         title =
             buildAnnotatedString {

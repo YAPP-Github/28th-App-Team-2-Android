@@ -30,7 +30,7 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.onboarding.OnboardingTerm
 import com.kikidan.onboarding.R
-import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.component.OnboardingLayout
 import com.kikidan.onboarding.model.OnboardingStep
 import com.kikidan.onboarding.model.TermsAgreementUiModel
 
@@ -45,7 +45,7 @@ internal fun TermsScreen(
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
-    OnboardingScaffold(
+    OnboardingLayout(
         progress = OnboardingStep.TERMS.progress,
         progressLabel = stringResource(id = R.string.onboarding_terms_progress_label),
         title =

@@ -74,7 +74,7 @@ fun OnboardingRoute(
     }
 
     BackHandler {
-        viewModel.onBackClick()
+        viewModel.clickBack()
     }
 
     when (state.step) {
@@ -82,10 +82,10 @@ fun OnboardingRoute(
             TermsScreen(
                 termsAgreement = state.termsAgreement,
                 canProceed = state.canProceed,
-                onTermChange = viewModel::onTermChange,
-                onAllTermsChange = viewModel::onAllTermsChange,
-                onNextClick = viewModel::onNextClick,
-                onBackClick = viewModel::onBackClick,
+                onTermChange = viewModel::changeTerm,
+                onAllTermsChange = viewModel::changeAllTerms,
+                onNextClick = viewModel::clickNext,
+                onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
@@ -94,9 +94,9 @@ fun OnboardingRoute(
             NameScreen(
                 username = state.username,
                 canProceed = state.canProceed,
-                onNameChange = viewModel::onNameChange,
-                onNextClick = viewModel::onNextClick,
-                onBackClick = viewModel::onBackClick,
+                onNameChange = viewModel::changeName,
+                onNextClick = viewModel::clickNext,
+                onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
@@ -110,14 +110,14 @@ fun OnboardingRoute(
                 openedSheet = state.sheet,
                 canProceed = state.canProceed,
                 isBirthDateError = state.isUnderAge,
-                onGenderSelect = viewModel::onGenderSelect,
-                onCalendarTypeSelect = viewModel::onCalendarTypeSelect,
-                onSheetOpen = viewModel::onSheetOpen,
-                onBirthDateClear = viewModel::onBirthDateClear,
-                onBirthTimeClear = viewModel::onBirthTimeClear,
-                onBirthTimeUnknownChange = viewModel::onBirthTimeUnknownChange,
-                onNextClick = viewModel::onNextClick,
-                onBackClick = viewModel::onBackClick,
+                onGenderSelect = viewModel::selectGender,
+                onCalendarTypeSelect = viewModel::selectCalendarType,
+                onSheetOpen = viewModel::openSheet,
+                onBirthDateClear = viewModel::clearBirthDate,
+                onBirthTimeClear = viewModel::clearBirthTime,
+                onBirthTimeUnknownChange = viewModel::changeBirthTimeUnknown,
+                onNextClick = viewModel::clickNext,
+                onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
@@ -127,12 +127,12 @@ fun OnboardingRoute(
                 lifeStage = state.lifeStage,
                 relationshipStatus = state.relationshipStatus,
                 canProceed = state.canProceed,
-                onLifeStageSelect = viewModel::onLifeStageSelect,
-                onRelationshipStatusSelect = viewModel::onRelationshipStatusSelect,
+                onLifeStageSelect = viewModel::selectLifeStage,
+                onRelationshipStatusSelect = viewModel::selectRelationshipStatus,
                 onNextClick = {
-                    viewModel.onCompleteConfirmed(onboardingToken)
+                    viewModel.confirmComplete(onboardingToken)
                 },
-                onBackClick = viewModel::onBackClick,
+                onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
@@ -149,15 +149,15 @@ fun OnboardingRoute(
     OnboardingSheetHost(
         sheet = state.sheet,
         birthDate = state.birthDate,
-        onBirthDateChange = viewModel::onBirthDateChange,
-        onBirthTimeChange = viewModel::onBirthTimeChange,
-        onDismiss = viewModel::onSheetDismiss,
+        onBirthDateChange = viewModel::changeBirthDate,
+        onBirthTimeChange = viewModel::changeBirthTime,
+        onDismiss = viewModel::dismissSheet,
     )
 
     OnboardingDialogHost(
         dialog = state.dialog,
-        onConfirmExit = viewModel::onExitConfirmed,
-        onDismiss = viewModel::onDialogDismiss,
+        onConfirmExit = viewModel::confirmExit,
+        onDismiss = viewModel::dismissDialog,
     )
 }
 

@@ -62,18 +62,18 @@ class OnboardingViewModelTest {
         runTest {
             val initial = OnboardingState(step = OnboardingStep.TERMS)
             viewModel().test(this, initialState = initial) {
-                containerHost.onTermChange(OnboardingTerm.SERVICE)
+                containerHost.changeTerm(OnboardingTerm.SERVICE)
                 expectState { copy(termsAgreement = termsAgreement.toggle(OnboardingTerm.SERVICE)) }
 
-                containerHost.onNextClick()
+                containerHost.clickNext()
                 expectNoItems()
 
-                containerHost.onTermChange(OnboardingTerm.PRIVACY)
+                containerHost.changeTerm(OnboardingTerm.PRIVACY)
                 expectState { copy(termsAgreement = termsAgreement.toggle(OnboardingTerm.PRIVACY)) }
-                containerHost.onTermChange(OnboardingTerm.AI_DATA_TRANSFER)
+                containerHost.changeTerm(OnboardingTerm.AI_DATA_TRANSFER)
                 expectState { copy(termsAgreement = termsAgreement.toggle(OnboardingTerm.AI_DATA_TRANSFER)) }
 
-                containerHost.onNextClick()
+                containerHost.clickNext()
                 expectState { copy(step = OnboardingStep.NAME) }
             }
         }
@@ -104,12 +104,12 @@ class OnboardingViewModelTest {
         runTest {
             val initial = OnboardingState(step = OnboardingStep.TERMS)
             viewModel().test(this, initialState = initial) {
-                containerHost.onAllTermsChange(true)
+                containerHost.changeAllTerms(true)
                 expectState {
                     copy(termsAgreement = TermsAgreementUiModel(OnboardingTerm.entries.toPersistentSet()))
                 }
 
-                containerHost.onAllTermsChange(false)
+                containerHost.changeAllTerms(false)
                 expectState { copy(termsAgreement = TermsAgreementUiModel()) }
             }
         }
@@ -119,10 +119,10 @@ class OnboardingViewModelTest {
         runTest {
             val initial = OnboardingState(step = OnboardingStep.TERMS)
             viewModel().test(this, initialState = initial) {
-                containerHost.onAllTermsChange(true)
+                containerHost.changeAllTerms(true)
                 skipItems(1)
 
-                containerHost.onTermChange(OnboardingTerm.MARKETING)
+                containerHost.changeTerm(OnboardingTerm.MARKETING)
                 val state = awaitState()
 
                 assertFalse(state.termsAgreement.allSelected)
@@ -135,12 +135,12 @@ class OnboardingViewModelTest {
         runTest {
             val initial = OnboardingState(step = OnboardingStep.NAME)
             viewModel().test(this, initialState = initial) {
-                containerHost.onNameChange("토닥이##")
+                containerHost.changeName("토닥이##")
                 expectState {
                     copy(username = UserName.Invalid.ContainsSpecialCharacter("토닥이##"))
                 }
 
-                containerHost.onNextClick()
+                containerHost.clickNext()
                 expectNoItems()
             }
         }
@@ -150,10 +150,10 @@ class OnboardingViewModelTest {
         runTest {
             val initial = OnboardingState(step = OnboardingStep.NAME)
             viewModel().test(this, initialState = initial) {
-                containerHost.onNameChange("토닥이")
+                containerHost.changeName("토닥이")
                 expectState { copy(username = UserName.Valid("토닥이")) }
 
-                containerHost.onNextClick()
+                containerHost.clickNext()
                 expectState { copy(step = OnboardingStep.BIRTH_INFO) }
             }
         }
@@ -168,7 +168,7 @@ class OnboardingViewModelTest {
                     sheet = OnboardingSheet.BIRTH_TIME,
                 )
             viewModel().test(this, initialState = initial) {
-                containerHost.onBirthTimeUnknownChange(true)
+                containerHost.changeBirthTimeUnknown(true)
 
                 expectState {
                     copy(birthTime = BirthTime.UNKNOWN, sheet = null)
@@ -196,10 +196,10 @@ class OnboardingViewModelTest {
         runTest {
             val initial = OnboardingState(step = OnboardingStep.TERMS)
             viewModel().test(this, initialState = initial) {
-                containerHost.onBackClick()
+                containerHost.clickBack()
                 expectState { copy(dialog = OnboardingDialog.EXIT_CONFIRM) }
 
-                containerHost.onExitConfirmed()
+                containerHost.confirmExit()
                 expectState { OnboardingState() }
                 expectSideEffect(OnboardingSideEffect.Exit)
             }
@@ -210,7 +210,7 @@ class OnboardingViewModelTest {
         runTest {
             val initial = OnboardingState(step = OnboardingStep.BIRTH_INFO)
             viewModel().test(this, initialState = initial) {
-                containerHost.onBackClick()
+                containerHost.clickBack()
 
                 expectState { copy(step = OnboardingStep.NAME) }
             }
@@ -231,7 +231,7 @@ class OnboardingViewModelTest {
                     relationshipStatus = RelationshipStatus.SOLO,
                 )
             viewModel().test(this, initialState = initial) {
-                containerHost.onCompleteConfirmed(onboardingToken)
+                containerHost.confirmComplete(onboardingToken)
                 expectState { copy(isSubmitting = true) }
                 expectState { copy(isSubmitting = false, step = OnboardingStep.COMPLETE) }
                 expectSideEffect(OnboardingSideEffect.PermissionRequest)
@@ -254,7 +254,7 @@ class OnboardingViewModelTest {
                     isSubmitting = true,
                 )
             viewModel().test(this, initialState = initial) {
-                containerHost.onCompleteConfirmed(onboardingToken)
+                containerHost.confirmComplete(onboardingToken)
                 expectNoItems()
             }
             assertEquals(0, authRepository.signupCallCount)
@@ -277,7 +277,7 @@ class OnboardingViewModelTest {
                     relationshipStatus = RelationshipStatus.SOLO,
                 )
             viewModel().test(this, initialState = initial) {
-                containerHost.onCompleteConfirmed(onboardingToken)
+                containerHost.confirmComplete(onboardingToken)
                 expectState { copy(isSubmitting = true) }
                 expectState { copy(isSubmitting = false) }
                 expectSideEffect(OnboardingSideEffect.Failure(error))
