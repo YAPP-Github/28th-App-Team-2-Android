@@ -13,6 +13,8 @@ import com.kikidan.domain.usecase.GetChatEntryUseCase
 import com.kikidan.domain.usecase.GetConversationDetailUseCase
 import com.kikidan.domain.usecase.SendChatMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.transform
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.Syntax
@@ -42,7 +44,7 @@ class ChatViewModel
                         reduce {
                             state.copy(
                                 greeting = entry.greeting,
-                                suggestions = entry.suggestions,
+                                suggestions = entry.suggestions.toPersistentList(),
                                 quota = entry.quota,
                             )
                         }
@@ -50,7 +52,7 @@ class ChatViewModel
 
                 if (conversationId != null) {
                     getConversationDetail(conversationId)
-                        .onSuccess { reduce { state.copy(messages = it.messages) } }
+                        .onSuccess { reduce { state.copy(messages = it.messages.toPersistentList()) } }
                         .onFailure { postSideEffect(ChatSideEffect.Error(it)) }
                 }
 
@@ -76,7 +78,7 @@ class ChatViewModel
                 reduce {
                     state.copy(
                         conversationId = null,
-                        messages = emptyList(),
+                        messages = persistentListOf(),
                         streamingChatState = StreamingChatState.Idle,
                         input = "",
                     )
@@ -91,7 +93,7 @@ class ChatViewModel
             val placeholder = localUserMessage(content.trim())
             reduce {
                 state.copy(
-                    messages = state.messages + placeholder,
+                    messages = state.messages.adding(placeholder),
                     streamingChatState = StreamingChatState.Thinking,
                 )
             }
@@ -160,16 +162,17 @@ class ChatViewModel
                 state.copy(
                     // 낙관적 메시지의 로컬 id를 서버가 준 진짜 id로 교체.
                     messages =
-                        state.messages.map { msg ->
-                            if (msg.id == placeholder.id) {
-                                msg.copy(
-                                    id = event.userMessageId,
-                                    status = MessageStatus.COMPLETED,
-                                )
-                            } else {
-                                msg
-                            }
-                        },
+                        state.messages
+                            .map { msg ->
+                                if (msg.id == placeholder.id) {
+                                    msg.copy(
+                                        id = event.userMessageId,
+                                        status = MessageStatus.COMPLETED,
+                                    )
+                                } else {
+                                    msg
+                                }
+                            }.toPersistentList(),
                     quota = event.quota,
                 )
             }
@@ -187,12 +190,13 @@ class ChatViewModel
                     conversationId = streamConversationId,
                     messages =
                         if (currentStreamingState is StreamingChatState.Typing) {
-                            state.messages +
+                            state.messages.adding(
                                 assistantMessage(
                                     id = assistantMessageId,
                                     content = currentStreamingState.streamingText,
                                     action = pendingAction,
-                                )
+                                ),
+                            )
                         } else {
                             state.messages
                         },
