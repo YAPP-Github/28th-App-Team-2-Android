@@ -138,13 +138,16 @@ private fun MyPageHomeContent(
         ) {
             Text(
                 text = stringResource(R.string.mypage_app_version_label),
-                style = TodakunTypography.caption1Regular,
+                style = TodakunTypography.body3Medium,
                 color = TodakunColor.gray400,
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(16.dp))
+            val versionText =
+                stringResource(R.string.mypage_app_version_format, model.appVersionName) +
+                    if (model.isLatestVersion) " " + stringResource(R.string.mypage_latest_version) else ""
             Text(
-                text = stringResource(R.string.mypage_app_version_value),
-                style = TodakunTypography.caption1Regular,
+                text = versionText,
+                style = TodakunTypography.body3Medium,
                 color = TodakunColor.gray400,
             )
         }
@@ -178,6 +181,8 @@ private fun MyPageHomeScreenPreview() {
                                 dayPillar = SajuPillar(CheonGan.GYE, JiJi.MYO),
                                 hourPillar = SajuPillar(CheonGan.JEONG, JiJi.CHUK),
                             ),
+                        appVersionName = "1.0.0",
+                        isLatestVersion = false,
                     ),
                 ),
         )

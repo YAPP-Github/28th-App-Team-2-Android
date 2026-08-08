@@ -24,6 +24,14 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 
+/**
+ * A custom tab component for the Todakun design system.
+ *
+ * @param text The text to be displayed on the tab.
+ * @param selected Whether the tab is currently selected.
+ * @param onClick Callback to be invoked when the tab is clicked.
+ * @param modifier The modifier to be applied to the tab.
+ */
 @Composable
 fun TodakunTab(
     text: String,
@@ -62,6 +70,9 @@ fun TodakunTab(
     }
 }
 
+/**
+ * Default values for [TodakunTab].
+ */
 private object TodakunTabDefaults {
     val Shape = RoundedCornerShape(99.dp)
 }

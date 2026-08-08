@@ -16,6 +16,7 @@ class MyPageHomeViewModel
     @Inject
     constructor(
         private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
+        private val appVersionChecker: AppVersionChecker,
     ) : ViewModel(),
         ContainerHost<MyPageHomeUiState, MyPageHomeSideEffect> {
         override val container: Container<MyPageHomeUiState, MyPageHomeSideEffect> =
@@ -29,7 +30,17 @@ class MyPageHomeViewModel
             intent {
                 getMyPageInfoUseCase()
                     .onSuccess { info ->
-                        reduce { MyPageHomeUiState.Success(MyPageHomeUiModel(info.user, info.sajuPalja)) }
+                        val isLatestVersion = appVersionChecker.isLatestVersion()
+                        reduce {
+                            MyPageHomeUiState.Success(
+                                MyPageHomeUiModel(
+                                    user = info.user,
+                                    sajuPalja = info.sajuPalja,
+                                    appVersionName = appVersionChecker.getCurrentVersionName(),
+                                    isLatestVersion = isLatestVersion,
+                                ),
+                            )
+                        }
                     }.onFailure { throwable ->
                         reduce { MyPageHomeUiState.Fail(throwable) }
                     }
