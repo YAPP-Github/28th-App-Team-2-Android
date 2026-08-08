@@ -67,6 +67,8 @@ import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatSuggestion
 import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
@@ -329,7 +331,7 @@ private val ActionDateFormatter: DateTimeFormatter =
     DateTimeFormatter.ofPattern("yyyy . M . d (E)", Locale.KOREA)
 
 private val previewSuggestions =
-    listOf(
+    persistentListOf(
         ChatSuggestion(
             emoji = "📅",
             label = "중요한 일정 잡기 좋은 날인지 궁금해",
@@ -358,7 +360,7 @@ private val previewSuggestions =
     )
 
 private val previewMessages =
-    listOf(
+    persistentListOf(
         ChatMessage(
             id = "1",
             role = MessageRole.USER,
@@ -454,7 +456,7 @@ private fun ChatScreenThinkingPreview() {
         ChatScreen(
             state =
                 ChatState(
-                    messages = previewMessages.take(1),
+                    messages = previewMessages.take(1).toPersistentList(),
                 ),
             onInputChange = {},
             onSendClick = {},
@@ -473,7 +475,7 @@ private fun ChatScreenTypingPreview() {
         ChatScreen(
             state =
                 ChatState(
-                    messages = previewMessages.take(1),
+                    messages = previewMessages.take(1).toPersistentList(),
                     streamingChatState = StreamingChatState.Typing("오늘의 운세를 알아볼게요! 대체로 긍정"),
                 ),
             onInputChange = {},
