@@ -5,6 +5,7 @@ import com.kikidan.domain.model.auth.Job
 import com.kikidan.domain.model.auth.RelationshipStatus
 import com.kikidan.domain.model.auth.SignupSubmission
 import com.kikidan.domain.model.onboarding.UserName
+import com.kikidan.domain.model.onboarding.isUnderAge
 import com.kikidan.domain.model.user.Birth
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
@@ -35,6 +36,8 @@ data class OnboardingState(
     val dialog: OnboardingDialog? = null,
     val isSubmitting: Boolean = false,
 ) {
+    val isUnderAge: Boolean = birthDate?.isUnderAge() ?: false
+
     val canProceed: Boolean
         get() =
             when (step) {
@@ -50,7 +53,8 @@ data class OnboardingState(
                     gender != null &&
                         calendarType != null &&
                         birthDate != null &&
-                        birthTime != null
+                        birthTime != null &&
+                        !isUnderAge
                 }
 
                 OnboardingStep.EXTRA_QUESTION -> {

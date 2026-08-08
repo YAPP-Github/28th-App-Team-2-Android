@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TooltipState
@@ -80,6 +81,53 @@ fun TodakunTooltip(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodakunWhiteTooltip(
+    text: String,
+    modifier: Modifier = Modifier,
+    state: TooltipState = rememberTooltipState(),
+    anchor: @Composable () -> Unit,
+) {
+    val density = LocalDensity.current
+    val screenMaxWidth =
+        with(density) {
+            LocalWindowInfo.current.containerSize.width
+                .toDp() - 40.dp
+        }
+    val maxWidth = minOf(TodakunTooltipDefaults.MaxWidth, screenMaxWidth)
+
+    TooltipBox(
+        positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(
+                TooltipAnchorPosition.Below,
+            ),
+        tooltip = {
+            PlainTooltip(
+                caretShape = TooltipDefaults.caretShape(TodakunTooltipDefaults.CaretSize),
+                maxWidth = maxWidth,
+                shape = RoundedCornerShape(12.dp),
+                containerColor = TodakunColor.whiteOpacity90,
+                contentColor = TodakunColor.black,
+            ) {
+                Text(
+                    text = text,
+                    style = TodakunTypography.body3Medium,
+                    textAlign = TextAlign.Center,
+                    modifier =
+                        Modifier.padding(
+                            horizontal = TodakunTooltipDefaults.ExtraHorizontalPadding,
+                            vertical = TodakunTooltipDefaults.ExtraVerticalPadding,
+                        ),
+                )
+            }
+        },
+        state = state,
+        modifier = modifier,
+        content = anchor,
+    )
+}
+
 private object TodakunTooltipDefaults {
     val CaretSize = DpSize(width = 8.dp, height = 8.dp)
 
@@ -94,6 +142,8 @@ private object TodakunTooltipDefaults {
      */
     val ExtraHorizontalPadding = 8.dp
     val ExtraVerticalPadding = 2.dp
+
+    val MaxWidth = 200.dp
 }
 
 private class TodakunTooltipPositionProvider(
@@ -112,7 +162,6 @@ private class TodakunTooltipPositionProvider(
 
         val above = anchorBounds.top - popupContentSize.height - spacing
         val y = if (above >= 0) above else anchorBounds.bottom + spacing
-
         return IntOffset(x, y)
     }
 }
@@ -142,6 +191,24 @@ private fun TodakunTooltipLongPreview() {
     TodakunTheme {
         TodakunTooltip(
             text = "오늘 이 사람과 어디를 갈까? 이 텍스트는 매우 길어서 줄바꿈 처리됩니다 오늘 이 사람과 어디를 갈까? 이 텍스트는 매우 길어서 줄바꿈 처리됩니다",
+            state = rememberTooltipState(initialIsVisible = true, isPersistent = true),
+        ) {
+            Text(
+                text = "앵커",
+                modifier = Modifier.padding(48.dp),
+                style = TodakunTypography.body3Medium,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun TodakunWhiteTooltipLongPreview() {
+    TodakunTheme {
+        TodakunWhiteTooltip(
+            text = "안녕하세요 안녕하세요 반갑습니다. 저는 1 안녕하세요반갑습니다",
             state = rememberTooltipState(initialIsVisible = true, isPersistent = true),
         ) {
             Text(

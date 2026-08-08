@@ -17,6 +17,9 @@ import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingState
 import com.kikidan.onboarding.model.OnboardingStep
 import com.kikidan.onboarding.model.TermsAgreementUiModel
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentHashSet
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -80,7 +83,7 @@ class OnboardingViewModelTest {
         runTest {
             val terms =
                 TermsAgreementUiModel(
-                    setOf(
+                    persistentSetOf(
                         OnboardingTerm.SERVICE,
                         OnboardingTerm.PRIVACY,
                         OnboardingTerm.AI_DATA_TRANSFER,
@@ -103,7 +106,7 @@ class OnboardingViewModelTest {
             viewModel().test(this, initialState = initial) {
                 containerHost.onAllTermsChange(true)
                 expectState {
-                    copy(termsAgreement = TermsAgreementUiModel(OnboardingTerm.entries.toSet()))
+                    copy(termsAgreement = TermsAgreementUiModel(OnboardingTerm.entries.toPersistentSet()))
                 }
 
                 containerHost.onAllTermsChange(false)
@@ -214,7 +217,7 @@ class OnboardingViewModelTest {
         }
 
     @Test
-    fun `마지막 스텝에서 다음을 누르면 완료 단계로 넘어간다`() =
+    fun `마지막 스텝에서 다음을 누르면 완료 화면으로 전환된다`() =
         runTest {
             val initial =
                 OnboardingState(
