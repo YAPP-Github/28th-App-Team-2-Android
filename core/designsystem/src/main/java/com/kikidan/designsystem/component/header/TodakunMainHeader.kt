@@ -27,6 +27,7 @@ fun TodakunMainHeader(
     title: String,
     modifier: Modifier = Modifier,
     subtext: String? = null,
+    bellClickEnabled: Boolean = true,
     onBellClick: () -> Unit = {},
 ) {
     Row(
@@ -57,15 +58,17 @@ fun TodakunMainHeader(
             }
         }
 
-        Icon(
-            painter = painterResource(id = R.drawable.ic_bell),
-            contentDescription = stringResource(R.string.header_notice_content_description),
-            tint = TodakunColor.gray975,
-            modifier =
-                Modifier
-                    .size(24.dp)
-                    .clickable(onClick = onBellClick),
-        )
+        if (bellClickEnabled) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_bell),
+                contentDescription = stringResource(R.string.header_notice_content_description),
+                tint = TodakunColor.gray975,
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .clickable(onClick = onBellClick),
+            )
+        }
     }
 }
 

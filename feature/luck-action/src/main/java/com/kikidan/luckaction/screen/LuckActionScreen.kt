@@ -44,6 +44,8 @@ import com.kikidan.luckaction.component.LuckActionCompleteOverlay
 import com.kikidan.luckaction.model.FortuneScoreUiModel
 import com.kikidan.luckaction.model.LuckActionItemUiModel
 import com.kikidan.luckaction.model.LuckActionUiState
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 
 @Composable
@@ -63,23 +65,24 @@ fun LuckActionScreen(
                 .systemBarsPadding(),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TodakunMainHeader(title = stringResource(R.string.bottom_nav_lucky_action))
+            TodakunMainHeader(
+                title = stringResource(R.string.bottom_nav_lucky_action),
+                bellClickEnabled = false,
+            )
 
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                when (state) {
-                    is LuckActionUiState.Loading, LuckActionUiState.Failure -> {
-                        //TODO 디자인 요구사항 반영
-                    }
+            when (state) {
+                is LuckActionUiState.Loading, LuckActionUiState.Failure -> {
+                    // TODO 디자인 요구사항 반영
+                }
 
-                    is LuckActionUiState.Success -> {
-                        LuckActionContent(
-                            state = state,
-                            onToggleAction = onToggleAction,
-                            onPrevDateClick = onPrevDateClick,
-                            onNextDateClick = onNextDateClick,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
+                is LuckActionUiState.Success -> {
+                    LuckActionContent(
+                        state = state,
+                        onToggleAction = onToggleAction,
+                        onPrevDateClick = onPrevDateClick,
+                        onNextDateClick = onNextDateClick,
+                        modifier = Modifier.fillMaxSize(),
+                    )
                 }
             }
         }
@@ -108,13 +111,13 @@ private fun LuckActionContent(
             modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp),
-        contentPadding = PaddingValues(top = 24.dp, bottom = 20.dp),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 20.dp),
     ) {
         item { LuckActionDescription() }
         item {
             FortuneScoreRow(
                 scores = state.scores,
-                modifier = Modifier.padding(top = 32.dp),
+                modifier = Modifier.padding(top = 16.dp),
             )
         }
         item {
@@ -124,14 +127,14 @@ private fun LuckActionContent(
                 isRefreshing = state.isRefreshing,
                 onPrevDateClick = onPrevDateClick,
                 onNextDateClick = onNextDateClick,
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = 32.dp),
             )
         }
         items(state.actions, key = { it.id }) { action ->
             LuckActionItemCard(
                 item = action,
                 onToggle = onToggleAction,
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.padding(top = 16.dp),
             )
         }
     }
@@ -159,7 +162,7 @@ private fun LuckActionDescription(modifier: Modifier = Modifier) {
 
 @Composable
 private fun FortuneScoreRow(
-    scores: List<FortuneScoreUiModel>,
+    scores: PersistentList<FortuneScoreUiModel>,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -174,7 +177,10 @@ private fun FortuneScoreRow(
     ) {
         scores.forEachIndexed { index, score ->
             Column(
-                modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .padding(horizontal = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -238,13 +244,6 @@ private fun LuckActionDateHeader(
                 style = TodakunTypography.body2SemiBold,
                 color = TodakunColor.gray975,
             )
-            if (isRefreshing) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(14.dp),
-                    strokeWidth = 2.dp,
-                    color = TodakunColor.primary600,
-                )
-            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Icon(
@@ -348,15 +347,15 @@ private fun LuckActionScreenPreview() {
                     date = LocalDate.now(),
                     canGoToPrevDate = true,
                     scores =
-                        listOf(
+                        persistentListOf(
                             FortuneScoreUiModel(FortuneCategory.RELATIONSHIP, 84),
                             FortuneScoreUiModel(FortuneCategory.LOVE, 21),
                             FortuneScoreUiModel(FortuneCategory.ACHIEVEMENT, 17),
-                            FortuneScoreUiModel(FortuneCategory.HEALTH, 60),
                             FortuneScoreUiModel(FortuneCategory.MONEY, 93),
+                            FortuneScoreUiModel(FortuneCategory.HEALTH, 60),
                         ),
                     actions =
-                        listOf(
+                        persistentListOf(
                             LuckActionItemUiModel("1", FortuneCategory.RELATIONSHIP, "오랜만에 생각난 사람에게 메시지 보내기", false),
                             LuckActionItemUiModel("2", FortuneCategory.LOVE, "평소보다 밝은 컬러의 옷 착용하기", true),
                             LuckActionItemUiModel("3", FortuneCategory.ACHIEVEMENT, "미뤄둔 작은 업무 하나 먼저 끝내기", false),
