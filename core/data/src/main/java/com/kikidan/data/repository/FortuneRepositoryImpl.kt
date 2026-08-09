@@ -34,9 +34,10 @@ class FortuneRepositoryImpl
 
         // API가 허용하는 조회 범위(이번 달 1일~오늘, 지난달 전체)를 합쳐서 반환한다.
         private suspend fun allowedHistoryEntries(): List<DailyFortuneHistoryEntry> {
-            val today = LocalDate.now()
-            val lastMonthEnd = today.withDayOfMonth(1).minusDays(1)
-            val thisMonth = remoteFortuneDataSource.getFortuneHistory(today)
+            // 오늘의 액션은 전용 API 사용, 오전 6시의 배치처리 한계
+            val yesterday = LocalDate.now().minusDays(1)
+            val lastMonthEnd = yesterday.withDayOfMonth(1).minusDays(1)
+            val thisMonth = remoteFortuneDataSource.getFortuneHistory(yesterday)
             val lastMonth = remoteFortuneDataSource.getFortuneHistory(lastMonthEnd)
             return (thisMonth + lastMonth).distinctBy { it.fortuneDate }
         }
