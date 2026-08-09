@@ -17,11 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.kikidan.auth.R
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
@@ -48,17 +46,17 @@ internal fun SplashScreen(modifier: Modifier = Modifier) {
                 contentDescription = stringResource(id = R.string.login_logo_content_description),
                 modifier = Modifier.size(width = 164.dp, height = 160.dp),
             )
-            Spacer(modifier = Modifier.height(52.dp))
+            Spacer(modifier = Modifier.height(46.dp))
+            Image(
+                painter = painterResource(id = R.drawable.img_logo_light_color_gradient),
+                contentDescription = stringResource(id = R.string.login_app_name),
+                modifier = Modifier.size(width = 244.dp, height = 71.dp),
+            )
+            Spacer(modifier = Modifier.height(18.dp))
             Text(
-                text = stringResource(id = R.string.login_app_name),
-                // 스플래시 전용 대형 워드마크. 타이포 스케일(최대 32sp)을 넘어서는 값이라 토큰이 없다.
-                style =
-                    TodakunTypography.heading1ExtraBold.copy(
-                        fontSize = 60.sp,
-                        lineHeight = 72.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                    ),
-                color = TodakunColor.white,
+                text = stringResource(id = R.string.login_tagline),
+                style = TodakunTypography.body1Medium,
+                color = TodakunColor.whiteOpacity90,
             )
         }
     }
