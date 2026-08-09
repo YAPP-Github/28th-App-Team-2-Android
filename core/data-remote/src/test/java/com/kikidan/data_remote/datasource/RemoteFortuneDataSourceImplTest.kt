@@ -66,28 +66,6 @@ class RemoteFortuneDataSourceImplTest {
         }
 
     @Test
-    fun `getFortuneHistory는 같은 to로 다시 호출해도 네트워크 요청을 한 번만 보낸다`() =
-        runTest {
-            val body =
-                """
-                {"success":true,"code":"200","message":"ok","data":
-                    [{"id":"f-1","fortuneDate":"2026-07-24","luckActions":[]}]
-                }
-                """.trimIndent()
-            var callCount = 0
-            val sut =
-                buildSut {
-                    callCount++
-                    respond(body, HttpStatusCode.OK, jsonHeaders)
-                }
-
-            sut.getFortuneHistory(LocalDate.of(2026, 7, 24))
-            sut.getFortuneHistory(LocalDate.of(2026, 7, 24))
-
-            assertEquals(1, callCount)
-        }
-
-    @Test
     fun `getFortuneDetailScores가 정상 응답이면 FortuneScore 목록으로 반환된다`() =
         runTest {
             val body =

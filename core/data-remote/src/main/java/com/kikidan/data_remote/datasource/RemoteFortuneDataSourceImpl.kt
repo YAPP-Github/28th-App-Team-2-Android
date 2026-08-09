@@ -21,10 +21,6 @@ class RemoteFortuneDataSourceImpl
     constructor(
         private val client: Lazy<HttpClient>,
     ) : RemoteFortuneDataSource {
-        // 히스토리는 (to) 기준으로 raw 응답을 세션 동안 캐싱한다. 같은 to로 다시 조회해도 네트워크 요청은 최초 1회뿐이다.
-        // ponytail: 싱글턴 내 단순 var 캐시라 동시 접근 시 드물게 중복 요청이 발생할 수 있음 — 문제가 되면 Mutex로 승격.
-        private val historyCache = mutableMapOf<LocalDate, List<DailyFortuneHistoryResponse>>()
-
         override suspend fun getTodayFortuneScores(): List<FortuneScore> =
             client
                 .get()
@@ -32,16 +28,12 @@ class RemoteFortuneDataSourceImpl
                 .bodyNotNull<TodayFortuneResponse>()
                 .toFortuneScores()
 
-        override suspend fun getFortuneHistory(to: LocalDate): List<DailyFortuneHistoryEntry> {
-            val cached = historyCache[to]
-            val responses =
-                cached ?: client
-                    .get()
-                    .get(HISTORY_URL) { parameter("to", to.toString()) }
-                    .bodyNotNull<List<DailyFortuneHistoryResponse>>()
-                    .also { historyCache[to] = it }
-            return responses.map { it.toDomain() }
-        }
+        override suspend fun getFortuneHistory(to: LocalDate): List<DailyFortuneHistoryEntry> =
+            client
+                .get()
+                .get(HISTORY_URL) { parameter("to", to.toString()) }
+                .bodyNotNull<List<DailyFortuneHistoryResponse>>()
+                .map { it.toDomain() }
 
         override suspend fun getFortuneDetailScores(dailyFortuneId: String): List<FortuneScore> =
             client
