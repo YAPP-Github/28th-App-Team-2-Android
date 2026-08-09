@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kikidan.auth.R
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.auth.OAuthProviderType
 
