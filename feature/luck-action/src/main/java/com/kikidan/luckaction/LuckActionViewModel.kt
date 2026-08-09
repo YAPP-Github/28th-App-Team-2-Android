@@ -27,19 +27,23 @@ class LuckActionViewModel
         ContainerHost<LuckActionUiState, LuckActionSideEffect> {
         override val container = container<LuckActionUiState, LuckActionSideEffect>(LuckActionUiState.Loading)
 
-        fun load() = intent { fetch(LocalDate.now()) }
+        fun load() =
+            intent {
+                val earliestDate = getEarliestFortuneDate().getOrNull()
+                fetch(LocalDate.now(), earliestDate)
+            }
 
         fun onPrevDateClick() =
             intent {
                 val current = state as? LuckActionUiState.Success ?: return@intent
-                if (current.canGoToPrevDate) fetch(current.date.minusDays(1))
+                if (current.canGoToPrevDate) fetch(current.date.minusDays(1), current.earliestDate)
             }
 
         fun onNextDateClick() =
             intent {
                 val current = state as? LuckActionUiState.Success ?: return@intent
                 val next = current.date.plusDays(1)
-                if (!next.isAfter(LocalDate.now())) fetch(next)
+                if (!next.isAfter(LocalDate.now())) fetch(next, current.earliestDate)
             }
 
         fun onToggleAction(id: String) =
@@ -69,9 +73,13 @@ class LuckActionViewModel
         // 이전에 성공적으로 불러온 화면이 있으면(Success) 그 위에서 isRefreshing만 켠 채 유지하고,
         // 최초 로딩(Loading)에서만 전체 화면 로딩/실패 상태로 전환한다.
         // 실패 시에도 이미 보여주던 날짜/목록은 그대로 두고 토스트만 띄운다(같은 이유).
-        private suspend fun Syntax<LuckActionUiState, LuckActionSideEffect>.fetch(date: LocalDate) {
+        // earliestDate는 세션 동안 바뀌지 않으므로 load()에서 한 번만 조회하고, 날짜 이동 시에는
+        // 상태에 들고 있는 값을 그대로 재사용한다(매 클릭마다 다시 조회하지 않는다).
+        private suspend fun Syntax<LuckActionUiState, LuckActionSideEffect>.fetch(
+            date: LocalDate,
+            earliestDate: LocalDate?,
+        ) {
             val previous = state as? LuckActionUiState.Success
-            val earliestDate = getEarliestFortuneDate().getOrNull()
             val canGoToPrevDate = earliestDate != null && date.isAfter(earliestDate)
 
             reduce { previous?.copy(isRefreshing = true) ?: LuckActionUiState.Loading }
@@ -91,12 +99,15 @@ class LuckActionViewModel
                             LuckActionUiState.Success(
                                 date = date,
                                 canGoToPrevDate = canGoToPrevDate,
+                                earliestDate = earliestDate,
                                 scores =
                                     page.scores
+                                        .sortedBy { it.category.ordinal }
                                         .map { FortuneScoreUiModel(it.category, it.score) }
                                         .toPersistentList(),
                                 actions =
                                     page.actions
+                                        .sortedBy { it.category.ordinal }
                                         .map { LuckActionItemUiModel(it.id, it.category, it.title, it.achieved) }
                                         .toPersistentList(),
                             )

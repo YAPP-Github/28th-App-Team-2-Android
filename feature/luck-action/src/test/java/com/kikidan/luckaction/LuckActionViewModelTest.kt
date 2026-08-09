@@ -49,6 +49,35 @@ class LuckActionViewModelTest {
         }
 
     @Test
+    fun `load 성공 시 scores는 서버 응답 순서와 무관하게 FortuneCategory 선언 순서로 정렬된다`() =
+        runTest {
+            val fakeFortuneRepository =
+                FakeFortuneRepository().apply {
+                    scoresResult =
+                        Result.success(
+                            listOf(
+                                FortuneScore(FortuneCategory.HEALTH, 60),
+                                FortuneScore(FortuneCategory.RELATIONSHIP, 84),
+                                FortuneScore(FortuneCategory.MONEY, 93),
+                            ),
+                        )
+                    earliestDateResult = Result.success(LocalDate.now().minusDays(3))
+                }
+            val fakeLuckActionRepository =
+                FakeLuckActionRepository().apply { actionsResult = Result.success(emptyList()) }
+            val vm = viewModel(fakeFortuneRepository, fakeLuckActionRepository)
+
+            vm.test(this) {
+                containerHost.load()
+                val loaded = awaitState() as LuckActionUiState.Success
+                assertEquals(
+                    listOf(FortuneCategory.RELATIONSHIP, FortuneCategory.MONEY, FortuneCategory.HEALTH),
+                    loaded.scores.map { it.category },
+                )
+            }
+        }
+
+    @Test
     fun `load 성공 시 오늘이 조회 가능한 가장 오래된 날짜면 canGoToPrevDate가 false다`() =
         runTest {
             val today = LocalDate.now()
@@ -91,10 +120,10 @@ class LuckActionViewModelTest {
             val fakeFortuneRepository =
                 FakeFortuneRepository().apply {
                     recordResult = Result.success(FortuneRecord(scores = emptyList(), actions = emptyList()))
-                    earliestDateResult = Result.success(today.minusDays(5))
                 }
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
-            val initial = LuckActionUiState.Success(date = today, canGoToPrevDate = true)
+            val initial =
+                LuckActionUiState.Success(date = today, canGoToPrevDate = true, earliestDate = today.minusDays(5))
 
             vm.test(this, initialState = initial) {
                 containerHost.onPrevDateClick()
