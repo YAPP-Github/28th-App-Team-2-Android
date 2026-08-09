@@ -70,25 +70,26 @@ class LuckActionViewModel
         // 실패 시에도 이미 보여주던 날짜/목록은 그대로 두고 토스트만 띄운다(같은 이유).
         private suspend fun Syntax<LuckActionUiState, LuckActionSideEffect>.fetch(date: LocalDate) {
             val previous = state as? LuckActionUiState.Success
+            val earliestDate = getEarliestFortuneDate().getOrNull()
+            val canGoToPrevDate = earliestDate != null && date.isAfter(earliestDate)
+
             reduce { previous?.copy(isRefreshing = true) ?: LuckActionUiState.Loading }
 
             getLuckActionPage(date)
                 .onSuccess { page ->
                     if (page == null) {
-                        // 조회 가능 범위 안에서만 이동하도록 미리 막아두므로 정상 흐름에서는 발생하지 않는 방어 경로.
+                        //중간에 날짜가 빵꾸가 났을 때 실행되는 방어 경로.
                         reduce {
                             (state as LuckActionUiState.Success).copy(
                                 isRefreshing = false,
-                                canGoToPrevDate = false,
+                                canGoToPrevDate = canGoToPrevDate,
                             )
                         }
                     } else {
-                        // 조회 가능 범위(이번 달 + 지난달)는 DataSource에 캐싱되어 있어 매번 불러도 네트워크 비용이 거의 없다.
-                        val earliestDate = getEarliestFortuneDate().getOrNull()
                         reduce {
                             LuckActionUiState.Success(
                                 date = date,
-                                canGoToPrevDate = earliestDate != null && date.isAfter(earliestDate),
+                                canGoToPrevDate = canGoToPrevDate,
                                 scores = page.scores.map { FortuneScoreUiModel(it.category, it.score) },
                                 actions =
                                     page.actions.map {
