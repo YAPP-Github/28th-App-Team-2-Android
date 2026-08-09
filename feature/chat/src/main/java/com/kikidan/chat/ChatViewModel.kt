@@ -1,5 +1,6 @@
 package com.kikidan.chat
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.model.ChatState
@@ -30,13 +31,21 @@ class ChatViewModel
         private val getChatEntry: GetChatEntryUseCase,
         private val getConversationDetail: GetConversationDetailUseCase,
         private val sendChatMessage: SendChatMessageUseCase,
+        private val savedStateHandle: SavedStateHandle,
     ) : ViewModel(),
         ContainerHost<ChatState, ChatSideEffect> {
-        override val container = container<ChatState, ChatSideEffect>(ChatState())
+        override val container =
+            container<ChatState, ChatSideEffect>(
+                ChatState(
+                    conversationId = savedStateHandle[KEY_CONVERSATION_ID],
+                    input = savedStateHandle[KEY_INPUT] ?: "",
+                ),
+            )
 
         /** 화면 진입 시 1회. conversationId가 있으면 과거 대화를 먼저 채운다. */
         fun load(conversationId: String?) =
             intent {
+                savedStateHandle[KEY_CONVERSATION_ID] = conversationId
                 reduce { state.copy(conversationId = conversationId, isLoading = true) }
 
                 getChatEntry()
@@ -61,20 +70,19 @@ class ChatViewModel
 
         fun onInputChange(value: String) =
             intent {
-                reduce { state.copy(input = value.take(SendChatMessageUseCase.MAX_CONTENT_LENGTH)) }
+                val trimmedToLimit = value.take(SendChatMessageUseCase.MAX_CONTENT_LENGTH)
+                savedStateHandle[KEY_INPUT] = trimmedToLimit
+                reduce { state.copy(input = trimmedToLimit) }
             }
 
-        fun onSendClick() =
-            intent {
-                val content = state.input
-                reduce { state.copy(input = "") }
-                send(content)
-            }
+        fun onSendClick() = intent { send(state.input) }
 
         fun onSuggestionClick(seedPrompt: String) = intent { send(seedPrompt) }
 
         fun startNewConversation() =
             intent {
+                savedStateHandle[KEY_CONVERSATION_ID] = null
+                savedStateHandle[KEY_INPUT] = ""
                 reduce {
                     state.copy(
                         conversationId = null,
@@ -85,31 +93,37 @@ class ChatViewModel
                 }
             }
 
-        // 전송 진입점이 여러 개이므로 가드를 여기 한 곳에만 둔다 (설계 2-7).
+        // 전송 진입점이 여러 개이므로 가드와 정규화(trim/공백 체크)를 여기 한 곳에만 둔다 (설계 2-7).
         private suspend fun Syntax<ChatState, ChatSideEffect>.send(content: String) {
             if (state.streamingChatState !is StreamingChatState.Idle) return
+            val trimmed = content.trim()
+            if (trimmed.isBlank()) return
 
             val conversationId = state.conversationId
-            val placeholder = localUserMessage(content.trim())
+            val placeholder = localUserMessage(trimmed)
+            savedStateHandle[KEY_INPUT] = ""
             reduce {
                 state.copy(
                     messages = state.messages.adding(placeholder),
                     streamingChatState = StreamingChatState.Thinking,
+                    input = "",
                 )
             }
 
             var streamConversationId: String? = conversationId
             var assistantMessageId: String? = null
+            var userMessageId: String = placeholder.id
             var pendingAction: ChatAction? = null
 
             try {
-                sendChatMessage(conversationId, content)
+                sendChatMessage(conversationId, trimmed)
                     .transform { result ->
                         when (val event = result.getOrElse { throw it }) {
                             is ChatStreamEvent.Start -> {
                                 val result = onStreamingStart(placeholder, event)
                                 streamConversationId = result.first
                                 assistantMessageId = result.second
+                                userMessageId = event.userMessageId
                             }
 
                             is ChatStreamEvent.Delta -> {
@@ -147,6 +161,11 @@ class ChatViewModel
             } catch (e: Throwable) {
                 reduce {
                     state.copy(
+                        messages =
+                            state.messages
+                                .map { msg ->
+                                    if (msg.id == userMessageId) msg.copy(status = MessageStatus.FAILED) else msg
+                                }.toPersistentList(),
                         streamingChatState = StreamingChatState.Idle,
                     )
                 }
@@ -203,6 +222,12 @@ class ChatViewModel
                     streamingChatState = StreamingChatState.Idle,
                 )
             }
+            savedStateHandle[KEY_CONVERSATION_ID] = streamConversationId
+        }
+
+        companion object {
+            private const val KEY_CONVERSATION_ID = "conversationId"
+            private const val KEY_INPUT = "input"
         }
     }
 
@@ -211,7 +236,7 @@ private fun localUserMessage(content: String) =
         id = "local-user-${System.currentTimeMillis()}",
         role = MessageRole.USER,
         content = content,
-        status = MessageStatus.COMPLETED,
+        status = MessageStatus.GENERATING,
         action = null,
         createdAt = Instant.now(),
     )

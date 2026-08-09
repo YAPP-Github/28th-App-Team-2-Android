@@ -1,5 +1,6 @@
 package com.kikidan.chat
 
+import androidx.lifecycle.SavedStateHandle
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
@@ -116,7 +117,7 @@ class ChatViewModelTest {
                 assertTrue(s1.messages.isNotEmpty())
                 assertEquals("안녕", s1.messages.first().content)
                 assertEquals(MessageRole.USER, s1.messages.first().role)
-                assertEquals(MessageStatus.COMPLETED, s1.messages.first().status)
+                assertEquals(MessageStatus.GENERATING, s1.messages.first().status)
                 cancelAndIgnoreRemainingItems()
             }
         }
@@ -234,7 +235,7 @@ class ChatViewModelTest {
             vm.test(this) {
                 containerHost.onSuggestionClick("안녕")
                 val s1 = awaitState()
-                assertEquals(MessageStatus.COMPLETED, s1.messages.first().status)
+                assertEquals(MessageStatus.GENERATING, s1.messages.first().status)
                 // S2: Start 수신 → id가 real-user-id로 교체, COMPLETED
                 val s2 = awaitState()
                 assertTrue(s2.messages.any { it.id == "real-user-id" && it.status == MessageStatus.COMPLETED })
@@ -372,6 +373,55 @@ class ChatViewModelTest {
         }
 
     @Test
+    fun `스트리밍 중 onSendClick 호출은 무시되고 input은 유지된다`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents = listOf(Result.success(ChatStreamEvent.Delta("텍스트")))
+                }
+            val vm = viewModel(fakeRepo)
+
+            vm.test(this) {
+                containerHost.onInputChange("첫 메시지")
+                awaitState()
+
+                containerHost.onSendClick()
+                var s = awaitState()
+                assertTrue("THINKING 상태여야 함", s.streamingChatState != StreamingChatState.Idle)
+                // send() 진입 시 input이 비워진다
+                assertEquals("", s.input)
+
+                // 스트리밍 중 입력한 값은 send() 가드가 즉시 return하므로 지워지지 않고 남아야 한다
+                containerHost.onInputChange("스트리밍 중 입력")
+                s = awaitState()
+                assertEquals("스트리밍 중 입력", s.input)
+
+                containerHost.onSendClick()
+
+                while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
+                assertEquals(1, fakeRepo.sendCallCount)
+                assertEquals("스트리밍 중 입력", s.input)
+            }
+        }
+
+    @Test
+    fun `공백만 입력한 상태에서 onSendClick 호출 시 전송되지 않는다`() =
+        runTest {
+            val fakeRepo = FakeChatRepository()
+            val vm = viewModel(fakeRepo)
+
+            vm.test(this) {
+                containerHost.onInputChange("   ")
+                val s1 = awaitState()
+                assertEquals("   ", s1.input)
+
+                containerHost.onSendClick()
+
+                assertEquals(0, fakeRepo.sendCallCount)
+            }
+        }
+
+    @Test
     fun `onInputChange에 501자 입력 시 input length가 500으로 제한된다`() =
         runTest {
             val fakeRepo = FakeChatRepository()
@@ -414,11 +464,15 @@ class ChatViewModelTest {
             }
         }
 
-    private fun viewModel(fakeRepo: FakeChatRepository): ChatViewModel =
+    private fun viewModel(
+        fakeRepo: FakeChatRepository,
+        savedStateHandle: SavedStateHandle = SavedStateHandle(),
+    ): ChatViewModel =
         ChatViewModel(
             getChatEntry = GetChatEntryUseCase(fakeRepo),
             getConversationDetail = GetConversationDetailUseCase(fakeRepo),
             sendChatMessage = SendChatMessageUseCase(fakeRepo),
+            savedStateHandle = savedStateHandle,
         )
 
     private val defaultEntry =
