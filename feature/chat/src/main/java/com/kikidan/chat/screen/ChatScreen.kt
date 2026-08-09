@@ -131,16 +131,26 @@ internal fun ChatScreen(
                 inputFieldHeight = inputFieldHeight,
                 selectedCategory = selectedCategory,
                 onActionClick = { action ->
-                    val beginMillis = action.date?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
-                    val endMillis = action.date?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+                    val beginMillis =
+                        action.date
+                            ?.atStartOfDay(ZoneOffset.UTC)
+                            ?.toInstant()
+                            ?.toEpochMilli()
+                    val endMillis =
+                        action.date
+                            ?.plusDays(1)
+                            ?.atStartOfDay(ZoneOffset.UTC)
+                            ?.toInstant()
+                            ?.toEpochMilli()
 
-                    val intent = Intent(Intent.ACTION_INSERT).apply {
-                        data = CalendarContract.Events.CONTENT_URI
-                        putExtra(CalendarContract.Events.TITLE, action.category)
-                        putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginMillis)
-                        putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
-                        putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
-                    }
+                    val intent =
+                        Intent(Intent.ACTION_INSERT).apply {
+                            data = CalendarContract.Events.CONTENT_URI
+                            putExtra(CalendarContract.Events.TITLE, action.category)
+                            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginMillis)
+                            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
+                            putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                        }
                     runCatching { context.startActivity(intent) }
                         .onFailure {
                             onCalendarLaunchFail(it)
@@ -160,8 +170,7 @@ internal fun ChatScreen(
                             with(density) {
                                 placeable.size.height.toDp()
                             }
-                    }
-                    .padding(20.dp),
+                    }.padding(20.dp),
         )
 
         AnimatedVisibility(
@@ -204,7 +213,7 @@ private fun ChatMessageList(
         if (listState.layoutInfo.totalItemsCount > 0) {
             listState.scrollToItem(
                 index = listState.layoutInfo.totalItemsCount - 1,
-                scrollOffset = Int.MAX_VALUE
+                scrollOffset = Int.MAX_VALUE,
             )
         }
     }
