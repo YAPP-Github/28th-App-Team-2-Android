@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.dialog.TodakunDialog
 import com.kikidan.onboarding.model.TermsDialog
 import com.kikidan.onboarding.model.TermsSideEffect

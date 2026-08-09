@@ -23,13 +23,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunCheckbox
 import com.kikidan.designsystem.component.TodakunDivider
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.onboarding.OnboardingTerm
-import com.kikidan.onboarding.R
 import com.kikidan.onboarding.component.OnboardingLayout
 import com.kikidan.onboarding.model.TermsAgreementUiModel
 
