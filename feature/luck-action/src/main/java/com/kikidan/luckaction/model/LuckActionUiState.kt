@@ -1,6 +1,8 @@
 package com.kikidan.luckaction.model
 
 import com.kikidan.domain.model.fortune.FortuneCategory
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 
 sealed interface LuckActionUiState {
@@ -10,8 +12,8 @@ sealed interface LuckActionUiState {
         val date: LocalDate,
         val canGoToPrevDate: Boolean,
         val isRefreshing: Boolean = false,
-        val scores: List<FortuneScoreUiModel> = emptyList(),
-        val actions: List<LuckActionItemUiModel> = emptyList(),
+        val scores: PersistentList<FortuneScoreUiModel> = persistentListOf(),
+        val actions: PersistentList<LuckActionItemUiModel> = persistentListOf(),
         val completionOverlayCategory: FortuneCategory? = null,
     ) : LuckActionUiState
 

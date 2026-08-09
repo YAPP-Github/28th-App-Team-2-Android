@@ -9,6 +9,7 @@ import com.kikidan.luckaction.model.LuckActionItemUiModel
 import com.kikidan.luckaction.model.LuckActionSideEffect
 import com.kikidan.luckaction.model.LuckActionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toPersistentList
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.Syntax
 import org.orbitmvi.orbit.viewmodel.container
@@ -49,9 +50,9 @@ class LuckActionViewModel
                         reduce {
                             current.copy(
                                 actions =
-                                    current.actions.map {
-                                        if (it.id == id) it.copy(achieved = updated.achieved) else it
-                                    },
+                                    current.actions
+                                        .map { if (it.id == id) it.copy(achieved = updated.achieved) else it }
+                                        .toPersistentList(),
                                 completionOverlayCategory =
                                     if (updated.achieved) updated.category else current.completionOverlayCategory,
                             )
@@ -78,7 +79,7 @@ class LuckActionViewModel
             getLuckActionPage(date)
                 .onSuccess { page ->
                     if (page == null) {
-                        //중간에 날짜가 빵꾸가 났을 때 실행되는 방어 경로.
+                        // 중간에 날짜가 빵꾸가 났을 때 실행되는 방어 경로.
                         reduce {
                             (state as LuckActionUiState.Success).copy(
                                 isRefreshing = false,
@@ -90,11 +91,14 @@ class LuckActionViewModel
                             LuckActionUiState.Success(
                                 date = date,
                                 canGoToPrevDate = canGoToPrevDate,
-                                scores = page.scores.map { FortuneScoreUiModel(it.category, it.score) },
+                                scores =
+                                    page.scores
+                                        .map { FortuneScoreUiModel(it.category, it.score) }
+                                        .toPersistentList(),
                                 actions =
-                                    page.actions.map {
-                                        LuckActionItemUiModel(it.id, it.category, it.title, it.achieved)
-                                    },
+                                    page.actions
+                                        .map { LuckActionItemUiModel(it.id, it.category, it.title, it.achieved) }
+                                        .toPersistentList(),
                             )
                         }
                     }

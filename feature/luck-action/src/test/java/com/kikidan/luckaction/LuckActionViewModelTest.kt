@@ -10,6 +10,7 @@ import com.kikidan.domain.usecase.ToggleLuckActionUseCase
 import com.kikidan.luckaction.model.LuckActionItemUiModel
 import com.kikidan.luckaction.model.LuckActionSideEffect
 import com.kikidan.luckaction.model.LuckActionUiState
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -113,7 +114,7 @@ class LuckActionViewModelTest {
             val today = LocalDate.now()
             val fakeFortuneRepository =
                 FakeFortuneRepository().apply { recordResult = Result.failure(IllegalStateException()) }
-            val staleActions = listOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "오늘 액션", false))
+            val staleActions = persistentListOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "오늘 액션", false))
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
             val initial = LuckActionUiState.Success(date = today, canGoToPrevDate = true, actions = staleActions)
 
@@ -134,7 +135,7 @@ class LuckActionViewModelTest {
         runTest {
             val today = LocalDate.now()
             val fakeFortuneRepository = FakeFortuneRepository().apply { recordResult = Result.success(null) }
-            val staleActions = listOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "오늘 액션", false))
+            val staleActions = persistentListOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "오늘 액션", false))
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
             val initial = LuckActionUiState.Success(date = today, canGoToPrevDate = true, actions = staleActions)
 
@@ -185,7 +186,7 @@ class LuckActionViewModelTest {
                 LuckActionUiState.Success(
                     date = LocalDate.now(),
                     canGoToPrevDate = true,
-                    actions = listOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "제목", false)),
+                    actions = persistentListOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "제목", false)),
                 )
 
             vm.test(this, initialState = initial) {
