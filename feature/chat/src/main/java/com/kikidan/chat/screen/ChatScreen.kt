@@ -192,7 +192,9 @@ private fun ChatMessageList(
 ) {
     // 상위에서 selectedCatgeory가 null이 되도 이전 캐릭터 유지
     var prevCategory by remember { mutableStateOf(selectedCategory) }
-    if (selectedCategory != null) prevCategory = selectedCategory
+    LaunchedEffect(selectedCategory) {
+        if (selectedCategory != null) prevCategory = selectedCategory
+    }
 
     val listState = rememberLazyListState()
     val imeBottom = WindowInsets.ime.getBottom(LocalDensity.current)
