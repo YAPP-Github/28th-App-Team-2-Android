@@ -36,7 +36,6 @@ fun LuckActionRoute(
         onPrevDateClick = viewModel::onPrevDateClick,
         onNextDateClick = viewModel::onNextDateClick,
         onCompleteOverlayDismiss = viewModel::onCompleteOverlayDismiss,
-        onRetryClick = viewModel::load,
         modifier = modifier,
     )
 }

@@ -128,6 +128,18 @@ private fun SpeechBubble(
     }
 }
 
+@Composable
+private fun FortuneCategory.completeMessage(): String =
+    stringResource(
+        when (this) {
+            FortuneCategory.RELATIONSHIP -> R.string.luck_action_complete_message_relationship
+            FortuneCategory.LOVE -> R.string.luck_action_complete_message_love
+            FortuneCategory.ACHIEVEMENT -> R.string.luck_action_complete_message_achievement
+            FortuneCategory.MONEY -> R.string.luck_action_complete_message_money
+            FortuneCategory.HEALTH -> R.string.luck_action_complete_message_health
+        },
+    )
+
 private object BubbleTail : Shape {
     override fun createOutline(
         size: Size,

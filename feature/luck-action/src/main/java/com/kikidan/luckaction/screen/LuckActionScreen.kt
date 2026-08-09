@@ -33,18 +33,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunBadge
+import com.kikidan.designsystem.component.TodakunBadgeType
 import com.kikidan.designsystem.component.TodakunCheckbox
-import com.kikidan.designsystem.component.button.PrimaryButton
-import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.component.header.TodakunMainHeader
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.luckaction.component.LuckActionCompleteOverlay
-import com.kikidan.luckaction.component.badgeLabel
-import com.kikidan.luckaction.component.badgeType
-import com.kikidan.luckaction.component.scoreLabel
 import com.kikidan.luckaction.model.FortuneScoreUiModel
 import com.kikidan.luckaction.model.LuckActionItemUiModel
 import com.kikidan.luckaction.model.LuckActionUiState
@@ -57,7 +53,6 @@ fun LuckActionScreen(
     onPrevDateClick: () -> Unit,
     onNextDateClick: () -> Unit,
     onCompleteOverlayDismiss: () -> Unit,
-    onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -72,12 +67,8 @@ fun LuckActionScreen(
 
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 when (state) {
-                    is LuckActionUiState.Loading -> {
-                        LuckActionLoading(modifier = Modifier.align(Alignment.Center))
-                    }
-
-                    is LuckActionUiState.Failure -> {
-                        LuckActionFailure(onRetryClick = onRetryClick, modifier = Modifier.align(Alignment.Center))
+                    is LuckActionUiState.Loading, LuckActionUiState.Failure -> {
+                        //TODO 디자인 요구사항 반영
                     }
 
                     is LuckActionUiState.Success -> {
@@ -101,35 +92,6 @@ fun LuckActionScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun LuckActionLoading(modifier: Modifier = Modifier) {
-    CircularProgressIndicator(modifier = modifier, color = TodakunColor.primary600)
-}
-
-@Composable
-private fun LuckActionFailure(
-    onRetryClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.padding(horizontal = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(R.string.luck_action_failure_message),
-            style = TodakunTypography.body2Regular,
-            color = TodakunColor.gray800,
-            textAlign = TextAlign.Center,
-        )
-        PrimaryButton(
-            text = stringResource(R.string.luck_action_retry),
-            onClick = onRetryClick,
-            size = TodakunButtonSize.Medium,
-            modifier = Modifier.padding(top = 20.dp),
-        )
     }
 }
 
@@ -343,6 +305,39 @@ private fun LuckActionItemCard(
     }
 }
 
+@Composable
+private fun FortuneCategory.scoreLabel(): String =
+    stringResource(
+        when (this) {
+            FortuneCategory.RELATIONSHIP -> R.string.luck_action_score_relationship
+            FortuneCategory.LOVE -> R.string.luck_action_score_love
+            FortuneCategory.ACHIEVEMENT -> R.string.luck_action_score_achievement
+            FortuneCategory.MONEY -> R.string.luck_action_score_money
+            FortuneCategory.HEALTH -> R.string.luck_action_score_health
+        },
+    )
+
+@Composable
+private fun FortuneCategory.badgeLabel(): String =
+    stringResource(
+        when (this) {
+            FortuneCategory.RELATIONSHIP -> R.string.luck_action_badge_relationship
+            FortuneCategory.LOVE -> R.string.luck_action_badge_love
+            FortuneCategory.ACHIEVEMENT -> R.string.luck_action_badge_achievement
+            FortuneCategory.MONEY -> R.string.luck_action_badge_money
+            FortuneCategory.HEALTH -> R.string.luck_action_badge_health
+        },
+    )
+
+private fun FortuneCategory.badgeType(): TodakunBadgeType =
+    when (this) {
+        FortuneCategory.RELATIONSHIP -> TodakunBadgeType.Purple
+        FortuneCategory.LOVE -> TodakunBadgeType.Pink
+        FortuneCategory.ACHIEVEMENT -> TodakunBadgeType.Green
+        FortuneCategory.MONEY -> TodakunBadgeType.Blue
+        FortuneCategory.HEALTH -> TodakunBadgeType.Yellow
+    }
+
 @Preview(showBackground = true, heightDp = 900)
 @Composable
 private fun LuckActionScreenPreview() {
@@ -373,7 +368,6 @@ private fun LuckActionScreenPreview() {
             onPrevDateClick = {},
             onNextDateClick = {},
             onCompleteOverlayDismiss = {},
-            onRetryClick = {},
         )
     }
 }
@@ -393,7 +387,6 @@ private fun LuckActionScreenOverlayPreview() {
             onPrevDateClick = {},
             onNextDateClick = {},
             onCompleteOverlayDismiss = {},
-            onRetryClick = {},
         )
     }
 }
@@ -408,7 +401,6 @@ private fun LuckActionScreenLoadingPreview() {
             onPrevDateClick = {},
             onNextDateClick = {},
             onCompleteOverlayDismiss = {},
-            onRetryClick = {},
         )
     }
 }
@@ -423,7 +415,6 @@ private fun LuckActionScreenFailurePreview() {
             onPrevDateClick = {},
             onNextDateClick = {},
             onCompleteOverlayDismiss = {},
-            onRetryClick = {},
         )
     }
 }
