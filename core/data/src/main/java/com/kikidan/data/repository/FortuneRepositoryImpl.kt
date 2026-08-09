@@ -7,6 +7,7 @@ import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.repository.FortuneRepository
 import com.kikidan.domain.util.runCatchingCancellable
 import java.time.LocalDate
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class FortuneRepositoryImpl
@@ -14,6 +15,10 @@ class FortuneRepositoryImpl
     constructor(
         private val remoteFortuneDataSource: RemoteFortuneDataSource,
     ) : FortuneRepository {
+        // 같은 to로 다시 조회해도 네트워크 요청은 최초 1회뿐이다. 이 인스턴스 자체가 Hilt @ViewModelScoped라
+        // ViewModel이 사라지면 캐시도 함께 사라진다. 동시 접근에 안전하도록 ConcurrentHashMap을 쓴다.
+        private val historyCache = ConcurrentHashMap<LocalDate, List<DailyFortuneHistoryEntry>>()
+
         override suspend fun getTodayFortuneScores(): Result<List<FortuneScore>> =
             runCatchingCancellable { remoteFortuneDataSource.getTodayFortuneScores() }
 
@@ -34,12 +39,12 @@ class FortuneRepositoryImpl
             runCatchingCancellable { allowedHistoryEntries().minOfOrNull { it.fortuneDate } }
 
         // API가 허용하는 조회 범위(이번 달 1일~오늘, 지난달 전체)를 합쳐서 반환한다.
-        // DataSource가 (to) 기준으로 raw 응답을 캐싱하므로, 반복 호출해도 최초 2회 이후로는 네트워크 요청이 없다.
         private suspend fun allowedHistoryEntries(): List<DailyFortuneHistoryEntry> {
             val today = LocalDate.now()
             val lastMonthEnd = today.withDayOfMonth(1).minusDays(1)
-            val thisMonth = remoteFortuneDataSource.getFortuneHistory(today)
-            val lastMonth = remoteFortuneDataSource.getFortuneHistory(lastMonthEnd)
-            return (thisMonth + lastMonth).distinctBy { it.fortuneDate }
+            return (fortuneHistory(today) + fortuneHistory(lastMonthEnd)).distinctBy { it.fortuneDate }
         }
+
+        private suspend fun fortuneHistory(to: LocalDate): List<DailyFortuneHistoryEntry> =
+            historyCache[to] ?: remoteFortuneDataSource.getFortuneHistory(to).also { historyCache[to] = it }
     }

@@ -90,6 +90,19 @@ class FortuneRepositoryImplTest {
         }
 
     @Test
+    fun `history 조회는 같은 to를 다시 요청해도 캐시로 처리되어 네트워크 요청이 늘지 않는다`() =
+        runTest {
+            val date = LocalDate.of(2026, 7, 24)
+            fake.history = listOf(DailyFortuneHistoryEntry("f-1", date, emptyList()))
+
+            sut.getFortuneRecordForDate(date)
+            val requestedAfterFirstCall = fake.requestedToValues.size
+            sut.getEarliestFortuneDate()
+
+            assertEquals(requestedAfterFirstCall, fake.requestedToValues.size)
+        }
+
+    @Test
     fun `getFortuneRecordForDate가 IOException을 throw하면 Result failure로 반환된다`() =
         runTest {
             fake.throwOnGetFortuneHistory = IOException("network")
