@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,7 +32,7 @@ import com.kikidan.designsystem.theme.TodakunTypography
 @Composable
 fun TodakunChatHeader(
     title: String,
-    freeChatUsed: Int,
+    freeChatRemaining: Int,
     freeChatTotal: Int,
     modifier: Modifier = Modifier,
     onCloseClick: () -> Unit = {},
@@ -77,7 +76,7 @@ fun TodakunChatHeader(
                 buildAnnotatedString {
                     append(stringResource(R.string.todak_chat_today_free_amount))
                     withStyle(SpanStyle(color = TodakunColor.gray800)) {
-                        append(freeChatUsed.toString())
+                        append(freeChatRemaining.toString())
                     }
                     append("/$freeChatTotal")
                 },
@@ -126,7 +125,7 @@ private fun TodakunChatHeaderPreview() {
     TodakunTheme {
         TodakunChatHeader(
             title = "토닥이",
-            freeChatUsed = 2,
+            freeChatRemaining = 2,
             freeChatTotal = 3,
         )
     }

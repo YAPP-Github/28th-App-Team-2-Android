@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,6 +73,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -87,6 +88,7 @@ internal fun ChatScreen(
     onCloseClick: () -> Unit,
     onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onCalendarLaunchFail: (Throwable) -> Unit = {},
 ) {
     val density = LocalDensity.current
     val context = LocalContext.current
@@ -111,7 +113,7 @@ internal fun ChatScreen(
         Column {
             TodakunChatHeader(
                 title = stringResource(R.string.chat_header_title),
-                freeChatUsed = state.quota?.remaining ?: 0,
+                freeChatRemaining = state.quota?.remaining ?: 0,
                 freeChatTotal = state.quota?.limit ?: 0,
                 onCloseClick = onCloseClick,
                 onChatIconClick = onNewConversationClick,
@@ -129,14 +131,20 @@ internal fun ChatScreen(
                 inputFieldHeight = inputFieldHeight,
                 selectedCategory = selectedCategory,
                 onActionClick = { action ->
-                    val intent =
-                        Intent(Intent.ACTION_INSERT).apply {
-                            data = CalendarContract.Events.CONTENT_URI
-                            putExtra(CalendarContract.Events.TITLE, action.category)
-                            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, action.date)
-                            putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                    val beginMillis = action.date?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+                    val endMillis = action.date?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+
+                    val intent = Intent(Intent.ACTION_INSERT).apply {
+                        data = CalendarContract.Events.CONTENT_URI
+                        putExtra(CalendarContract.Events.TITLE, action.category)
+                        putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginMillis)
+                        putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
+                        putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                    }
+                    runCatching { context.startActivity(intent) }
+                        .onFailure {
+                            onCalendarLaunchFail(it)
                         }
-                    context.startActivity(intent)
                 },
             )
         }
@@ -152,7 +160,8 @@ internal fun ChatScreen(
                             with(density) {
                                 placeable.size.height.toDp()
                             }
-                    }.padding(20.dp),
+                    }
+                    .padding(20.dp),
         )
 
         AnimatedVisibility(

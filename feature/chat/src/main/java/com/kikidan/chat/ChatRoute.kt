@@ -4,6 +4,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -11,6 +12,7 @@ import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.screen.ChatScreen
 import com.kikidan.chat.screen.ChatSplashScreen
 import com.kikidan.designsystem.R
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -24,8 +26,9 @@ fun ChatRoute(
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
+    val scope = rememberCoroutineScope()
     val defaultErrorMessage = stringResource(R.string.chat_default_error)
-    val showSplash = state.quota == null
+    val calendarErrorMessage = stringResource(R.string.chat_calendar_error)
 
     LaunchedEffect(Unit) { viewModel.load(conversationId) }
 
@@ -36,7 +39,7 @@ fun ChatRoute(
         }
     }
 
-    if (showSplash) {
+    if (state.isLoading && conversationId == null) {
         ChatSplashScreen()
     } else {
         ChatScreen(
@@ -47,6 +50,11 @@ fun ChatRoute(
             onNewConversationClick = viewModel::startNewConversation,
             onCloseClick = onCloseClick,
             onHistoryClick = onNavigateToHistory,
+            onCalendarLaunchFail = {
+                scope.launch {
+                    snackbarHostState.showSnackbar(calendarErrorMessage)
+                }
+            },
             modifier = modifier,
         )
     }
