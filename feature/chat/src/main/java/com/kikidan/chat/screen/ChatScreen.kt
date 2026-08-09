@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -190,7 +191,10 @@ private fun ChatMessageList(
     // 키보드가 열리고 닫히는 애니메이션 프레임마다 마지막 아이템으로 재스크롤해 입력창에 가려지지 않게 한다.
     LaunchedEffect(state.messages.size, state.streamingChatState, imeBottom) {
         if (listState.layoutInfo.totalItemsCount > 0) {
-            listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
+            listState.scrollToItem(
+                index = listState.layoutInfo.totalItemsCount - 1,
+                scrollOffset = Int.MAX_VALUE
+            )
         }
     }
 
@@ -204,7 +208,7 @@ private fun ChatMessageList(
                 top = 12.dp,
                 bottom = inputFieldHeight,
             ),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         item {
             ProfileCharacterImage(size = 60.dp, category = prevCategory)
@@ -216,7 +220,7 @@ private fun ChatMessageList(
             )
         }
 
-        if (state.messages.isEmpty() && state.streamingChatState is StreamingChatState.Idle) {
+        if (state.conversationId == null) {
             item {
                 suggestions.forEach { suggestion ->
                     TodakunChatExampleChip(
@@ -231,6 +235,7 @@ private fun ChatMessageList(
         }
 
         items(state.messages, key = { it.id }) { message ->
+            Spacer(modifier = Modifier.height(4.dp))
             when (message.role) {
                 MessageRole.USER -> {
                     Row(
@@ -243,7 +248,6 @@ private fun ChatMessageList(
 
                 MessageRole.ASSISTANT -> {
                     Column {
-                        Spacer(modifier = Modifier.height(24.dp))
                         Text(
                             text = message.content,
                             style = TodakunTypography.body2Regular,
