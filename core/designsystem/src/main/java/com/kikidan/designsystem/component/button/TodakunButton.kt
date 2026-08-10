@@ -133,7 +133,7 @@ private fun TodakunButton(
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
-            modifier = Modifier.height(size.height).then(modifier),
+            modifier = modifier.height(size.height),
             onClick = onClick,
             enabled = enabled,
             shape = RoundedCornerShape(12.dp),
