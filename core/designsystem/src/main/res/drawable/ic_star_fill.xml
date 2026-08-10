@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- TODO(N5): 임시 벡터. 실제 별점 아이콘 에셋은 Figma export 후 교체 예정 -->
+    <path
+        android:pathData="M12,2L14.59,8.63L22,9.24L16.46,13.97L18.18,21L12,17.27L5.82,21L7.54,13.97L2,9.24L9.41,8.63L12,2Z"
+        android:fillColor="#FFFFFF" />
+</vector>
