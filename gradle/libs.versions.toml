@@ -97,4 +97,5 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradlePlugin" }
 todakun-android-signing = { id = "todakun.android.signing" }
+todakun-feature = { id = "todakun.feature" }
 
