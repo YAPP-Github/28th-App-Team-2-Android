@@ -48,6 +48,39 @@
     <string name="bottom_nav_lucky_action">행운 액션</string>
     <string name="bottom_nav_my">마이</string>
 
+    <!--Todak Chat-->
+    <string name="chat_header_title">토닥이</string>
+    <string name="chat_entry_question">오늘은 어떤게 궁금해?</string>
+    <string name="chat_thinking_description">토닥이가 생각하고 있어요</string>
+    <string name="chat_thinking_label">생각 중</string>
+    <string name="chat_greeting_close_description">그리팅 닫기</string>
+    <string name="chat_default_error">알 수 없는 에러가 발생했어요. 잠시 후 다시 시도해주세요</string>
+    <string name="chat_calendar_error">앱에 캘린더가 설치되어 있지 않아 일정을 추가할 수 없어요</string>
+    <string name="chat_charactor_content_description">토닥이 사진</string>
+
+    <!-- 카테고리 팝업 문구 -->
+    <string name="chat_greeting_relationship_title">관계운을 알려줄게!</string>
+    <string name="chat_greeting_relationship_body">친구, 가족, 동료 등\n 고민되는 게 있으면 전부 나한테 물어봐.</string>
+    <string name="chat_greeting_love_title">연애운을 알려줄게!</string>
+    <string name="chat_greeting_love_body">짝사랑, 썸, 연애 등\n 남한테 말하지 못하는 비밀을 나한테 털어놔.</string>
+    <string name="chat_greeting_achievement_title">성취운을 알려줄게!</string>
+    <string name="chat_greeting_achievement_body">커리어, 학업, 목표 등\n 궁금한 점이나 고민은 전부 나한테 물어봐.</string>
+    <string name="chat_greeting_money_title">금전운을 알려줄게!</string>
+    <string name="chat_greeting_money_body">수입, 지출, 재테크 등\n 돈의 흐름에 대해서 나한테 물어봐.</string>
+    <string name="chat_greeting_health_title">건강운을 알려줄게!</string>
+    <string name="chat_greeting_health_body">컨디션, 습관, 마음가짐 등\n 요즘 신경 쓰이는 걸 나한테 말해봐.</string>
+
+    <!-- Splash -->
+    <string name="chat_splash_brand_primary">토닥운</string>
+    <string name="chat_splash_brand_secondary">AI 토닥이</string>
+    <string name="chat_splash_tagline">토닥이에게\n궁금한 운세를 다 물어봐!</string>
+
+    <!-- History -->
+    <string name="chat_history_title">대화 히스토리</string>
+    <string name="chat_history_empty">아직 토닥이와 나눈 대화가 없어요.</string>
+    <string name="chat_history_new_chat">새 채팅</string>
+
+
     <!-- LoginRoute -->
     <string name="login_app_name">토닥운</string>
     <string name="login_logo_content_description">토닥운 캐릭터</string>
