@@ -13,13 +13,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunTextField
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.onboarding.UserName
-import com.kikidan.onboarding.R
-import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.component.OnboardingLayout
 import com.kikidan.onboarding.model.OnboardingStep
 
 @Composable
@@ -51,7 +51,7 @@ internal fun NameScreen(
     val isError = username is UserName.Invalid && username !is UserName.Invalid.Empty
     val errorMessage = if (isError) username.errorMessage() else ""
 
-    OnboardingScaffold(
+    OnboardingLayout(
         progress = OnboardingStep.NAME.progress,
         title = title,
         ctaText = stringResource(id = R.string.onboarding_next),

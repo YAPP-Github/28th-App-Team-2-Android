@@ -17,6 +17,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunCheckbox
 import com.kikidan.designsystem.component.TodakunSelectBox
 import com.kikidan.designsystem.component.TodakunSelectField
@@ -26,12 +27,10 @@ import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
-import com.kikidan.onboarding.R
-import com.kikidan.onboarding.component.OnboardingScaffold
+import com.kikidan.onboarding.component.OnboardingLayout
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingStep
 import java.time.LocalDate
-import com.kikidan.designsystem.R as DesignSystemR
 
 @Composable
 internal fun BirthInfoScreen(
@@ -60,7 +59,7 @@ internal fun BirthInfoScreen(
             }
             append(stringResource(R.string.onboarding_birth_title2))
         }
-    OnboardingScaffold(
+    OnboardingLayout(
         progress = OnboardingStep.BIRTH_INFO.progress,
         title = title,
         ctaText = stringResource(id = R.string.onboarding_next),
@@ -183,7 +182,7 @@ private fun LocalDate?.formatted(): String =
  */
 @Composable
 private fun BirthTime?.formatted(): String {
-    val labels = stringArrayResource(id = DesignSystemR.array.wheel_picker_saju_birth_times)
+    val labels = stringArrayResource(id = R.array.wheel_picker_saju_birth_times)
     return this?.let { labels.getOrNull(it.ordinal) }.orEmpty()
 }
 

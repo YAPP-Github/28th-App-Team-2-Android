@@ -12,15 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.kikidan.designsystem.component.dialog.TodakunDialog
 import com.kikidan.designsystem.component.wheelpicker.BirthDateState
 import com.kikidan.designsystem.component.wheelpicker.BirthDateWheelPicker
 import com.kikidan.designsystem.component.wheelpicker.SajuBirthTimeWheelPicker
 import com.kikidan.domain.model.auth.OnboardingToken
 import com.kikidan.domain.model.user.BirthTime
-import com.kikidan.onboarding.model.OnboardingDialog
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingStep
@@ -28,7 +25,6 @@ import com.kikidan.onboarding.screen.BirthInfoScreen
 import com.kikidan.onboarding.screen.CompleteScreen
 import com.kikidan.onboarding.screen.ExtraQuestionScreen
 import com.kikidan.onboarding.screen.NameScreen
-import com.kikidan.onboarding.screen.TermsScreen
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.LocalDate
@@ -36,7 +32,7 @@ import java.time.LocalDate
 @Composable
 fun OnboardingRoute(
     onFinish: () -> Unit,
-    onExit: () -> Unit,
+    onNavigateTerm: () -> Unit,
     onboardingToken: OnboardingToken,
     modifier: Modifier = Modifier,
     viewModel: OnboardingViewModel = hiltViewModel(),
@@ -59,8 +55,8 @@ fun OnboardingRoute(
                 onFinish()
             }
 
-            OnboardingSideEffect.Exit -> {
-                onExit()
+            OnboardingSideEffect.NavigateToTerms -> {
+                onNavigateTerm()
             }
 
             OnboardingSideEffect.PermissionRequest -> {
@@ -74,29 +70,17 @@ fun OnboardingRoute(
     }
 
     BackHandler {
-        viewModel.onBackClick()
+        viewModel.clickBack()
     }
 
     when (state.step) {
-        OnboardingStep.TERMS -> {
-            TermsScreen(
-                termsAgreement = state.termsAgreement,
-                canProceed = state.canProceed,
-                onTermChange = viewModel::onTermChange,
-                onAllTermsChange = viewModel::onAllTermsChange,
-                onNextClick = viewModel::onNextClick,
-                onBackClick = viewModel::onBackClick,
-                modifier = modifier,
-            )
-        }
-
         OnboardingStep.NAME -> {
             NameScreen(
                 username = state.username,
                 canProceed = state.canProceed,
-                onNameChange = viewModel::onNameChange,
-                onNextClick = viewModel::onNextClick,
-                onBackClick = viewModel::onBackClick,
+                onNameChange = viewModel::changeName,
+                onNextClick = viewModel::clickNext,
+                onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
@@ -110,14 +94,14 @@ fun OnboardingRoute(
                 openedSheet = state.sheet,
                 canProceed = state.canProceed,
                 isBirthDateError = state.isUnderAge,
-                onGenderSelect = viewModel::onGenderSelect,
-                onCalendarTypeSelect = viewModel::onCalendarTypeSelect,
-                onSheetOpen = viewModel::onSheetOpen,
-                onBirthDateClear = viewModel::onBirthDateClear,
-                onBirthTimeClear = viewModel::onBirthTimeClear,
-                onBirthTimeUnknownChange = viewModel::onBirthTimeUnknownChange,
-                onNextClick = viewModel::onNextClick,
-                onBackClick = viewModel::onBackClick,
+                onGenderSelect = viewModel::selectGender,
+                onCalendarTypeSelect = viewModel::selectCalendarType,
+                onSheetOpen = viewModel::openSheet,
+                onBirthDateClear = viewModel::clearBirthDate,
+                onBirthTimeClear = viewModel::clearBirthTime,
+                onBirthTimeUnknownChange = viewModel::changeBirthTimeUnknown,
+                onNextClick = viewModel::clickNext,
+                onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
@@ -127,12 +111,12 @@ fun OnboardingRoute(
                 lifeStage = state.lifeStage,
                 relationshipStatus = state.relationshipStatus,
                 canProceed = state.canProceed,
-                onLifeStageSelect = viewModel::onLifeStageSelect,
-                onRelationshipStatusSelect = viewModel::onRelationshipStatusSelect,
+                onLifeStageSelect = viewModel::selectLifeStage,
+                onRelationshipStatusSelect = viewModel::selectRelationshipStatus,
                 onNextClick = {
-                    viewModel.onCompleteConfirmed(onboardingToken)
+                    viewModel.confirmComplete(onboardingToken)
                 },
-                onBackClick = viewModel::onBackClick,
+                onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
@@ -149,15 +133,9 @@ fun OnboardingRoute(
     OnboardingSheetHost(
         sheet = state.sheet,
         birthDate = state.birthDate,
-        onBirthDateChange = viewModel::onBirthDateChange,
-        onBirthTimeChange = viewModel::onBirthTimeChange,
-        onDismiss = viewModel::onSheetDismiss,
-    )
-
-    OnboardingDialogHost(
-        dialog = state.dialog,
-        onConfirmExit = viewModel::onExitConfirmed,
-        onDismiss = viewModel::onDialogDismiss,
+        onBirthDateChange = viewModel::changeBirthDate,
+        onBirthTimeChange = viewModel::changeBirthTime,
+        onDismiss = viewModel::dismissSheet,
     )
 }
 
@@ -201,30 +179,6 @@ private fun OnboardingSheetHost(
                     onDismiss()
                 },
                 onDismissRequest = onDismiss,
-            )
-        }
-
-        null -> {
-            Unit
-        }
-    }
-}
-
-@Composable
-private fun OnboardingDialogHost(
-    dialog: OnboardingDialog?,
-    onConfirmExit: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    when (dialog) {
-        OnboardingDialog.EXIT_CONFIRM -> {
-            TodakunDialog(
-                title = stringResource(id = R.string.onboarding_terms_exit_title),
-                description = stringResource(id = R.string.onboarding_terms_exit_description),
-                confirmText = stringResource(id = R.string.onboarding_terms_exit_confirm),
-                dismissText = stringResource(id = R.string.onboarding_terms_exit_dismiss),
-                onConfirm = onConfirmExit,
-                onDismiss = onDismiss,
             )
         }
 

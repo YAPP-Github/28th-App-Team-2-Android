@@ -17,14 +17,9 @@ enum class OnboardingSheet {
     BIRTH_TIME,
 }
 
-enum class OnboardingDialog {
-    EXIT_CONFIRM,
-}
-
 @Immutable
 data class OnboardingState(
-    val step: OnboardingStep = OnboardingStep.TERMS,
-    val termsAgreement: TermsAgreementUiModel = TermsAgreementUiModel(),
+    val step: OnboardingStep = OnboardingStep.NAME,
     val username: UserName = UserName.Invalid.Empty,
     val gender: Gender? = null,
     val calendarType: DateType? = null,
@@ -33,7 +28,6 @@ data class OnboardingState(
     val lifeStage: Job? = null,
     val relationshipStatus: RelationshipStatus? = null,
     val sheet: OnboardingSheet? = null,
-    val dialog: OnboardingDialog? = null,
     val isSubmitting: Boolean = false,
 ) {
     val isUnderAge: Boolean = birthDate?.isUnderAge() ?: false
@@ -41,10 +35,6 @@ data class OnboardingState(
     val canProceed: Boolean
         get() =
             when (step) {
-                OnboardingStep.TERMS -> {
-                    termsAgreement.allRequiredSelected
-                }
-
                 OnboardingStep.NAME -> {
                     username is UserName.Valid
                 }
