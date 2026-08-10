@@ -29,8 +29,12 @@ class LuckActionViewModel
 
         fun load() =
             intent {
-                val earliestDate = getEarliestFortuneDate().getOrNull()
-                fetch(LocalDate.now(), earliestDate)
+                getEarliestFortuneDate()
+                    .onSuccess { earliestDate ->
+                        fetch(LocalDate.now(), earliestDate)
+                    }.onFailure {
+                        postSideEffect(LuckActionSideEffect.Error(it))
+                    }
             }
 
         fun goToPrevDate() =
@@ -86,13 +90,13 @@ class LuckActionViewModel
 
             getLuckActionPage(date)
                 .onSuccess { page ->
+                    // 중간에 날짜가 빵꾸가 났을 때 실행되는 방어 경로.
                     if (page == null) {
-                        // 중간에 날짜가 빵꾸가 났을 때 실행되는 방어 경로.
                         reduce {
-                            (state as LuckActionUiState.Success).copy(
+                            previous?.copy(
                                 isRefreshing = false,
-                                canGoToPrevDate = canGoToPrevDate,
-                            )
+                                canGoToPrevDate = false,
+                            ) ?: LuckActionUiState.Failure
                         }
                     } else {
                         reduce {
