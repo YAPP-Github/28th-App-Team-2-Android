@@ -3,6 +3,9 @@ package com.kikidan.luckaction.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +27,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -55,7 +60,15 @@ internal fun LuckActionCompleteOverlay(
                 ),
         contentAlignment = Alignment.Center,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier =
+                Modifier.pointerInput(Unit) {
+                    awaitEachGesture {
+                        awaitPointerEvent().changes.forEach { it.consume() }
+                    }
+                },
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Image(
                 painter = painterResource(R.drawable.img_luck_action_complete),
                 contentDescription = stringResource(R.string.luck_action_complete_character_content_description),
