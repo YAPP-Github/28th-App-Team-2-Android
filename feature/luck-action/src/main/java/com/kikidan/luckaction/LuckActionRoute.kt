@@ -32,10 +32,10 @@ fun LuckActionRoute(
 
     LuckActionScreen(
         state = state,
-        onToggleAction = viewModel::onToggleAction,
-        onPrevDateClick = viewModel::onPrevDateClick,
-        onNextDateClick = viewModel::onNextDateClick,
-        onCompleteOverlayDismiss = viewModel::onCompleteOverlayDismiss,
+        toggleAction = viewModel::toggleAction,
+        goToPrevDate = viewModel::goToPrevDate,
+        goToNextDate = viewModel::goToNextDate,
+        dismissCompleteOverlay = viewModel::dismissCompleteOverlay,
         modifier = modifier,
     )
 }

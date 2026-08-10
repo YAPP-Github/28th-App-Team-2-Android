@@ -51,10 +51,10 @@ import java.time.LocalDate
 @Composable
 fun LuckActionScreen(
     state: LuckActionUiState,
-    onToggleAction: (String) -> Unit,
-    onPrevDateClick: () -> Unit,
-    onNextDateClick: () -> Unit,
-    onCompleteOverlayDismiss: () -> Unit,
+    toggleAction: (String) -> Unit,
+    goToPrevDate: () -> Unit,
+    goToNextDate: () -> Unit,
+    dismissCompleteOverlay: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -78,9 +78,9 @@ fun LuckActionScreen(
                 is LuckActionUiState.Success -> {
                     LuckActionContent(
                         state = state,
-                        onToggleAction = onToggleAction,
-                        onPrevDateClick = onPrevDateClick,
-                        onNextDateClick = onNextDateClick,
+                        toggleAction = toggleAction,
+                        goToPrevDate = goToPrevDate,
+                        goToNextDate = goToNextDate,
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -91,7 +91,7 @@ fun LuckActionScreen(
             state.completionOverlayCategory?.let { category ->
                 LuckActionCompleteOverlay(
                     category = category,
-                    onCloseClick = onCompleteOverlayDismiss,
+                    onCloseClick = dismissCompleteOverlay,
                 )
             }
         }
@@ -101,9 +101,9 @@ fun LuckActionScreen(
 @Composable
 private fun LuckActionContent(
     state: LuckActionUiState.Success,
-    onToggleAction: (String) -> Unit,
-    onPrevDateClick: () -> Unit,
-    onNextDateClick: () -> Unit,
+    toggleAction: (String) -> Unit,
+    goToPrevDate: () -> Unit,
+    goToNextDate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -125,15 +125,15 @@ private fun LuckActionContent(
                 date = state.date,
                 isPrevEnabled = state.canGoToPrevDate,
                 isRefreshing = state.isRefreshing,
-                onPrevDateClick = onPrevDateClick,
-                onNextDateClick = onNextDateClick,
+                goToPrevDate = goToPrevDate,
+                goToNextDate = goToNextDate,
                 modifier = Modifier.padding(top = 32.dp),
             )
         }
         items(state.actions, key = { it.id }) { action ->
             LuckActionItemCard(
                 item = action,
-                onToggle = onToggleAction,
+                onToggle = toggleAction,
                 modifier = Modifier.padding(top = 16.dp),
             )
         }
@@ -225,8 +225,8 @@ private fun LuckActionDateHeader(
     date: LocalDate,
     isPrevEnabled: Boolean,
     isRefreshing: Boolean,
-    onPrevDateClick: () -> Unit,
-    onNextDateClick: () -> Unit,
+    goToPrevDate: () -> Unit,
+    goToNextDate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isNextEnabled = date.isBefore(LocalDate.now())
@@ -253,7 +253,7 @@ private fun LuckActionDateHeader(
                 modifier =
                     Modifier
                         .size(24.dp)
-                        .clickable(enabled = isPrevEnabled, onClick = onPrevDateClick),
+                        .clickable(enabled = isPrevEnabled, onClick = goToPrevDate),
             )
             Icon(
                 painter = painterResource(R.drawable.ic_chevron_left),
@@ -263,7 +263,7 @@ private fun LuckActionDateHeader(
                     Modifier
                         .size(24.dp)
                         .scale(scaleX = -1f, scaleY = 1f)
-                        .clickable(enabled = isNextEnabled, onClick = onNextDateClick),
+                        .clickable(enabled = isNextEnabled, onClick = goToNextDate),
             )
         }
     }
@@ -363,10 +363,10 @@ private fun LuckActionScreenPreview() {
                             LuckActionItemUiModel("5", FortuneCategory.MONEY, "사용하지 않는 구독 서비스나 자동결제 내역 확인하기", false),
                         ),
                 ),
-            onToggleAction = {},
-            onPrevDateClick = {},
-            onNextDateClick = {},
-            onCompleteOverlayDismiss = {},
+            toggleAction = {},
+            goToPrevDate = {},
+            goToNextDate = {},
+            dismissCompleteOverlay = {},
         )
     }
 }
@@ -382,10 +382,10 @@ private fun LuckActionScreenOverlayPreview() {
                     canGoToPrevDate = true,
                     completionOverlayCategory = FortuneCategory.LOVE,
                 ),
-            onToggleAction = {},
-            onPrevDateClick = {},
-            onNextDateClick = {},
-            onCompleteOverlayDismiss = {},
+            toggleAction = {},
+            goToPrevDate = {},
+            goToNextDate = {},
+            dismissCompleteOverlay = {},
         )
     }
 }
@@ -396,10 +396,10 @@ private fun LuckActionScreenLoadingPreview() {
     TodakunTheme {
         LuckActionScreen(
             state = LuckActionUiState.Loading,
-            onToggleAction = {},
-            onPrevDateClick = {},
-            onNextDateClick = {},
-            onCompleteOverlayDismiss = {},
+            toggleAction = {},
+            goToPrevDate = {},
+            goToNextDate = {},
+            dismissCompleteOverlay = {},
         )
     }
 }
@@ -410,10 +410,10 @@ private fun LuckActionScreenFailurePreview() {
     TodakunTheme {
         LuckActionScreen(
             state = LuckActionUiState.Failure,
-            onToggleAction = {},
-            onPrevDateClick = {},
-            onNextDateClick = {},
-            onCompleteOverlayDismiss = {},
+            toggleAction = {},
+            goToPrevDate = {},
+            goToNextDate = {},
+            dismissCompleteOverlay = {},
         )
     }
 }
