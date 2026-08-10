@@ -123,7 +123,12 @@ class LuckActionViewModelTest {
                 }
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
             val initial =
-                LuckActionUiState.Success(date = today, canGoToPrevDate = true, earliestDate = today.minusDays(5))
+                LuckActionUiState.Success(
+                    date = today,
+                    canGoToPrevDate = true,
+                    canGoToNextDate = false,
+                    earliestDate = today.minusDays(5),
+                )
 
             vm.test(this, initialState = initial) {
                 containerHost.goToPrevDate()
@@ -145,7 +150,13 @@ class LuckActionViewModelTest {
                 FakeFortuneRepository().apply { recordResult = Result.failure(IllegalStateException()) }
             val staleActions = persistentListOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "오늘 액션", false))
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
-            val initial = LuckActionUiState.Success(date = today, canGoToPrevDate = true, actions = staleActions)
+            val initial =
+                LuckActionUiState.Success(
+                    date = today,
+                    canGoToPrevDate = true,
+                    canGoToNextDate = false,
+                    actions = staleActions,
+                )
 
             vm.test(this, initialState = initial) {
                 containerHost.goToPrevDate()
@@ -166,7 +177,13 @@ class LuckActionViewModelTest {
             val fakeFortuneRepository = FakeFortuneRepository().apply { recordResult = Result.success(null) }
             val staleActions = persistentListOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "오늘 액션", false))
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
-            val initial = LuckActionUiState.Success(date = today, canGoToPrevDate = true, actions = staleActions)
+            val initial =
+                LuckActionUiState.Success(
+                    date = today,
+                    canGoToPrevDate = true,
+                    canGoToNextDate = false,
+                    actions = staleActions,
+                )
 
             vm.test(this, initialState = initial) {
                 containerHost.goToPrevDate()
@@ -183,7 +200,8 @@ class LuckActionViewModelTest {
     fun `canGoToPrevDate가 false면 goToPrevDate은 아무 것도 하지 않는다`() =
         runTest {
             val vm = viewModel(FakeFortuneRepository(), FakeLuckActionRepository())
-            val initial = LuckActionUiState.Success(date = LocalDate.now(), canGoToPrevDate = false)
+            val initial =
+                LuckActionUiState.Success(date = LocalDate.now(), canGoToPrevDate = false, canGoToNextDate = false)
 
             vm.test(this, initialState = initial) {
                 containerHost.goToPrevDate()
@@ -195,7 +213,8 @@ class LuckActionViewModelTest {
     fun `goToNextDate은 오늘 날짜에서는 무시된다`() =
         runTest {
             val vm = viewModel(FakeFortuneRepository(), FakeLuckActionRepository())
-            val initial = LuckActionUiState.Success(date = LocalDate.now(), canGoToPrevDate = true)
+            val initial =
+                LuckActionUiState.Success(date = LocalDate.now(), canGoToPrevDate = true, canGoToNextDate = false)
 
             vm.test(this, initialState = initial) {
                 containerHost.goToNextDate()
@@ -215,6 +234,7 @@ class LuckActionViewModelTest {
                 LuckActionUiState.Success(
                     date = LocalDate.now(),
                     canGoToPrevDate = true,
+                    canGoToNextDate = false,
                     actions = persistentListOf(LuckActionItemUiModel("1", FortuneCategory.LOVE, "제목", false)),
                 )
 
@@ -234,6 +254,7 @@ class LuckActionViewModelTest {
                 LuckActionUiState.Success(
                     date = LocalDate.now(),
                     canGoToPrevDate = true,
+                    canGoToNextDate = false,
                     completionOverlayCategory = FortuneCategory.LOVE,
                 )
 

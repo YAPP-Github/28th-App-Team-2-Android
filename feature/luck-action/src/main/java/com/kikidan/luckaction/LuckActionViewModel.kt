@@ -85,6 +85,7 @@ class LuckActionViewModel
         ) {
             val previous = state as? LuckActionUiState.Success
             val canGoToPrevDate = earliestDate != null && date.isAfter(earliestDate)
+            val canGoToNextDate = date.isBefore(LocalDate.now())
 
             reduce { previous?.copy(isRefreshing = true) ?: LuckActionUiState.Loading }
 
@@ -103,6 +104,7 @@ class LuckActionViewModel
                             LuckActionUiState.Success(
                                 date = date,
                                 canGoToPrevDate = canGoToPrevDate,
+                                canGoToNextDate = canGoToNextDate,
                                 earliestDate = earliestDate,
                                 scores =
                                     page.scores

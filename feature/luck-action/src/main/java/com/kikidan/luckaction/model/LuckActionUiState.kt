@@ -11,6 +11,7 @@ sealed interface LuckActionUiState {
     data class Success(
         val date: LocalDate,
         val canGoToPrevDate: Boolean,
+        val canGoToNextDate: Boolean,
         val earliestDate: LocalDate? = null,
         val isRefreshing: Boolean = false,
         val scores: PersistentList<FortuneScoreUiModel> = persistentListOf(),
