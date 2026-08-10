@@ -33,20 +33,20 @@ class LuckActionViewModel
                 fetch(LocalDate.now(), earliestDate)
             }
 
-        fun onPrevDateClick() =
+        fun goToPrevDate() =
             intent {
                 val current = state as? LuckActionUiState.Success ?: return@intent
                 if (current.canGoToPrevDate) fetch(current.date.minusDays(1), current.earliestDate)
             }
 
-        fun onNextDateClick() =
+        fun goToNextDate() =
             intent {
                 val current = state as? LuckActionUiState.Success ?: return@intent
                 val next = current.date.plusDays(1)
                 if (!next.isAfter(LocalDate.now())) fetch(next, current.earliestDate)
             }
 
-        fun onToggleAction(id: String) =
+        fun toggleAction(id: String) =
             intent {
                 val current = state as? LuckActionUiState.Success ?: return@intent
                 toggleLuckAction(id)
@@ -64,7 +64,7 @@ class LuckActionViewModel
                     }.onFailure { postSideEffect(LuckActionSideEffect.Error(it)) }
             }
 
-        fun onCompleteOverlayDismiss() =
+        fun dismissCompleteOverlay() =
             intent {
                 val current = state as? LuckActionUiState.Success ?: return@intent
                 reduce { current.copy(completionOverlayCategory = null) }

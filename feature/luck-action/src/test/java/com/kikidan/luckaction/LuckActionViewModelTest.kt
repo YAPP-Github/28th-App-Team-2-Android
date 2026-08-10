@@ -114,7 +114,7 @@ class LuckActionViewModelTest {
         }
 
     @Test
-    fun `onPrevDateClick은 하루 전 날짜로 다시 조회한다`() =
+    fun `goToPrevDate은 하루 전 날짜로 다시 조회한다`() =
         runTest {
             val today = LocalDate.now()
             val fakeFortuneRepository =
@@ -126,7 +126,7 @@ class LuckActionViewModelTest {
                 LuckActionUiState.Success(date = today, canGoToPrevDate = true, earliestDate = today.minusDays(5))
 
             vm.test(this, initialState = initial) {
-                containerHost.onPrevDateClick()
+                containerHost.goToPrevDate()
                 val refreshing = awaitState() as LuckActionUiState.Success
                 assertTrue(refreshing.isRefreshing)
                 assertEquals(today, refreshing.date)
@@ -138,7 +138,7 @@ class LuckActionViewModelTest {
         }
 
     @Test
-    fun `onPrevDateClick 조회가 실패하면 Success 상태를 유지하고 date와 목록은 그대로다`() =
+    fun `goToPrevDate 조회가 실패하면 Success 상태를 유지하고 date와 목록은 그대로다`() =
         runTest {
             val today = LocalDate.now()
             val fakeFortuneRepository =
@@ -148,7 +148,7 @@ class LuckActionViewModelTest {
             val initial = LuckActionUiState.Success(date = today, canGoToPrevDate = true, actions = staleActions)
 
             vm.test(this, initialState = initial) {
-                containerHost.onPrevDateClick()
+                containerHost.goToPrevDate()
                 awaitState() // isRefreshing = true, date/actions는 아직 그대로
                 val se = awaitSideEffect()
                 assertTrue(se is LuckActionSideEffect.Error)
@@ -160,7 +160,7 @@ class LuckActionViewModelTest {
         }
 
     @Test
-    fun `onPrevDateClick이 방어적으로 no-record를 만나면 canGoToPrevDate만 false로 바뀐다`() =
+    fun `goToPrevDate이 방어적으로 no-record를 만나면 canGoToPrevDate만 false로 바뀐다`() =
         runTest {
             val today = LocalDate.now()
             val fakeFortuneRepository = FakeFortuneRepository().apply { recordResult = Result.success(null) }
@@ -169,7 +169,7 @@ class LuckActionViewModelTest {
             val initial = LuckActionUiState.Success(date = today, canGoToPrevDate = true, actions = staleActions)
 
             vm.test(this, initialState = initial) {
-                containerHost.onPrevDateClick()
+                containerHost.goToPrevDate()
                 awaitState() // isRefreshing = true
                 val settled = awaitState() as LuckActionUiState.Success
                 assertFalse(settled.isRefreshing)
@@ -180,25 +180,25 @@ class LuckActionViewModelTest {
         }
 
     @Test
-    fun `canGoToPrevDate가 false면 onPrevDateClick은 아무 것도 하지 않는다`() =
+    fun `canGoToPrevDate가 false면 goToPrevDate은 아무 것도 하지 않는다`() =
         runTest {
             val vm = viewModel(FakeFortuneRepository(), FakeLuckActionRepository())
             val initial = LuckActionUiState.Success(date = LocalDate.now(), canGoToPrevDate = false)
 
             vm.test(this, initialState = initial) {
-                containerHost.onPrevDateClick()
+                containerHost.goToPrevDate()
                 expectNoItems()
             }
         }
 
     @Test
-    fun `onNextDateClick은 오늘 날짜에서는 무시된다`() =
+    fun `goToNextDate은 오늘 날짜에서는 무시된다`() =
         runTest {
             val vm = viewModel(FakeFortuneRepository(), FakeLuckActionRepository())
             val initial = LuckActionUiState.Success(date = LocalDate.now(), canGoToPrevDate = true)
 
             vm.test(this, initialState = initial) {
-                containerHost.onNextDateClick()
+                containerHost.goToNextDate()
                 expectNoItems()
             }
         }
@@ -219,7 +219,7 @@ class LuckActionViewModelTest {
                 )
 
             vm.test(this, initialState = initial) {
-                containerHost.onToggleAction("1")
+                containerHost.toggleAction("1")
                 val s = awaitState() as LuckActionUiState.Success
                 assertTrue(s.actions[0].achieved)
                 assertEquals(FortuneCategory.LOVE, s.completionOverlayCategory)
@@ -238,7 +238,7 @@ class LuckActionViewModelTest {
                 )
 
             vm.test(this, initialState = initial) {
-                containerHost.onCompleteOverlayDismiss()
+                containerHost.dismissCompleteOverlay()
                 val s = awaitState() as LuckActionUiState.Success
                 assertNull(s.completionOverlayCategory)
             }
