@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune
+package com.kikidan.sajucontents.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +17,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.designsystem.component.TodakunChip2
 import com.kikidan.designsystem.component.TodakunProgressBar
 import com.kikidan.designsystem.component.button.PrimaryButton
@@ -36,12 +34,12 @@ import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.sajucontents.R
-import com.kikidan.sajucontents.dayfortune.component.FortuneScoreCard
-import com.kikidan.sajucontents.dayfortune.component.ResultDateTabRow
-import com.kikidan.sajucontents.dayfortune.component.label
+import com.kikidan.sajucontents.component.FortuneScoreCard
+import com.kikidan.sajucontents.component.ResultDateTabRow
+import com.kikidan.sajucontents.component.label
+import com.kikidan.sajucontents.model.DateFortuneState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import org.orbitmvi.orbit.compose.collectAsState
 import java.time.LocalDate
 import com.kikidan.designsystem.R as DesignSystemR
 
@@ -49,28 +47,7 @@ import com.kikidan.designsystem.R as DesignSystemR
 private const val RESULT_PROGRESS = 210f / 316f
 
 @Composable
-fun DateFortuneResultRoute(
-    onNavigateBack: () -> Unit,
-    onAskTodakClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: DateFortuneViewModel = hiltViewModel(),
-) {
-    val state by viewModel.collectAsState()
-
-    DateFortuneResultScreen(
-        state = state,
-        onBackClick = onNavigateBack,
-        onTabSelect = viewModel::onResultTabSelect,
-        // Swagger에 공유/캘린더 내보내기 엔드포인트가 없어 콜백만 노출한다 (설계 문서 Q7, 3-3절).
-        onShareClick = {},
-        onExportClick = {},
-        onAskTodakClick = onAskTodakClick,
-        modifier = modifier,
-    )
-}
-
-@Composable
-fun DateFortuneResultScreen(
+internal fun DateFortuneResultScreen(
     state: DateFortuneState,
     onBackClick: () -> Unit,
     onTabSelect: (Int) -> Unit,
