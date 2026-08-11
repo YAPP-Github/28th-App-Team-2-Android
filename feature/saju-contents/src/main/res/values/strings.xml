@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- DateFortuneInputScreen -->
+    <string name="date_fortune_header_title">무슨 날을 정하시나요?</string>
     <string name="date_fortune_title">무슨 날을 정하시나요?</string>
     <string name="date_fortune_gender_male">남성</string>
     <string name="date_fortune_gender_female">여성</string>
@@ -9,7 +10,8 @@
     <string name="date_fortune_purpose_travel">여행</string>
     <string name="date_fortune_purpose_confession_dating">고백・소개팅</string>
     <string name="date_fortune_purpose_exam_interview">시험・면접</string>
-    <string name="date_fortune_dates_label">후보 날짜 (%1$d개까지 가능)</string>
+    <string name="date_fortune_dates_label">후보 날짜</string>
+    <string name="date_fortune_dates_sub_label">(%1$d개까지 가능)</string>
     <string name="date_fortune_dates_placeholder">날짜를 선택해주세요</string>
     <string name="date_fortune_cta">무료로 택일 보기</string>
     <string name="date_fortune_date_remove">날짜 삭제</string>
