@@ -2,52 +2,42 @@ package com.kikidan.sajucontents
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.kikidan.designsystem.component.TodakunSnackbar
-import com.kikidan.domain.usecase.DateFortuneDefaults
 import com.kikidan.sajucontents.model.DateFortuneSideEffect
 import com.kikidan.sajucontents.screen.DateFortuneInputScreen
-import kotlinx.coroutines.delay
+import kotlinx.collections.immutable.ImmutableList
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
-private const val TOAST_DURATION_MS = 2000L
-
 @Composable
 fun DateFortuneInputRoute(
+    snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit,
-    onNavigateToResult: () -> Unit,
+    onNavigateToResult: (List<String>) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DateFortuneViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
-    val context = LocalContext.current
-    var toastMessage by remember { mutableStateOf<String?>(null) }
+    val maxDateSelectionMessage = stringResource(R.string.date_fortune_max_dates_toast)
+    val submitErrorMessage = stringResource(R.string.date_fortune_submit_error)
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
             is DateFortuneSideEffect.ShowToast -> {
-                // getString의 남는 포맷 인자는 무시되므로 플레이스홀더가 없는 메시지에도 안전하다.
-                toastMessage = context.getString(effect.messageRes, DateFortuneDefaults.MAX_TARGET_DATES)
+                snackbarHostState.showSnackbar(maxDateSelectionMessage)
             }
 
             is DateFortuneSideEffect.ShowError -> {
-                toastMessage = context.getString(effect.messageRes)
+                snackbarHostState.showSnackbar(submitErrorMessage)
             }
 
-            DateFortuneSideEffect.NavigateToResult -> {
-                onNavigateToResult()
+            is DateFortuneSideEffect.NavigateToResult -> {
+                onNavigateToResult(effect.id)
             }
 
             DateFortuneSideEffect.NavigateBack -> {
@@ -59,25 +49,13 @@ fun DateFortuneInputRoute(
     Box(modifier = modifier.fillMaxSize()) {
         DateFortuneInputScreen(
             state = state,
-            onPurposeSelect = viewModel::onPurposeSelect,
-            onOpenDateSheet = viewModel::onOpenDateSheet,
-            onCloseDateSheet = viewModel::onCloseDateSheet,
-            onDateToggle = viewModel::onDateToggle,
-            onDateRemove = viewModel::onDateRemove,
-            onReset = viewModel::onReset,
-            onSubmit = viewModel::onSubmit,
+            onPurposeSelect = viewModel::selectPurpose,
+            onOpenDateSheet = viewModel::openDateSheet,
+            onCloseDateSheet = viewModel::closeDateSheet,
+            onDateToggle = viewModel::toggleDate,
+            onDateRemove = viewModel::removeDate,
+            onReset = viewModel::reset,
+            onSubmit = viewModel::submit,
         )
-
-        val currentToastMessage = toastMessage
-        if (currentToastMessage != null) {
-            LaunchedEffect(currentToastMessage) {
-                delay(TOAST_DURATION_MS)
-                toastMessage = null
-            }
-            TodakunSnackbar(
-                text = currentToastMessage,
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 32.dp),
-            )
-        }
     }
 }

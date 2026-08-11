@@ -19,7 +19,7 @@ fun DateFortuneResultRoute(
     DateFortuneResultScreen(
         state = state,
         onBackClick = onNavigateBack,
-        onTabSelect = viewModel::onResultTabSelect,
+        onTabSelect = viewModel::selectTabResult,
         // Swagger에 공유/캘린더 내보내기 엔드포인트가 없어 콜백만 노출한다 (설계 문서 Q7, 3-3절).
         onShareClick = {},
         onExportClick = {},
