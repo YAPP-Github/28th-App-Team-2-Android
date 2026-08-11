@@ -35,4 +35,5 @@ android {
 dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     implementation(libs.kakao.share)
+    implementation(libs.kizitonwose.calendar.compose)
 }

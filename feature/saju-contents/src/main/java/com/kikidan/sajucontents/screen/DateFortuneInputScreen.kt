@@ -61,7 +61,7 @@ internal fun DateFortuneInputScreen(
             modifier
                 .fillMaxSize()
                 .background(TodakunColor.white)
-                .systemBarsPadding()
+                .systemBarsPadding(),
     ) {
         Column(
             modifier =
@@ -90,7 +90,7 @@ internal fun DateFortuneInputScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = stringResource(id = R.string.date_fortune_dates_label),
@@ -101,10 +101,11 @@ internal fun DateFortuneInputScreen(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = stringResource(
-                        id = R.string.date_fortune_dates_sub_label,
-                        DateFortuneDefaults.MAX_TARGET_DATES
-                    ),
+                    text =
+                        stringResource(
+                            id = R.string.date_fortune_dates_sub_label,
+                            DateFortuneDefaults.MAX_TARGET_DATES,
+                        ),
                     style = TodakunTypography.body3Regular,
                     color = TodakunColor.gray700,
                 )
@@ -114,20 +115,21 @@ internal fun DateFortuneInputScreen(
             TodakunSelectField(
                 value = state.selectedDates.joinToString(", ") { it.format(DateSummaryFormatter) },
                 onClick = onOpenDateSheet,
+                onClear = onReset,
                 placeholder = stringResource(id = R.string.date_fortune_dates_placeholder),
                 expanded = state.isSheetVisible,
             )
         }
 
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 20.dp,
-                    vertical = 14.dp
-                )
-                .align(Alignment.BottomCenter),
-            ) {
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 20.dp,
+                        vertical = 14.dp,
+                    ).align(Alignment.BottomCenter),
+        ) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.date_fortune_cta),

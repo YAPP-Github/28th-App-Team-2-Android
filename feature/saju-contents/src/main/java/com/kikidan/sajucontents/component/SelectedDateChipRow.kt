@@ -1,13 +1,16 @@
 package com.kikidan.sajucontents.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -15,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -58,21 +62,31 @@ private fun DateChip(
     Row(
         modifier =
             modifier
+                .clickable(onClick = onRemove)
+
                 .border(1.dp, TodakunColor.primary300, RoundedCornerShape(99.dp))
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             text = label,
-            style = TodakunTypography.body3Medium,
+            style = TodakunTypography.body2Medium,
             color = TodakunColor.primary700,
         )
-        Icon(
-            painter = painterResource(id = DesignSystemR.drawable.ic_close),
-            contentDescription = stringResource(id = R.string.date_fortune_date_remove),
-            tint = TodakunColor.primary400,
-            modifier = Modifier.size(16.dp).clickable(onClick = onRemove),
-        )
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(color = TodakunColor.gray300),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(13.dp),
+                painter = painterResource(id = DesignSystemR.drawable.ic_close),
+                contentDescription = stringResource(id = R.string.date_fortune_date_remove),
+                tint = TodakunColor.white,
+            )
+        }
     }
 }
