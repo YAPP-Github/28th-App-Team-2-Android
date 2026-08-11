@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune
+package com.kikidan.sajucontents
 
 import androidx.lifecycle.ViewModel
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
@@ -6,6 +6,8 @@ import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.CreateDayFortunesUseCase
 import com.kikidan.domain.usecase.DateFortuneDefaults
 import com.kikidan.sajucontents.R
+import com.kikidan.sajucontents.model.DateFortuneSideEffect
+import com.kikidan.sajucontents.model.DateFortuneState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList

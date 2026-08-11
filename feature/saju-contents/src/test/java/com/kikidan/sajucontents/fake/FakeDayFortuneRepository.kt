@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune.fake
+package com.kikidan.sajucontents.fake
 
 import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
