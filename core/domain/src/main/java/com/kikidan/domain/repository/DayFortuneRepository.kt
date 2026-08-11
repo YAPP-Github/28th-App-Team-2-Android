@@ -9,4 +9,6 @@ interface DayFortuneRepository {
         purpose: DayFortunePurpose,
         targetDates: List<LocalDate>,
     ): Result<List<DayFortune>>
+
+    suspend fun getDayFortune(id: String): Result<DayFortune>
 }

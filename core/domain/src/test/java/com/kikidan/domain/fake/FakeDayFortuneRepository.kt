@@ -14,6 +14,10 @@ class FakeDayFortuneRepository : DayFortuneRepository {
     var lastTargetDates: List<LocalDate>? = null
         private set
 
+    var getResult: Result<DayFortune> = Result.failure(IllegalStateException("설정되지 않았습니다."))
+    var lastGetId: String? = null
+        private set
+
     override suspend fun createDayFortunes(
         purpose: DayFortunePurpose,
         targetDates: List<LocalDate>,
@@ -22,5 +26,10 @@ class FakeDayFortuneRepository : DayFortuneRepository {
         lastPurpose = purpose
         lastTargetDates = targetDates
         return result
+    }
+
+    override suspend fun getDayFortune(id: String): Result<DayFortune> {
+        lastGetId = id
+        return getResult
     }
 }
