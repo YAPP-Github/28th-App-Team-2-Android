@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune
+package com.kikidan.sajucontents.model
 
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.model.user.Gender
