@@ -22,9 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
-import com.kikidan.designsystem.R
 import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
