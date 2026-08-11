@@ -65,7 +65,7 @@ fun DateSelectBottomSheet(
                     .fillMaxHeight(0.8f)
                     .navigationBarsPadding()
                     .padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             DateSelectBottomSheetTitle(
                 onDismissClick = {
@@ -73,27 +73,30 @@ fun DateSelectBottomSheet(
                         sheetState.hide()
                         onDismissRequest()
                     }
-                }
+                },
             )
             Spacer(modifier = Modifier.height(12.dp))
             MultiSelectCalendar(
                 selectedDates = selectedDates,
                 onDateToggle = onDateToggle,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
             )
             SelectedDateChipRow(
                 selectedDates = selectedDates,
                 onDateRemove = onDateRemove,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
             )
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 SecondaryButton(
@@ -110,18 +113,17 @@ fun DateSelectBottomSheet(
                 )
             }
         }
-
     }
 }
 
 @Composable
 private fun DateSelectBottomSheetTitle(
-    onDismissClick:() -> Unit,
-    modifier: Modifier = Modifier
+    onDismissClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
             Text(
@@ -131,10 +133,11 @@ private fun DateSelectBottomSheetTitle(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = stringResource(
-                    id = R.string.date_fortune_sheet_subtitle,
-                    DateFortuneDefaults.MAX_TARGET_DATES
-                ),
+                text =
+                    stringResource(
+                        id = R.string.date_fortune_sheet_subtitle,
+                        DateFortuneDefaults.MAX_TARGET_DATES,
+                    ),
                 style = TodakunTypography.body3Regular,
                 color = TodakunColor.gray700,
             )
@@ -144,7 +147,7 @@ private fun DateSelectBottomSheetTitle(
             modifier = Modifier.size(24.dp).noRippleClickable(onClick = onDismissClick),
             tint = TodakunColor.gray925,
             painter = painterResource(com.kikidan.designsystem.R.drawable.ic_close),
-            contentDescription = stringResource(R.string.date_fortune_close_content_description)
+            contentDescription = stringResource(R.string.date_fortune_close_content_description),
         )
     }
 }

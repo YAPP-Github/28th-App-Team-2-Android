@@ -62,10 +62,9 @@ private fun DateChip(
     Row(
         modifier =
             modifier
-                .clickable(onClick = onRemove)
-
                 .border(1.dp, TodakunColor.primary300, RoundedCornerShape(99.dp))
-                .padding(horizontal = 16.dp, vertical = 6.dp),
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+                .clickable(onClick = onRemove),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -75,11 +74,12 @@ private fun DateChip(
             color = TodakunColor.primary700,
         )
         Box(
-            modifier = Modifier
-                .size(20.dp)
-                .clip(CircleShape)
-                .background(color = TodakunColor.gray300),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(color = TodakunColor.gray300),
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 modifier = Modifier.size(13.dp),
