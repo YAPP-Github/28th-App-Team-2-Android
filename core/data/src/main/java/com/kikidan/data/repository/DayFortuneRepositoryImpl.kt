@@ -20,4 +20,9 @@ class DayFortuneRepositoryImpl
             runCatchingCancellable {
                 remoteDayFortuneDataSource.postDayFortunes(purpose, targetDates)
             }
+
+        override suspend fun getDayFortune(id: String): Result<DayFortune> =
+            runCatchingCancellable {
+                remoteDayFortuneDataSource.getDayFortune(id)
+            }
     }
