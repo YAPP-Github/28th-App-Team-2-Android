@@ -76,11 +76,6 @@ class DateFortuneViewModel
                 reduce { state.copy(selectedDates = persistentListOf()) }
             }
 
-        fun selectTabResult(index: Int) =
-            intent {
-                reduce { state.copy(selectedResultIndex = index) }
-            }
-
         fun submit() =
             intent {
                 val purpose = state.selectedPurpose ?: return@intent
@@ -89,21 +84,10 @@ class DateFortuneViewModel
 
                 reduce { state.copy(isLoading = true) }
 
-                // ponytail: gender는 서버 Request 필드 추가 후 전달 (블로커 B-2)
                 createDayFortunes(purpose, dates).fold(
                     onSuccess = { results ->
-                        reduce {
-                            state.copy(
-                                isLoading = false,
-                                results = results.toPersistentList(),
-                                selectedResultIndex = 0,
-                            )
-                        }
-                        postSideEffect(
-                            DateFortuneSideEffect.NavigateToResult(
-                                results.map { it.id },
-                            ),
-                        )
+                        reduce { state.copy(isLoading = false) }
+                        postSideEffect(DateFortuneSideEffect.NavigateToResult(results.map { it.id }))
                     },
                     onFailure = {
                         reduce { state.copy(isLoading = false) }

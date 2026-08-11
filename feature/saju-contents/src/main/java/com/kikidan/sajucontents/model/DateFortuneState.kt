@@ -1,6 +1,5 @@
 package com.kikidan.sajucontents.model
 
-import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.model.user.Gender
 import kotlinx.collections.immutable.ImmutableList
@@ -14,8 +13,6 @@ data class DateFortuneState(
     val selectedDates: ImmutableList<LocalDate> = persistentListOf(),
     val isSheetVisible: Boolean = false,
     val isLoading: Boolean = false,
-    val results: ImmutableList<DayFortune> = persistentListOf(),
-    val selectedResultIndex: Int = 0,
 ) {
     // selectedGender는 서버로 보내지 않는 값이라 필수 조건에서 제외한다(B-2 회귀 방지).
     val canSubmit: Boolean
