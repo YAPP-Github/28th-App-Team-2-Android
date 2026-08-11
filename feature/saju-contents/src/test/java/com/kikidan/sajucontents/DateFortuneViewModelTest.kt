@@ -126,8 +126,8 @@ class DateFortuneViewModelTest {
             viewModel.test(this, initialState = initial) {
                 viewModel.submit()
                 expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false, results = persistentListOf(), selectedResultIndex = 0) }
-                expectSideEffect(DateFortuneSideEffect.NavigateToResult)
+                expectState { copy(isLoading = false) }
+                expectSideEffect(DateFortuneSideEffect.NavigateToResult(emptyList()))
             }
 
             // CreateDayFortunesUseCase.invoke(purpose, targetDates) 시그니처 자체가 2-arity라 컴파일 타임에도
@@ -137,7 +137,7 @@ class DateFortuneViewModelTest {
         }
 
     @Test
-    fun `제출_성공_시_results와_selectedResultIndex가_반영된다`() =
+    fun `제출_성공_시_생성된_결과의_id_목록으로_NavigateToResult가_발생한다`() =
         runTest {
             val viewModel = viewModel()
             val date = LocalDate.now()
@@ -161,8 +161,8 @@ class DateFortuneViewModelTest {
             viewModel.test(this, initialState = initial) {
                 viewModel.submit()
                 expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false, results = persistentListOf(fortune), selectedResultIndex = 0) }
-                expectSideEffect(DateFortuneSideEffect.NavigateToResult)
+                expectState { copy(isLoading = false) }
+                expectSideEffect(DateFortuneSideEffect.NavigateToResult(listOf("id-1")))
             }
         }
 
@@ -183,17 +183,6 @@ class DateFortuneViewModelTest {
                 expectState { copy(isLoading = true) }
                 expectState { copy(isLoading = false) }
                 expectSideEffect(DateFortuneSideEffect.ShowError(R.string.date_fortune_submit_error))
-            }
-        }
-
-    @Test
-    fun `결과_탭_전환_시_selectedResultIndex가_변경된다`() =
-        runTest {
-            val viewModel = viewModel()
-
-            viewModel.test(this) {
-                viewModel.selectTabResult(2)
-                expectState { copy(selectedResultIndex = 2) }
             }
         }
 }
