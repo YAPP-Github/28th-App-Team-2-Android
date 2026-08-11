@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +24,13 @@ import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.sajucontents.R
+import com.kizitonwose.calendar.compose.VerticalCalendar
+import com.kizitonwose.calendar.compose.rememberCalendarState
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.DayPosition
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -45,7 +49,7 @@ enum class CalendarDayState {
 fun resolveCalendarDayState(
     date: LocalDate,
     today: LocalDate,
-    selectedDates: List<LocalDate>,
+    selectedDates: ImmutableList<LocalDate>,
 ): CalendarDayState =
     when {
         date.isBefore(today) -> CalendarDayState.PAST
@@ -54,9 +58,7 @@ fun resolveCalendarDayState(
         else -> CalendarDayState.DEFAULT
     }
 
-private const val MONTH_COUNT = 12
-private const val DAYS_IN_WEEK = 7
-private val CellSize = 48.dp
+private const val MONTH_COUNT = 12L
 
 @Composable
 fun MultiSelectCalendar(
@@ -65,69 +67,44 @@ fun MultiSelectCalendar(
     modifier: Modifier = Modifier,
     today: LocalDate = LocalDate.now(),
 ) {
-    val months =
-        remember(today) {
-            val start = YearMonth.from(today)
-            (0 until MONTH_COUNT).map { start.plusMonths(it.toLong()) }
-        }
-
-    LazyColumn(modifier = modifier) {
-        items(months, key = { it.toString() }) { month ->
-            MonthSection(
-                month = month,
-                today = today,
-                selectedDates = selectedDates,
-                onDateToggle = onDateToggle,
-            )
-        }
-    }
-}
-
-@Composable
-private fun MonthSection(
-    month: YearMonth,
-    today: LocalDate,
-    selectedDates: ImmutableList<LocalDate>,
-    onDateToggle: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier.fillMaxWidth().padding(vertical = 12.dp)) {
-        Text(
-            text = "${month.year}.${month.monthValue}",
-            style = TodakunTypography.heading4Bold,
-            color = TodakunColor.gray975,
-            modifier = Modifier.padding(bottom = 12.dp),
+    val startMonth = remember(today) { YearMonth.from(today) }
+    val endMonth = remember(startMonth) { startMonth.plusMonths(MONTH_COUNT - 1) }
+    val calendarState =
+        rememberCalendarState(
+            startMonth = startMonth,
+            endMonth = endMonth,
+            firstVisibleMonth = startMonth,
+            firstDayOfWeek = DayOfWeek.SUNDAY,
         )
-        WeekDaysHeader()
 
-        val firstDayOfMonth = month.atDay(1)
-        val daysInMonth = month.lengthOfMonth()
-        // 일요일 시작 기준 선행 빈 칸 개수 (MONDAY=1..SUNDAY=7 → SUNDAY만 0)
-        val leadingBlanks = firstDayOfMonth.dayOfWeek.value % DAYS_IN_WEEK
-        val totalCells = leadingBlanks + daysInMonth
-        val weekCount = (totalCells + DAYS_IN_WEEK - 1) / DAYS_IN_WEEK
-
-        for (week in 0 until weekCount) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                for (dayOfWeek in 0 until DAYS_IN_WEEK) {
-                    val dayNumber = week * DAYS_IN_WEEK + dayOfWeek - leadingBlanks + 1
-                    Box(
-                        modifier = Modifier.weight(1f).height(CellSize),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (dayNumber in 1..daysInMonth) {
-                            val date = month.atDay(dayNumber)
-                            DayCell(
-                                date = date,
-                                state = resolveCalendarDayState(date, today, selectedDates),
-                                onClick = onDateToggle,
-                            )
-                        }
-                    }
-                }
+    VerticalCalendar(
+        state = calendarState,
+        modifier = modifier,
+        monthHeader = { month ->
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "${month.yearMonth.year}.${month.yearMonth.monthValue}",
+                    style = TodakunTypography.body2SemiBold,
+                    color = TodakunColor.gray975,
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                WeekDaysHeader()
             }
-        }
-    }
+        },
+        dayContent = { day ->
+            if (day.position == DayPosition.MonthDate) {
+                DayCell(
+                    day = day,
+                    state = resolveCalendarDayState(day.date, today, selectedDates),
+                    onClick = onDateToggle,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+        },
+    )
 }
 
 @Composable
@@ -149,7 +126,7 @@ private fun WeekDaysHeader(modifier: Modifier = Modifier) {
                 style = TodakunTypography.caption1Medium,
                 color = TodakunColor.gray700,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f).height(CellSize),
+                modifier = Modifier.weight(1f).height(44.dp),
             )
         }
     }
@@ -157,7 +134,7 @@ private fun WeekDaysHeader(modifier: Modifier = Modifier) {
 
 @Composable
 private fun DayCell(
-    date: LocalDate,
+    day: CalendarDay,
     state: CalendarDayState,
     onClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
@@ -166,36 +143,35 @@ private fun DayCell(
     val textColor =
         when (state) {
             CalendarDayState.PAST -> TodakunColor.gray300
-            CalendarDayState.SELECTED -> TodakunColor.gray975
+            CalendarDayState.SELECTED -> TodakunColor.white
             CalendarDayState.TODAY -> TodakunColor.primary600
             CalendarDayState.DEFAULT -> TodakunColor.gray975
         }
 
-    Column(
+    Box(
         modifier =
             modifier
-                .size(CellSize)
+                .size(44.dp)
                 .clip(CircleShape)
                 .background(if (state == CalendarDayState.SELECTED) TodakunColor.primary400 else TodakunColor.white)
                 .then(
                     if (enabled) {
-                        Modifier.clickable { onClick(date) }
+                        Modifier.clickable { onClick(day.date) }
                     } else {
                         Modifier
                     },
                 ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = date.dayOfMonth.toString(),
+            text = day.date.dayOfMonth.toString(),
             style = TodakunTypography.body2Medium,
             color = textColor,
             textAlign = TextAlign.Center,
         )
         if (state == CalendarDayState.TODAY) {
-            Spacer(modifier = Modifier.height(1.dp))
             Text(
+                modifier = Modifier.align(Alignment.BottomCenter),
                 text = stringResource(R.string.date_fortune_today_label),
                 style = TodakunTypography.caption3Medium,
                 color = TodakunColor.primary600,

@@ -30,6 +30,7 @@ kakao = "2.24.0"
 androidx-credentials = "1.6.0"
 googleid = "1.2.0"
 kotlinx-collections-immutable = "0.5.1"
+kizitonwoseCalendar = "2.10.1"
 material3 = "1.4.0"
 kyantBackdrop = "1.0.2"
 haze = "1.7.2"
@@ -98,6 +99,7 @@ ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref =
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 kyant-backdrop = { group = "io.github.kyant0", name = "backdrop", version.ref = "kyantBackdrop" }
+kizitonwose-calendar-compose = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "kizitonwoseCalendar" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }

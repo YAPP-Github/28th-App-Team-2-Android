@@ -18,6 +18,7 @@
 
     <!-- DateSelectBottomSheet / MultiSelectCalendar -->
     <string name="date_fortune_sheet_title">후보 날짜 선택</string>
+    <string name="date_fortune_close_content_description">닫기</string>
     <string name="date_fortune_sheet_subtitle">%1$d개까지 날짜 선택 가능해요</string>
     <string name="date_fortune_reset">초기화</string>
     <string name="date_fortune_confirm">선택 완료</string>
