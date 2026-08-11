@@ -9,11 +9,19 @@ class FakeRemoteDayFortuneDataSource : RemoteDayFortuneDataSource {
     var dayFortunes: List<DayFortune> = emptyList()
     var throwOnPost: Throwable? = null
 
+    var dayFortune: DayFortune? = null
+    var throwOnGet: Throwable? = null
+
     override suspend fun postDayFortunes(
         purpose: DayFortunePurpose,
         targetDates: List<LocalDate>,
     ): List<DayFortune> {
         throwOnPost?.let { throw it }
         return dayFortunes
+    }
+
+    override suspend fun getDayFortune(id: String): DayFortune {
+        throwOnGet?.let { throw it }
+        return requireNotNull(dayFortune) { "dayFortune이 설정되지 않았습니다." }
     }
 }

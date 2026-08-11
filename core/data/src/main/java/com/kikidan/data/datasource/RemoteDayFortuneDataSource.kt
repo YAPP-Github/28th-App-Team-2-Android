@@ -9,4 +9,6 @@ interface RemoteDayFortuneDataSource {
         purpose: DayFortunePurpose,
         targetDates: List<LocalDate>,
     ): List<DayFortune>
+
+    suspend fun getDayFortune(id: String): DayFortune
 }
