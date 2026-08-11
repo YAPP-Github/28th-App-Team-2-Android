@@ -1,26 +1,46 @@
 package com.kikidan.sajucontents
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.designsystem.R
+import com.kikidan.sajucontents.model.DateFortuneResultSideEffect
 import com.kikidan.sajucontents.screen.DateFortuneResultScreen
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun DateFortuneResultRoute(
+    ids: List<String>,
+    snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit,
     onAskTodakClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: DateFortuneViewModel = hiltViewModel(),
+    viewModel: DateFortuneResultViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
+    val loadErrorMessage = stringResource(R.string.date_fortune_result_load_error)
+
+    LaunchedEffect(ids) {
+        viewModel.loadResults(ids)
+    }
+
+    viewModel.collectSideEffect { effect ->
+        when (effect) {
+            DateFortuneResultSideEffect.ShowError -> {
+                snackbarHostState.showSnackbar(loadErrorMessage)
+            }
+        }
+    }
 
     DateFortuneResultScreen(
         state = state,
         onBackClick = onNavigateBack,
         onTabSelect = viewModel::selectTabResult,
-        // Swagger에 공유/캘린더 내보내기 엔드포인트가 없어 콜백만 노출한다 (설계 문서 Q7, 3-3절).
         onShareClick = {},
         onExportClick = {},
         onAskTodakClick = onAskTodakClick,
