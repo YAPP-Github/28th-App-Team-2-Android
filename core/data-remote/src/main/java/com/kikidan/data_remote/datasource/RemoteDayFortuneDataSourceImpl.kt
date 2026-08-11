@@ -9,6 +9,7 @@ import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import dagger.Lazy
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import java.time.LocalDate
@@ -35,6 +36,13 @@ class RemoteDayFortuneDataSourceImpl
                     )
                 }.bodyNotNull<List<DayFortuneResponse>>()
                 .map { it.toDomain() }
+
+        override suspend fun getDayFortune(id: String): DayFortune =
+            client
+                .get()
+                .get("$DAY_FORTUNES_URL/$id")
+                .bodyNotNull<DayFortuneResponse>()
+                .toDomain()
 
         companion object {
             private const val DAY_FORTUNES_URL = "api/v1/day-fortunes"
