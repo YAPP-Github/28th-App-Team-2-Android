@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.button.PrimaryButton
 import com.kikidan.designsystem.component.button.SecondaryButton
 import com.kikidan.designsystem.component.button.TodakunButtonSize
@@ -33,7 +34,6 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.designsystem.util.noRippleClickable
 import com.kikidan.domain.usecase.DateFortuneDefaults
-import com.kikidan.designsystem.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import java.time.LocalDate
