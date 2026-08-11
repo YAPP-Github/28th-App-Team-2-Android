@@ -35,6 +35,7 @@ import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.model.user.User
+import com.kikidan.mypage.ui.component.SajuPaljaGrid
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

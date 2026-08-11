@@ -1,4 +1,4 @@
-package com.kikidan.mypage.home.ui.component
+package com.kikidan.mypage.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
