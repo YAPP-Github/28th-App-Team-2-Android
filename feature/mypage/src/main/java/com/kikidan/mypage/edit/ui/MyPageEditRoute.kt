@@ -31,6 +31,7 @@ fun MyPageEditRoute(
         onDateTypeSelect = viewModel::selectDateType,
         onBirthDateChange = viewModel::updateBirthDate,
         onBirthTimeChange = viewModel::updateBirthTime,
+        onCurrentSituationChange = viewModel::updateCurrentSituation,
         onSaveClick = viewModel::save,
     )
 }

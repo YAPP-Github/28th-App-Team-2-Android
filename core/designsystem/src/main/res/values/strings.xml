@@ -70,6 +70,20 @@
     <string name="mypage_edit_birth_time_unknown">시간 모름</string>
     <string name="mypage_edit_current_situation_label">현재 상황</string>
     <string name="mypage_edit_save_button">저장하기</string>
+    <string name="mypage_current_situation_title">당신의 현재 상황에 대해 알려주세요.</string>
+    <string name="mypage_current_situation_life_label">Q1  주로 어떤 일상을 보내고 계신가요?</string>
+    <string name="mypage_current_situation_relationship_label">Q2  현재 연애 상태를 알려주세요.</string>
+    <string name="mypage_current_situation_life_student">학생</string>
+    <string name="mypage_current_situation_life_job_seeking">취업 준비중</string>
+    <string name="mypage_current_situation_life_office_worker">직장인</string>
+    <string name="mypage_current_situation_life_self_employed">자영업 · 프리랜서</string>
+    <string name="mypage_current_situation_life_homemaker">주부</string>
+    <string name="mypage_current_situation_life_on_leave_or_retired">휴직 · 은퇴</string>
+    <string name="mypage_current_situation_relationship_single">솔로</string>
+    <string name="mypage_current_situation_relationship_dating">연애중</string>
+    <string name="mypage_current_situation_relationship_married">기혼</string>
+    <string name="mypage_current_situation_relationship_divorced">돌싱</string>
+    <string name="mypage_current_situation_format">%1$s ∙ %2$s</string>
 
     <!-- Common -->
     <string name="separator_dot">·</string>

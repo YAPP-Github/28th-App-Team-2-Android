@@ -43,8 +43,11 @@ import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
+import com.kikidan.mypage.edit.model.LifeStatus
 import com.kikidan.mypage.edit.model.MyPageEditUiModel
 import com.kikidan.mypage.edit.model.MyPageEditUiState
+import com.kikidan.mypage.edit.model.RelationshipStatus
+import com.kikidan.mypage.edit.ui.component.CurrentSituationBottomSheet
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -57,6 +60,7 @@ fun MyPageEditScreen(
     onDateTypeSelect: (DateType) -> Unit = {},
     onBirthDateChange: (LocalDate) -> Unit = {},
     onBirthTimeChange: (BirthTime) -> Unit = {},
+    onCurrentSituationChange: (String) -> Unit = {},
     onSaveClick: () -> Unit = {},
 ) {
     Column(
@@ -86,6 +90,7 @@ fun MyPageEditScreen(
                     onDateTypeSelect = onDateTypeSelect,
                     onBirthDateChange = onBirthDateChange,
                     onBirthTimeChange = onBirthTimeChange,
+                    onCurrentSituationChange = onCurrentSituationChange,
                     onSaveClick = onSaveClick,
                     modifier = Modifier.weight(1f),
                 )
@@ -101,11 +106,13 @@ private fun MyPageEditContent(
     onDateTypeSelect: (DateType) -> Unit,
     onBirthDateChange: (LocalDate) -> Unit,
     onBirthTimeChange: (BirthTime) -> Unit,
+    onCurrentSituationChange: (String) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showBirthDatePicker by remember { mutableStateOf(false) }
     var showBirthTimePicker by remember { mutableStateOf(false) }
+    var showCurrentSituationSheet by remember { mutableStateOf(false) }
     val birthTimeItems = stringArrayResource(R.array.wheel_picker_saju_birth_times)
     val birthTimeDisplayText =
         if (model.birthTime == BirthTime.UNKNOWN) {
@@ -205,7 +212,7 @@ private fun MyPageEditContent(
             EditField(label = stringResource(R.string.mypage_edit_current_situation_label)) {
                 TodakunSelectField(
                     value = model.currentSituationText,
-                    onClick = {},
+                    onClick = { showCurrentSituationSheet = true },
                 )
             }
         }
@@ -250,6 +257,24 @@ private fun MyPageEditContent(
                 showBirthTimePicker = false
             },
             onDismissRequest = { showBirthTimePicker = false },
+        )
+    }
+
+    if (showCurrentSituationSheet) {
+        val currentSituationFormat = stringResource(R.string.mypage_current_situation_format)
+        val lifeStatusLabels = LifeStatus.entries.associateWith { stringResource(it.labelRes) }
+        val relationshipStatusLabels = RelationshipStatus.entries.associateWith { stringResource(it.labelRes) }
+        CurrentSituationBottomSheet(
+            onSaveClick = { life, relationship ->
+                onCurrentSituationChange(
+                    currentSituationFormat.format(
+                        lifeStatusLabels.getValue(life),
+                        relationshipStatusLabels.getValue(relationship),
+                    ),
+                )
+                showCurrentSituationSheet = false
+            },
+            onDismissRequest = { showCurrentSituationSheet = false },
         )
     }
 }

@@ -1,6 +1,8 @@
 package com.kikidan.mypage.edit
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kikidan.domain.model.user.Birth
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
@@ -12,6 +14,8 @@ import com.kikidan.mypage.edit.model.MyPageEditSideEffect
 import com.kikidan.mypage.edit.model.MyPageEditUiModel
 import com.kikidan.mypage.edit.model.MyPageEditUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -30,6 +34,13 @@ class MyPageEditViewModel
             container(MyPageEditUiState.Loading) {
                 loadUser()
             }
+
+        init {
+            container.stateFlow
+                .onEach {
+                    Log.e("moony", "heyyy: $it")
+                }.launchIn(viewModelScope)
+        }
 
         fun loadUser() =
             intent {
@@ -59,6 +70,8 @@ class MyPageEditViewModel
         fun updateBirthDate(date: LocalDate) = updateModel { copy(birthDate = date) }
 
         fun updateBirthTime(birthTime: BirthTime) = updateModel { copy(birthTime = birthTime) }
+
+        fun updateCurrentSituation(text: String) = updateModel { copy(currentSituationText = text) }
 
         fun save() =
             intent {
