@@ -194,4 +194,72 @@ class RemoteDayFortuneDataSourceImplTest {
             // then
             assertTrue(result.isFailure)
         }
+
+    @Test
+    fun `getDayFortune_요청_경로와_메서드가_api_v1_day-fortunes_id_GET_이다`() =
+        runTest {
+            // given
+            var capturedUrl: String? = null
+            var capturedMethod: HttpMethod? = null
+            val sut =
+                buildSut { request ->
+                    capturedUrl = request.url.encodedPath
+                    capturedMethod = request.method
+                    respond(
+                        content =
+                            """{"success":true,"code":"200","message":"ok","data":""" +
+                                """{"id":"id-1","purpose":"TRAVEL","targetDate":"2026-08-10","score":85,""" +
+                                """"title":"title","content":"content","fortuneCategories":[]}}""",
+                        status = HttpStatusCode.OK,
+                        headers = jsonHeaders,
+                    )
+                }
+
+            // when
+            sut.getDayFortune("id-1")
+
+            // then
+            assertEquals("/api/v1/day-fortunes/id-1", capturedUrl)
+            assertEquals(HttpMethod.Get, capturedMethod)
+        }
+
+    @Test
+    fun `getDayFortune_정상_응답이면_targetDate가_LocalDate로_매핑된다`() =
+        runTest {
+            // given
+            val body =
+                """{"success":true,"code":"200","message":"ok","data":""" +
+                    """{"id":"id-1","purpose":"TRAVEL","targetDate":"2026-08-10","score":85,""" +
+                    """"title":"title","content":"content",""" +
+                    """"fortuneCategories":[{"fortuneCategory":"MONEY","star":3}]}}"""
+            val sut =
+                buildSut {
+                    respond(content = body, status = HttpStatusCode.OK, headers = jsonHeaders)
+                }
+
+            // when
+            val result = sut.getDayFortune("id-1")
+
+            // then
+            assertEquals(LocalDate.of(2026, 8, 10), result.targetDate)
+            assertEquals(DayFortunePurpose.TRAVEL, result.purpose)
+            assertEquals(FortuneCategory.MONEY, result.categoryStars.first().category)
+        }
+
+    @Test
+    fun `getDayFortune_data가_null이면_IllegalArgumentException이_throw된다`() =
+        runTest {
+            // given
+            val body = """{"success":true,"code":"200","message":"ok"}"""
+            val sut =
+                buildSut {
+                    respond(content = body, status = HttpStatusCode.OK, headers = jsonHeaders)
+                }
+
+            // when
+            val result = runCatching { sut.getDayFortune("id-1") }
+
+            // then
+            assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+        }
 }
