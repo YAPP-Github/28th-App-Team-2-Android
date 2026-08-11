@@ -33,15 +33,13 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
-import com.kikidan.sajucontents.R
+import com.kikidan.designsystem.R
 import com.kikidan.sajucontents.component.FortuneScoreCard
 import com.kikidan.sajucontents.component.ResultDateTabRow
-import com.kikidan.sajucontents.component.label
 import com.kikidan.sajucontents.model.DateFortuneState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import java.time.LocalDate
-import com.kikidan.designsystem.R as DesignSystemR
 
 // 입력 화면과 동일한 진행률(Q10, 결과 화면의 "완료" 단계 표현이 Figma에 없음).
 private const val RESULT_PROGRESS = 210f / 316f
@@ -80,13 +78,13 @@ internal fun DateFortuneResultScreen(
                 )
                 // ⚠️ 전용 아이콘 에셋(ic_event_export/ic_share)이 아직 없다(N5). 임시로 기존 designsystem 아이콘을 사용한다.
                 Icon(
-                    painter = painterResource(id = DesignSystemR.drawable.ic_notes),
+                    painter = painterResource(id = R.drawable.ic_notes),
                     contentDescription = stringResource(id = R.string.date_fortune_export_calendar),
                     tint = TodakunColor.white,
                     modifier = Modifier.size(24.dp).clickable(onClick = onExportClick),
                 )
                 Icon(
-                    painter = painterResource(id = DesignSystemR.drawable.ic_arrow_upward),
+                    painter = painterResource(id = R.drawable.ic_arrow_upward),
                     contentDescription = stringResource(id = R.string.date_fortune_share),
                     tint = TodakunColor.white,
                     modifier = Modifier.size(24.dp).padding(start = 12.dp).clickable(onClick = onShareClick),
