@@ -40,7 +40,12 @@ class DateFortuneResultViewModel
                 reduce {
                     state.copy(
                         isLoading = false,
-                        results = results.map { it.getOrThrow() }.toPersistentList(),
+                        results =
+                            results
+                                .map { it.getOrThrow() }
+                                .sortedByDescending { it.score }
+                                .take(3)
+                                .toPersistentList(),
                         selectedResultIndex = 0,
                     )
                 }
