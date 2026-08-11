@@ -83,7 +83,7 @@ fun MultiSelectCalendar(
         monthHeader = { month ->
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = "${month.yearMonth.year}.${month.yearMonth.monthValue}",
