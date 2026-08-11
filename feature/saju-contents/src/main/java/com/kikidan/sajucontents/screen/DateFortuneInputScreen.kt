@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunChip
 import com.kikidan.designsystem.component.TodakunSelectField
 import com.kikidan.designsystem.component.button.PrimaryButton
@@ -33,7 +34,6 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.usecase.DateFortuneDefaults
-import com.kikidan.designsystem.R
 import com.kikidan.sajucontents.component.DateSelectBottomSheet
 import com.kikidan.sajucontents.model.DateFortuneState
 import kotlinx.collections.immutable.persistentListOf
@@ -185,7 +185,6 @@ fun DayFortunePurpose.label(): String =
                 DayFortunePurpose.EXAM_INTERVIEW -> R.string.date_fortune_purpose_exam_interview
             },
     )
-
 
 @Preview(showBackground = true)
 @Composable
