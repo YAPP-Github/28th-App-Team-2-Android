@@ -27,10 +27,10 @@ fun MyPageEditRoute(
         uiState = uiState,
         modifier = modifier,
         onBackClick = onNavigateBack,
-        onGenderSelect = viewModel::onGenderSelect,
-        onDateTypeSelect = viewModel::onDateTypeSelect,
-        onBirthDateChange = viewModel::onBirthDateChange,
-        onBirthTimeChange = viewModel::onBirthTimeChange,
-        onSaveClick = viewModel::onSaveClick,
+        onGenderSelect = viewModel::selectGender,
+        onDateTypeSelect = viewModel::selectDateType,
+        onBirthDateChange = viewModel::updateBirthDate,
+        onBirthTimeChange = viewModel::updateBirthTime,
+        onSaveClick = viewModel::save,
     )
 }
