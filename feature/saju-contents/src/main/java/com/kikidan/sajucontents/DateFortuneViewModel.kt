@@ -5,7 +5,6 @@ import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.CreateDayFortunesUseCase
 import com.kikidan.domain.usecase.DateFortuneDefaults
-import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.model.DateFortuneSideEffect
 import com.kikidan.sajucontents.model.DateFortuneState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,27 +28,27 @@ class DateFortuneViewModel
         override val container: Container<DateFortuneState, DateFortuneSideEffect> =
             container(DateFortuneState())
 
-        fun onPurposeSelect(purpose: DayFortunePurpose) =
+        fun selectPurpose(purpose: DayFortunePurpose) =
             intent {
                 reduce { state.copy(selectedPurpose = purpose) }
             }
 
-        fun onGenderSelect(gender: Gender) =
+        fun selectGender(gender: Gender) =
             intent {
                 reduce { state.copy(selectedGender = gender) }
             }
 
-        fun onOpenDateSheet() =
+        fun openDateSheet() =
             intent {
                 reduce { state.copy(isSheetVisible = true) }
             }
 
-        fun onCloseDateSheet() =
+        fun closeDateSheet() =
             intent {
                 reduce { state.copy(isSheetVisible = false) }
             }
 
-        fun onDateToggle(date: LocalDate) =
+        fun toggleDate(date: LocalDate) =
             intent {
                 val current = state.selectedDates
                 when {
@@ -58,7 +57,7 @@ class DateFortuneViewModel
                     }
 
                     current.size >= DateFortuneDefaults.MAX_TARGET_DATES -> {
-                        postSideEffect(DateFortuneSideEffect.ShowToast(R.string.date_fortune_max_dates_toast))
+                        postSideEffect(DateFortuneSideEffect.ShowToast)
                     }
 
                     else -> {
@@ -67,22 +66,22 @@ class DateFortuneViewModel
                 }
             }
 
-        fun onDateRemove(date: LocalDate) =
+        fun removeDate(date: LocalDate) =
             intent {
                 reduce { state.copy(selectedDates = state.selectedDates.filterNot { it == date }.toPersistentList()) }
             }
 
-        fun onReset() =
+        fun reset() =
             intent {
                 reduce { state.copy(selectedDates = persistentListOf()) }
             }
 
-        fun onResultTabSelect(index: Int) =
+        fun selectTabResult(index: Int) =
             intent {
                 reduce { state.copy(selectedResultIndex = index) }
             }
 
-        fun onSubmit() =
+        fun submit() =
             intent {
                 val purpose = state.selectedPurpose ?: return@intent
                 val dates = state.selectedDates
@@ -100,11 +99,15 @@ class DateFortuneViewModel
                                 selectedResultIndex = 0,
                             )
                         }
-                        postSideEffect(DateFortuneSideEffect.NavigateToResult)
+                        postSideEffect(
+                            DateFortuneSideEffect.NavigateToResult(
+                                results.map { it.id },
+                            ),
+                        )
                     },
                     onFailure = {
                         reduce { state.copy(isLoading = false) }
-                        postSideEffect(DateFortuneSideEffect.ShowError(R.string.date_fortune_submit_error))
+                        postSideEffect(DateFortuneSideEffect.ShowError)
                     },
                 )
             }

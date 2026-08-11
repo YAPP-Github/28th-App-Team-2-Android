@@ -70,6 +70,7 @@ dependencies {
     implementation(projects.feature.mypage)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.auth)
+    implementation(projects.feature.sajuContents)
     implementation(projects.feature.luckAction)
     implementation(projects.feature.home)
     implementation(projects.feature.chat)

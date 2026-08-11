@@ -5,7 +5,6 @@ import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.CreateDayFortunesUseCase
 import com.kikidan.domain.usecase.DateFortuneDefaults
-import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.fake.FakeDayFortuneRepository
 import com.kikidan.sajucontents.model.DateFortuneSideEffect
 import com.kikidan.sajucontents.model.DateFortuneState
@@ -50,7 +49,7 @@ class DateFortuneViewModelTest {
             val viewModel = viewModel()
 
             viewModel.test(this) {
-                viewModel.onPurposeSelect(DayFortunePurpose.TRAVEL)
+                viewModel.selectPurpose(DayFortunePurpose.TRAVEL)
                 expectState { copy(selectedPurpose = DayFortunePurpose.TRAVEL) }
             }
         }
@@ -62,10 +61,10 @@ class DateFortuneViewModelTest {
             val date = LocalDate.now()
 
             viewModel.test(this) {
-                viewModel.onDateToggle(date)
+                viewModel.toggleDate(date)
                 expectState { copy(selectedDates = persistentListOf(date)) }
 
-                viewModel.onDateToggle(date)
+                viewModel.toggleDate(date)
                 expectState { copy(selectedDates = persistentListOf()) }
             }
         }
@@ -79,7 +78,7 @@ class DateFortuneViewModelTest {
             val initial = DateFortuneState(selectedDates = fiveDates.toPersistentList())
 
             viewModel.test(this, initialState = initial) {
-                viewModel.onDateToggle(today.plusDays(10))
+                viewModel.toggleDate(today.plusDays(10))
                 expectSideEffect(DateFortuneSideEffect.ShowToast(R.string.date_fortune_max_dates_toast))
             }
         }
@@ -95,7 +94,7 @@ class DateFortuneViewModelTest {
                 )
 
             viewModel.test(this, initialState = initial) {
-                viewModel.onReset()
+                viewModel.reset()
                 expectState { copy(selectedDates = persistentListOf()) }
             }
         }
@@ -106,7 +105,7 @@ class DateFortuneViewModelTest {
             val viewModel = viewModel()
 
             viewModel.test(this) {
-                viewModel.onGenderSelect(Gender.FEMALE)
+                viewModel.selectGender(Gender.FEMALE)
                 expectState { copy(selectedGender = Gender.FEMALE) }
             }
         }
@@ -125,7 +124,7 @@ class DateFortuneViewModelTest {
             fakeRepository.result = Result.success(emptyList())
 
             viewModel.test(this, initialState = initial) {
-                viewModel.onSubmit()
+                viewModel.submit()
                 expectState { copy(isLoading = true) }
                 expectState { copy(isLoading = false, results = persistentListOf(), selectedResultIndex = 0) }
                 expectSideEffect(DateFortuneSideEffect.NavigateToResult)
@@ -160,7 +159,7 @@ class DateFortuneViewModelTest {
                 )
 
             viewModel.test(this, initialState = initial) {
-                viewModel.onSubmit()
+                viewModel.submit()
                 expectState { copy(isLoading = true) }
                 expectState { copy(isLoading = false, results = persistentListOf(fortune), selectedResultIndex = 0) }
                 expectSideEffect(DateFortuneSideEffect.NavigateToResult)
@@ -180,7 +179,7 @@ class DateFortuneViewModelTest {
                 )
 
             viewModel.test(this, initialState = initial) {
-                viewModel.onSubmit()
+                viewModel.submit()
                 expectState { copy(isLoading = true) }
                 expectState { copy(isLoading = false) }
                 expectSideEffect(DateFortuneSideEffect.ShowError(R.string.date_fortune_submit_error))
@@ -193,7 +192,7 @@ class DateFortuneViewModelTest {
             val viewModel = viewModel()
 
             viewModel.test(this) {
-                viewModel.onResultTabSelect(2)
+                viewModel.selectTabResult(2)
                 expectState { copy(selectedResultIndex = 2) }
             }
         }
