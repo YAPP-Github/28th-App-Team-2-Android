@@ -30,7 +30,7 @@ private val TabDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("M
 
 /** 결과 화면 상단 날짜 탭. 개수는 [results]에 따라 동적(1~5개, D7 상한 상수 참조). */
 @Composable
-fun ResultDateTabRow(
+internal fun ResultDateTabRow(
     results: ImmutableList<DayFortune>,
     selectedIndex: Int,
     onTabSelect: (Int) -> Unit,

@@ -24,23 +24,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
-import com.kikidan.sajucontents.R
+import com.kikidan.designsystem.R
 import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import com.kikidan.designsystem.R as DesignSystemR
 
 private val DateChipFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("M.d(E)", Locale.KOREAN)
 
 @Composable
-fun SelectedDateChipRow(
+internal fun SelectedDateChipRow(
     selectedDates: ImmutableList<LocalDate>,
     onDateRemove: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (selectedDates.isEmpty()) return
-
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -83,7 +80,7 @@ private fun DateChip(
         ) {
             Icon(
                 modifier = Modifier.size(13.dp),
-                painter = painterResource(id = DesignSystemR.drawable.ic_close),
+                painter = painterResource(id = R.drawable.ic_close),
                 contentDescription = stringResource(id = R.string.date_fortune_date_remove),
                 tint = TodakunColor.white,
             )

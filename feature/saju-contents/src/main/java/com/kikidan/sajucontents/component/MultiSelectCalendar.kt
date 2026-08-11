@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
-import com.kikidan.sajucontents.R
+import com.kikidan.designsystem.R
 import com.kizitonwose.calendar.compose.VerticalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -35,7 +35,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 /** 캘린더 날짜 셀의 시각 상태 4종. 우선순위: 과거 > 선택 > 오늘 > 기본. */
-enum class CalendarDayState {
+internal enum class CalendarDayState {
     PAST,
     SELECTED,
     TODAY,
@@ -46,7 +46,7 @@ enum class CalendarDayState {
  * 날짜 하나의 캘린더 셀 상태를 판정하는 순수 함수.
  * Compose에 의존하지 않아 유닛 테스트로 직접 검증한다.
  */
-fun resolveCalendarDayState(
+internal fun resolveCalendarDayState(
     date: LocalDate,
     today: LocalDate,
     selectedDates: ImmutableList<LocalDate>,
@@ -61,7 +61,7 @@ fun resolveCalendarDayState(
 private const val MONTH_COUNT = 12L
 
 @Composable
-fun MultiSelectCalendar(
+internal fun MultiSelectCalendar(
     selectedDates: ImmutableList<LocalDate>,
     onDateToggle: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
