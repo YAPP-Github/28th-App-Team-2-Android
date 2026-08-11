@@ -21,9 +21,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
-import com.kikidan.designsystem.R
 import com.kizitonwose.calendar.compose.VerticalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
