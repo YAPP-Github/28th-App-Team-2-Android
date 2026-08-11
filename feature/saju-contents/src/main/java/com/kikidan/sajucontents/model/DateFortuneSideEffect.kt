@@ -1,15 +1,13 @@
 package com.kikidan.sajucontents.model
 
 sealed interface DateFortuneSideEffect {
-    data class ShowToast(
-        val messageRes: Int,
-    ) : DateFortuneSideEffect
+    data object ShowToast : DateFortuneSideEffect
 
-    data class ShowError(
-        val messageRes: Int,
-    ) : DateFortuneSideEffect
+    data object ShowError : DateFortuneSideEffect
 
-    data object NavigateToResult : DateFortuneSideEffect
+    data class NavigateToResult(
+        val id: List<String>,
+    ) : DateFortuneSideEffect
 
     data object NavigateBack : DateFortuneSideEffect
 }
