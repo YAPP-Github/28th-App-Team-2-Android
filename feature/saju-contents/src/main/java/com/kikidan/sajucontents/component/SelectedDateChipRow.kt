@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune.component
+package com.kikidan.sajucontents.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

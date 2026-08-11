@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune
+package com.kikidan.sajucontents.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,17 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.designsystem.component.TodakunProgressBar
 import com.kikidan.designsystem.component.TodakunSelectField
 import com.kikidan.designsystem.component.TodakunSnackbar
@@ -37,13 +32,12 @@ import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.DateFortuneDefaults
 import com.kikidan.sajucontents.R
-import com.kikidan.sajucontents.dayfortune.component.DateSelectBottomSheet
-import com.kikidan.sajucontents.dayfortune.component.GenderSelector
-import com.kikidan.sajucontents.dayfortune.component.PurposeChipGroup
+import com.kikidan.sajucontents.component.DateSelectBottomSheet
+import com.kikidan.sajucontents.component.GenderSelector
+import com.kikidan.sajucontents.component.PurposeChipGroup
+import com.kikidan.sajucontents.model.DateFortuneState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
-import org.orbitmvi.orbit.compose.collectAsState
-import org.orbitmvi.orbit.compose.collectSideEffect
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -55,56 +49,7 @@ private const val TOAST_DURATION_MS = 2000L
 private val DateSummaryFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("M.d(E)", Locale.KOREAN)
 
 @Composable
-fun DateFortuneInputRoute(
-    onNavigateBack: () -> Unit,
-    onNavigateToResult: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: DateFortuneViewModel = hiltViewModel(),
-) {
-    val state by viewModel.collectAsState()
-    val context = LocalContext.current
-    var toastMessage by remember { mutableStateOf<String?>(null) }
-
-    viewModel.collectSideEffect { effect ->
-        when (effect) {
-            is DateFortuneSideEffect.ShowToast -> {
-                // getString의 남는 포맷 인자는 무시되므로 플레이스홀더가 없는 메시지에도 안전하다.
-                toastMessage = context.getString(effect.messageRes, DateFortuneDefaults.MAX_TARGET_DATES)
-            }
-
-            is DateFortuneSideEffect.ShowError -> {
-                toastMessage = context.getString(effect.messageRes)
-            }
-
-            DateFortuneSideEffect.NavigateToResult -> {
-                onNavigateToResult()
-            }
-
-            DateFortuneSideEffect.NavigateBack -> {
-                onNavigateBack()
-            }
-        }
-    }
-
-    DateFortuneInputScreen(
-        state = state,
-        toastMessage = toastMessage,
-        onToastDismiss = { toastMessage = null },
-        onBackClick = onNavigateBack,
-        onPurposeSelect = viewModel::onPurposeSelect,
-        onGenderSelect = viewModel::onGenderSelect,
-        onOpenDateSheet = viewModel::onOpenDateSheet,
-        onCloseDateSheet = viewModel::onCloseDateSheet,
-        onDateToggle = viewModel::onDateToggle,
-        onDateRemove = viewModel::onDateRemove,
-        onReset = viewModel::onReset,
-        onSubmit = viewModel::onSubmit,
-        modifier = modifier,
-    )
-}
-
-@Composable
-fun DateFortuneInputScreen(
+internal fun DateFortuneInputScreen(
     state: DateFortuneState,
     toastMessage: String?,
     onToastDismiss: () -> Unit,

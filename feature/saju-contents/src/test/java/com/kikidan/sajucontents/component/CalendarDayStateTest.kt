@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune.component
+package com.kikidan.sajucontents.component
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

@@ -1,4 +1,4 @@
-package com.kikidan.sajucontents.dayfortune.component
+package com.kikidan.sajucontents.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
