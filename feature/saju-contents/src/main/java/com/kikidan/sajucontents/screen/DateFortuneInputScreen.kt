@@ -1,21 +1,21 @@
 package com.kikidan.sajucontents.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,19 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.component.TodakunChip
 import com.kikidan.designsystem.component.TodakunSelectField
 import com.kikidan.designsystem.component.button.PrimaryButton
 import com.kikidan.designsystem.component.button.TodakunButtonSize
-import com.kikidan.designsystem.component.header.TodakunMainHeader
 import com.kikidan.designsystem.component.header.TodakunSubHeader
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.usecase.DateFortuneDefaults
-import com.kikidan.sajucontents.R
+import com.kikidan.designsystem.R
 import com.kikidan.sajucontents.component.DateSelectBottomSheet
-import com.kikidan.sajucontents.component.PurposeChipGroup
 import com.kikidan.sajucontents.model.DateFortuneState
 import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
@@ -151,6 +150,42 @@ internal fun DateFortuneInputScreen(
         }
     }
 }
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PurposeChipGroup(
+    selectedPurpose: DayFortunePurpose?,
+    onPurposeSelect: (DayFortunePurpose) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        DayFortunePurpose.entries.forEach { purpose ->
+            TodakunChip(
+                label = purpose.label(),
+                selected = purpose == selectedPurpose,
+                onClick = { onPurposeSelect(purpose) },
+            )
+        }
+    }
+}
+
+@Composable
+fun DayFortunePurpose.label(): String =
+    stringResource(
+        id =
+            when (this) {
+                DayFortunePurpose.CONTRACT_MOVING -> R.string.date_fortune_purpose_contract_moving
+                DayFortunePurpose.BUSINESS_OPENING -> R.string.date_fortune_purpose_business_opening
+                DayFortunePurpose.TRAVEL -> R.string.date_fortune_purpose_travel
+                DayFortunePurpose.CONFESSION_DATING -> R.string.date_fortune_purpose_confession_dating
+                DayFortunePurpose.EXAM_INTERVIEW -> R.string.date_fortune_purpose_exam_interview
+            },
+    )
+
 
 @Preview(showBackground = true)
 @Composable

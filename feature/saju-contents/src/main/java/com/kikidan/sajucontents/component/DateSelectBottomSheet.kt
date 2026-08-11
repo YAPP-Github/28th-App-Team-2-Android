@@ -33,14 +33,14 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.designsystem.util.noRippleClickable
 import com.kikidan.domain.usecase.DateFortuneDefaults
-import com.kikidan.sajucontents.R
+import com.kikidan.designsystem.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateSelectBottomSheet(
+internal fun DateSelectBottomSheet(
     selectedDates: ImmutableList<LocalDate>,
     onDateToggle: (LocalDate) -> Unit,
     onDateRemove: (LocalDate) -> Unit,

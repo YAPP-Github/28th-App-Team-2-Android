@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.designsystem.R
 import com.kikidan.sajucontents.model.DateFortuneSideEffect
 import com.kikidan.sajucontents.screen.DateFortuneInputScreen
 import kotlinx.collections.immutable.ImmutableList
