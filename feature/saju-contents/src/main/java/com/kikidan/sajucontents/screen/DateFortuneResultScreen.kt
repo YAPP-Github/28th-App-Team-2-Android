@@ -52,6 +52,7 @@ import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.model.dayfortune.FortuneCategoryStar
 import com.kikidan.domain.model.fortune.FortuneCategory
+import com.kikidan.sajucontents.component.DateFortuneShareDialog
 import com.kikidan.sajucontents.component.FortuneScoreCard
 import com.kikidan.sajucontents.component.ResultDateTabRow
 import com.kikidan.sajucontents.model.DateFortuneResultState
@@ -66,6 +67,9 @@ internal fun DateFortuneResultScreen(
     onBackClick: () -> Unit,
     onTabSelect: (Int) -> Unit,
     onShareClick: () -> Unit,
+    onShareDismiss: () -> Unit,
+    onKakaoShareFail: () -> Unit,
+    onUrlCopy: () -> Unit,
     onExportClick: () -> Unit,
     onAskTodakClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -99,6 +103,16 @@ internal fun DateFortuneResultScreen(
             state = state,
             selectedFortune = selectedFortune,
         )
+
+        if (state.isShareDialogVisible) {
+            DateFortuneShareDialog(
+                fortuneTitle = selectedFortune.title,
+                fortuneId = selectedFortune.id,
+                onKakaoShareFail = onKakaoShareFail,
+                onUrlCopy = onUrlCopy,
+                onDismiss = onShareDismiss,
+            )
+        }
     }
 }
 
@@ -332,6 +346,9 @@ private fun DateFortuneResultScreenPreview() {
             onBackClick = {},
             onTabSelect = {},
             onShareClick = {},
+            onShareDismiss = {},
+            onKakaoShareFail = {},
+            onUrlCopy = {},
             onExportClick = {},
             onAskTodakClick = {},
         )

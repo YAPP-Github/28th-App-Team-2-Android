@@ -63,6 +63,9 @@ fun DateFortuneResultRoute(
         onBackClick = onNavigateBack,
         onTabSelect = viewModel::selectTabResult,
         onShareClick = viewModel::showShareDialog,
+        onShareDismiss = viewModel::hideShareDialog,
+        onKakaoShareFail = viewModel::notifyShareUnavailable,
+        onUrlCopy = viewModel::notifyUrlCopied,
         onExportClick = {
             val fortune = state.results.getOrNull(state.selectedResultIndex)
             if (fortune != null) {
