@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- YearSelectionScreen -->
+    <string name="year_fortune_header_title">연도별 운세</string>
+    <string name="year_fortune_select_title">어느 해가 궁금하시나요?</string>
+    <string name="year_fortune_year_this_year">%1$d (올해)</string>
+    <string name="year_fortune_cta">무료로 연도별 운세 보기</string>
+
+    <!-- YearFortuneResultScreen -->
+    <string name="year_fortune_result_header_title">연도별 운세 결과</string>
+    <string name="year_fortune_share">공유</string>
+    <string name="year_fortune_result_title">%1$d년 토닥이님의 운세</string>
+    <string name="year_fortune_score_label">연간 종합 점수</string>
+    <string name="year_fortune_summary_title">종합 총평</string>
+    <string name="year_fortune_ask_todak">토닥이에게 더 물어보기</string>
+    <string name="year_fortune_retry">다시 시도</string>
+
+    <!-- 카테고리 라벨: 임시값, 기획 확정 전(설계 문서 2-1절, date_fortune과 동일 정책) -->
+    <string name="year_fortune_category_relationship">관계운</string>
+    <string name="year_fortune_category_love">애정운</string>
+    <string name="year_fortune_category_achievement">성취운</string>
+    <string name="year_fortune_category_money">재물운</string>
+    <string name="year_fortune_category_health">건강운</string>
+
+    <!-- ShareBottomSheet -->
+    <string name="year_fortune_share_title">운세 공유하기</string>
+    <string name="year_fortune_share_kakao">카카오톡 공유</string>
+    <string name="year_fortune_share_copy_url">URL 복사</string>
+    <string name="year_fortune_share_cancel">취소</string>
+</resources>
