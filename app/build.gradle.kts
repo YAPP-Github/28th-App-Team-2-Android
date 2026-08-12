@@ -32,14 +32,14 @@ android {
 
     buildTypes {
         debug {
-            //TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
+            // TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
             val kakaoKey = localProperty.getProperty("KAKAO_NATIVE_APP_KEY_DEV") ?: ""
             val appLinkHost = localProperty.getProperty("APP_LINK_HOST_DEV") ?: ""
             manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
             manifestPlaceholders["APP_LINK_HOST"] = appLinkHost
         }
         release {
-            //TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
+            // TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
             val kakaoKey = localProperty.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
             val appLinkHost = localProperty.getProperty("APP_LINK_HOST") ?: ""
             manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
