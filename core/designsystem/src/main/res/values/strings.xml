@@ -247,13 +247,4 @@
     <string name="date_fortune_category_achievement">성취운</string>
     <string name="date_fortune_category_money">재물운</string>
     <string name="date_fortune_category_health">건강운</string>
-
-    <!-- DateFortune 공유 -->
-    <string name="date_fortune_share_dialog_title">운세 공유하기</string>
-    <string name="date_fortune_share_kakao">카카오톡 공유</string>
-    <string name="date_fortune_share_copy_url">URL 복사</string>
-    <string name="date_fortune_share_cancel">취소</string>
-    <string name="date_fortune_share_message">%1$s\n토닥운에서 확인해보세요.</string>
-    <string name="date_fortune_share_kakao_error">카카오톡으로 공유할 수 없어요. 카카오톡 설치 여부를 확인해주세요.</string>
-    <string name="date_fortune_share_url_copied">링크를 복사했어요.</string>
 </resources>
