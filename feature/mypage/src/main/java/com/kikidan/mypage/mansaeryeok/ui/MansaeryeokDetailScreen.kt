@@ -124,7 +124,7 @@ private fun ProfileSummaryCard(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
                 .background(TodakunColor.coolGray50)
-                .padding(20.dp),
+                .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 18.dp),
     ) {
         Text(
             text = stringResource(R.string.mansaeryeok_profile_format, user.name, user.gender.displayName()),
@@ -153,7 +153,7 @@ private fun SectionLabel(
         )
         Spacer(modifier = Modifier.width(4.dp))
         Icon(
-            painter = painterResource(id = R.drawable.ic_manage_saju_info),
+            painter = painterResource(id = R.drawable.ic_circle_info),
             contentDescription = stringResource(R.string.mansaeryeok_info_content_description),
             tint = TodakunColor.gray400,
             modifier = Modifier.size(20.dp),
