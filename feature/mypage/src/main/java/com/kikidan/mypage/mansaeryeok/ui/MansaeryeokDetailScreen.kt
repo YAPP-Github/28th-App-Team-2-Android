@@ -52,8 +52,8 @@ import com.kikidan.mypage.mansaeryeok.model.TenGod
 import com.kikidan.mypage.mansaeryeok.model.TwelveSinsal
 import com.kikidan.mypage.mansaeryeok.model.TwelveUnseong
 import com.kikidan.mypage.mansaeryeok.ui.component.FiveElementCard
+import com.kikidan.mypage.mansaeryeok.ui.component.MansaeryeokInfoBottomSheet
 import com.kikidan.mypage.mansaeryeok.ui.component.SajuFourPillarsTable
-import com.kikidan.mypage.mansaeryeok.ui.component.SajuWonGukInfoBottomSheet
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -99,6 +99,7 @@ private fun MansaeryeokDetailContent(
     modifier: Modifier = Modifier,
 ) {
     var showSajuWonGukInfo by remember { mutableStateOf(false) }
+    var showOhaengInfo by remember { mutableStateOf(false) }
 
     Column(
         modifier =
@@ -118,13 +119,43 @@ private fun MansaeryeokDetailContent(
         SajuFourPillarsTable(pillars = model.pillars)
         Spacer(modifier = Modifier.height(32.dp))
 
-        SectionLabel(text = stringResource(R.string.mansaeryeok_ohaeng_title))
+        SectionLabel(
+            text = stringResource(R.string.mansaeryeok_ohaeng_title),
+            onInfoClick = { showOhaengInfo = true },
+        )
         Spacer(modifier = Modifier.height(16.dp))
         FiveElementCard(fiveElements = model.fiveElements)
     }
 
     if (showSajuWonGukInfo) {
-        SajuWonGukInfoBottomSheet(onDismissRequest = { showSajuWonGukInfo = false })
+        MansaeryeokInfoBottomSheet(
+            titleRes = R.string.mansaeryeok_saju_won_guk_info_title,
+            descriptionRes = R.string.mansaeryeok_saju_won_guk_info_description,
+            pointRes =
+                listOf(
+                    R.string.mansaeryeok_saju_won_guk_info_year,
+                    R.string.mansaeryeok_saju_won_guk_info_month,
+                    R.string.mansaeryeok_saju_won_guk_info_day,
+                    R.string.mansaeryeok_saju_won_guk_info_hour,
+                ),
+            onDismissRequest = { showSajuWonGukInfo = false },
+        )
+    }
+
+    if (showOhaengInfo) {
+        MansaeryeokInfoBottomSheet(
+            titleRes = R.string.mansaeryeok_ohaeng_info_title,
+            descriptionRes = R.string.mansaeryeok_ohaeng_info_description,
+            pointRes =
+                listOf(
+                    R.string.mansaeryeok_ohaeng_info_mok,
+                    R.string.mansaeryeok_ohaeng_info_hwa,
+                    R.string.mansaeryeok_ohaeng_info_to,
+                    R.string.mansaeryeok_ohaeng_info_geum,
+                    R.string.mansaeryeok_ohaeng_info_su,
+                ),
+            onDismissRequest = { showOhaengInfo = false },
+        )
     }
 }
 

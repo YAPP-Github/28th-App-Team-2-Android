@@ -1,5 +1,6 @@
 package com.kikidan.mypage.mansaeryeok.ui.component
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +35,10 @@ import com.kikidan.designsystem.theme.TodakunTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SajuWonGukInfoBottomSheet(
+fun MansaeryeokInfoBottomSheet(
+    @StringRes titleRes: Int,
+    @StringRes descriptionRes: Int,
+    pointRes: List<Int>,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -53,7 +57,7 @@ fun SajuWonGukInfoBottomSheet(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = stringResource(R.string.mansaeryeok_saju_won_guk_info_title),
+                    text = stringResource(titleRes),
                     style = TodakunTypography.heading4Bold,
                     color = TodakunColor.gray975,
                     modifier = Modifier.weight(1f),
@@ -72,7 +76,7 @@ fun SajuWonGukInfoBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = stringResource(R.string.mansaeryeok_saju_won_guk_info_description),
+                text = stringResource(descriptionRes),
                 style = TodakunTypography.body2Medium,
                 color = TodakunColor.gray925,
             )
@@ -88,26 +92,13 @@ fun SajuWonGukInfoBottomSheet(
                         .padding(horizontal = 16.dp, vertical = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(
-                    text = stringResource(R.string.mansaeryeok_saju_won_guk_info_year),
-                    style = TodakunTypography.body3Medium,
-                    color = TodakunColor.gray975,
-                )
-                Text(
-                    text = stringResource(R.string.mansaeryeok_saju_won_guk_info_month),
-                    style = TodakunTypography.body3Medium,
-                    color = TodakunColor.gray975,
-                )
-                Text(
-                    text = stringResource(R.string.mansaeryeok_saju_won_guk_info_day),
-                    style = TodakunTypography.body3Medium,
-                    color = TodakunColor.gray975,
-                )
-                Text(
-                    text = stringResource(R.string.mansaeryeok_saju_won_guk_info_hour),
-                    style = TodakunTypography.body3Medium,
-                    color = TodakunColor.gray975,
-                )
+                pointRes.forEach { res ->
+                    Text(
+                        text = stringResource(res),
+                        style = TodakunTypography.body3Medium,
+                        color = TodakunColor.gray975,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(36.dp))
@@ -129,6 +120,37 @@ fun SajuWonGukInfoBottomSheet(
 @Composable
 private fun SajuWonGukInfoBottomSheetPreview() {
     TodakunTheme {
-        SajuWonGukInfoBottomSheet(onDismissRequest = {})
+        MansaeryeokInfoBottomSheet(
+            titleRes = R.string.mansaeryeok_saju_won_guk_info_title,
+            descriptionRes = R.string.mansaeryeok_saju_won_guk_info_description,
+            pointRes =
+                listOf(
+                    R.string.mansaeryeok_saju_won_guk_info_year,
+                    R.string.mansaeryeok_saju_won_guk_info_month,
+                    R.string.mansaeryeok_saju_won_guk_info_day,
+                    R.string.mansaeryeok_saju_won_guk_info_hour,
+                ),
+            onDismissRequest = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OhaengInfoBottomSheetPreview() {
+    TodakunTheme {
+        MansaeryeokInfoBottomSheet(
+            titleRes = R.string.mansaeryeok_ohaeng_info_title,
+            descriptionRes = R.string.mansaeryeok_ohaeng_info_description,
+            pointRes =
+                listOf(
+                    R.string.mansaeryeok_ohaeng_info_mok,
+                    R.string.mansaeryeok_ohaeng_info_hwa,
+                    R.string.mansaeryeok_ohaeng_info_to,
+                    R.string.mansaeryeok_ohaeng_info_geum,
+                    R.string.mansaeryeok_ohaeng_info_su,
+                ),
+            onDismissRequest = {},
+        )
     }
 }

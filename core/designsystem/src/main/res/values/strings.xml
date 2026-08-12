@@ -155,6 +155,13 @@
     <string name="mansaeryeok_saju_won_guk_info_month">월주: 태어난 달의 천간·지지 → 부모, 형제, 성장 환경을 의미</string>
     <string name="mansaeryeok_saju_won_guk_info_day">일주: 태어난 날의 천간·지지 → 나 자신, 배우자를 의미 (사주의 중심)</string>
     <string name="mansaeryeok_saju_won_guk_info_hour">시주: 태어난 시각의 천간·지지 → 자녀, 말년운을 의미</string>
+    <string name="mansaeryeok_ohaeng_info_title">오행이란?</string>
+    <string name="mansaeryeok_ohaeng_info_description">오행은 우주 만물을 이루는 다섯 가지 기운, 목(木)·화(火)·토(土)·금(金)·수(水)를 뜻해요. 오행의 균형이 성격과 운의 흐름에 영향을 줘요.</string>
+    <string name="mansaeryeok_ohaeng_info_mok">목(木): 성장과 시작의 기운 (봄, 나무)</string>
+    <string name="mansaeryeok_ohaeng_info_hwa">화(火): 열정과 확산의 기운 (여름, 불)</string>
+    <string name="mansaeryeok_ohaeng_info_to">토(土): 중심과 안정의 기운 (환절기, 흙)</string>
+    <string name="mansaeryeok_ohaeng_info_geum">금(金): 결실과 결단의 기운 (가을, 쇠)</string>
+    <string name="mansaeryeok_ohaeng_info_su">수(水): 지혜와 휴식의 기운 (겨울, 물)</string>
 
     <!-- Common -->
     <string name="separator_dot">·</string>
