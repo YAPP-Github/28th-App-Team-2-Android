@@ -6,7 +6,7 @@ import java.util.Properties
 
 private const val DEBUG_STORE_NAME = ".keystore/todakun-debug.jks"
 private const val RELEASE_STORE_NAME = ".keystore/todakun-release.jks"
-private const val RELEASE_KEY_ALIAS = "todakun"
+private const val RELEASE_KEY_ALIAS = "release"
 
 private const val RELEASE_PASSWORD_PROPERTY = "todakun.release.password"
 
@@ -48,6 +48,10 @@ private fun ApplicationExtension.configureSigningConfigs(
     }
 
     buildTypes {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+        }
+
         getByName("release") {
             signingConfig = signingConfigs.findByName("release")
         }

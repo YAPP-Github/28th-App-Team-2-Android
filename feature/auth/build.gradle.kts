@@ -12,6 +12,9 @@ val localProperty =
             ?.inputStream()
             ?.use { load(it) }
     }
+val kakaoKeyRelease: String = localProperty.getProperty("KAKAO_NATIVE_APP_KEY", "")
+val kakaoKeyDebug: String = localProperty.getProperty("KAKAO_NATIVE_APP_KEY_DEV", "")
+val googleClientId: String = localProperty.getProperty("GOOGLE_WEB_CLIENT_ID", "")
 
 android {
     namespace = "com.kikidan.auth"
@@ -20,12 +23,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
-        val kakaoKey = localProperty.getProperty("KAKAO_NATIVE_APP_KEY", "")
-        val googleClientId = localProperty.getProperty("GOOGLE_WEB_CLIENT_ID", "")
-
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoKey\"")
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClientId\"")
-        manifestPlaceholders["kakaoNativeAppKey"] = kakaoKey
+    }
+    buildTypes {
+        debug {
+            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoKeyDebug\"")
+            manifestPlaceholders["kakaoNativeAppKey"] = kakaoKeyDebug
+        }
+        release {
+            buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoKeyRelease\"")
+            manifestPlaceholders["kakaoNativeAppKey"] = kakaoKeyRelease
+        }
     }
     buildFeatures {
         buildConfig = true

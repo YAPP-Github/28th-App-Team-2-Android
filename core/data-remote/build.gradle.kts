@@ -16,7 +16,8 @@ val localProperty =
             ?.inputStream()
             ?.use { load(it) }
     }
-val baseUrl: String = localProperty.getProperty("BASE_URL", "")
+val baseUrlRelease: String = localProperty.getProperty("BASE_URL", "")
+val baseUrlDebug: String = localProperty.getProperty("BASE_URL_DEV", "")
 
 android {
     namespace = "com.kikidan.data_remote"
@@ -26,12 +27,13 @@ android {
         minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
     }
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"${baseUrlDebug}\"")
+        }
         release {
-            // TODO(#후속): prod 서버 개설 시 교체
-            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
+            buildConfigField("String", "BASE_URL", "\"${baseUrlRelease}\"")
         }
     }
     buildFeatures {
