@@ -8,4 +8,5 @@ data class DateFortuneResultState(
     val isLoading: Boolean = false,
     val results: ImmutableList<DayFortune> = persistentListOf(),
     val selectedResultIndex: Int = 0,
+    val isShareDialogVisible: Boolean = false,
 )
