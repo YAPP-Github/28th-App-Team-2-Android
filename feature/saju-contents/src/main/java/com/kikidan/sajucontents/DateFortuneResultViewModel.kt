@@ -55,4 +55,26 @@ class DateFortuneResultViewModel
             intent {
                 reduce { state.copy(selectedResultIndex = index) }
             }
+
+        fun showShareDialog() =
+            intent {
+                reduce { state.copy(isShareDialogVisible = true) }
+            }
+
+        fun hideShareDialog() =
+            intent {
+                reduce { state.copy(isShareDialogVisible = false) }
+            }
+
+        fun notifyShareUnavailable() =
+            intent {
+                reduce { state.copy(isShareDialogVisible = false) }
+                postSideEffect(DateFortuneResultSideEffect.ShowShareError)
+            }
+
+        fun notifyUrlCopied() =
+            intent {
+                reduce { state.copy(isShareDialogVisible = false) }
+                postSideEffect(DateFortuneResultSideEffect.ShowUrlCopied)
+            }
     }
