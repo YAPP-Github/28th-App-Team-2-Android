@@ -36,7 +36,7 @@ internal fun SajuCard(
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(ohaeng.containerColor())
-                .padding(horizontal = 6.dp, vertical = 9.dp),
+                .padding(horizontal = 6.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
