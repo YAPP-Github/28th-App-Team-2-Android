@@ -24,6 +24,8 @@ fun DateFortuneResultRoute(
 ) {
     val state by viewModel.collectAsState()
     val loadErrorMessage = stringResource(R.string.date_fortune_result_load_error)
+    val shareErrorMessage = stringResource(R.string.date_fortune_share_kakao_error)
+    val urlCopiedMessage = stringResource(R.string.date_fortune_share_url_copied)
 
     LaunchedEffect(ids) {
         viewModel.loadResults(ids)
@@ -34,6 +36,14 @@ fun DateFortuneResultRoute(
             DateFortuneResultSideEffect.ShowError -> {
                 snackbarHostState.showSnackbar(loadErrorMessage)
             }
+
+            DateFortuneResultSideEffect.ShowShareError -> {
+                snackbarHostState.showSnackbar(shareErrorMessage)
+            }
+
+            DateFortuneResultSideEffect.ShowUrlCopied -> {
+                snackbarHostState.showSnackbar(urlCopiedMessage)
+            }
         }
     }
 
@@ -41,7 +51,7 @@ fun DateFortuneResultRoute(
         state = state,
         onBackClick = onNavigateBack,
         onTabSelect = viewModel::selectTabResult,
-        onShareClick = {},
+        onShareClick = viewModel::showShareDialog,
         onExportClick = {},
         onAskTodakClick = onAskTodakClick,
         modifier = modifier,
