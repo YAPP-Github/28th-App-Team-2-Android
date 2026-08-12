@@ -148,6 +148,13 @@
     <string name="mansaeryeok_five_element_status_lacking">부족</string>
     <string name="mansaeryeok_five_element_status_moderate">적정</string>
     <string name="mansaeryeok_five_element_status_abundant">발달</string>
+    <string name="mansaeryeok_info_confirm_button">확인</string>
+    <string name="mansaeryeok_saju_won_guk_info_title">사주원국이란?</string>
+    <string name="mansaeryeok_saju_won_guk_info_description">사주원국은 태어난 연/월/일/시를 각각 천간(하늘의 기운)과 지지(땅의 기운)로 나타낸, 타고난 사주의 기본 틀이에요. 이 네 기둥(사주)이 모여 한 사람이 타고난 기질과 운의 전체 지도를 보여줘요.</string>
+    <string name="mansaeryeok_saju_won_guk_info_year">년주: 태어난 해의 천간·지지 → 조상, 어린 시절, 사회적 배경을 의미</string>
+    <string name="mansaeryeok_saju_won_guk_info_month">월주: 태어난 달의 천간·지지 → 부모, 형제, 성장 환경을 의미</string>
+    <string name="mansaeryeok_saju_won_guk_info_day">일주: 태어난 날의 천간·지지 → 나 자신, 배우자를 의미 (사주의 중심)</string>
+    <string name="mansaeryeok_saju_won_guk_info_hour">시주: 태어난 시각의 천간·지지 → 자녀, 말년운을 의미</string>
 
     <!-- Common -->
     <string name="separator_dot">·</string>

@@ -1,6 +1,7 @@
 package com.kikidan.mypage.mansaeryeok.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +53,7 @@ import com.kikidan.mypage.mansaeryeok.model.TwelveSinsal
 import com.kikidan.mypage.mansaeryeok.model.TwelveUnseong
 import com.kikidan.mypage.mansaeryeok.ui.component.FiveElementCard
 import com.kikidan.mypage.mansaeryeok.ui.component.SajuFourPillarsTable
+import com.kikidan.mypage.mansaeryeok.ui.component.SajuWonGukInfoBottomSheet
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -92,6 +98,8 @@ private fun MansaeryeokDetailContent(
     model: MansaeryeokDetailUiModel,
     modifier: Modifier = Modifier,
 ) {
+    var showSajuWonGukInfo by remember { mutableStateOf(false) }
+
     Column(
         modifier =
             modifier
@@ -102,7 +110,10 @@ private fun MansaeryeokDetailContent(
         ProfileSummaryCard(user = model.user)
         Spacer(modifier = Modifier.height(32.dp))
 
-        SectionLabel(text = stringResource(R.string.mansaeryeok_saju_won_guk_title))
+        SectionLabel(
+            text = stringResource(R.string.mansaeryeok_saju_won_guk_title),
+            onInfoClick = { showSajuWonGukInfo = true },
+        )
         Spacer(modifier = Modifier.height(16.dp))
         SajuFourPillarsTable(pillars = model.pillars)
         Spacer(modifier = Modifier.height(32.dp))
@@ -110,6 +121,10 @@ private fun MansaeryeokDetailContent(
         SectionLabel(text = stringResource(R.string.mansaeryeok_ohaeng_title))
         Spacer(modifier = Modifier.height(16.dp))
         FiveElementCard(fiveElements = model.fiveElements)
+    }
+
+    if (showSajuWonGukInfo) {
+        SajuWonGukInfoBottomSheet(onDismissRequest = { showSajuWonGukInfo = false })
     }
 }
 
@@ -144,6 +159,7 @@ private fun ProfileSummaryCard(
 private fun SectionLabel(
     text: String,
     modifier: Modifier = Modifier,
+    onInfoClick: (() -> Unit)? = null,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Text(
@@ -156,7 +172,12 @@ private fun SectionLabel(
             painter = painterResource(id = R.drawable.ic_circle_info),
             contentDescription = stringResource(R.string.mansaeryeok_info_content_description),
             tint = TodakunColor.gray400,
-            modifier = Modifier.size(20.dp),
+            modifier =
+                Modifier
+                    .size(20.dp)
+                    .let { iconModifier ->
+                        if (onInfoClick != null) iconModifier.clickable(onClick = onInfoClick) else iconModifier
+                    },
         )
     }
 }
