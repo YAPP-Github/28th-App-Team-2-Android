@@ -16,12 +16,12 @@ android {
 
     buildTypes {
         debug {
-            //TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
+            // TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
             val appLinkHost = localProperty.getProperty("APP_LINK_HOST_DEV") ?: ""
             buildConfigField("String", "APP_LINK_HOST", "\"https://${appLinkHost}\"")
         }
         release {
-            //TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
+            // TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
             val appLinkHost = localProperty.getProperty("APP_LINK_HOST") ?: ""
             buildConfigField("String", "APP_LINK_HOST", "\"https://${appLinkHost}\"")
         }
