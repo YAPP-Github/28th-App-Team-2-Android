@@ -18,6 +18,8 @@ class FakeDayFortuneRepository : DayFortuneRepository {
     var lastTargetDates: List<LocalDate>? = null
         private set
 
+    var getResults: MutableMap<String, Result<DayFortune>> = mutableMapOf()
+
     override suspend fun createDayFortunes(
         purpose: DayFortunePurpose,
         targetDates: List<LocalDate>,
@@ -27,4 +29,7 @@ class FakeDayFortuneRepository : DayFortuneRepository {
         lastTargetDates = targetDates
         return result
     }
+
+    override suspend fun getDayFortune(id: String): Result<DayFortune> =
+        getResults[id] ?: Result.failure(IllegalStateException("$id 에 대한 결과가 설정되지 않았습니다."))
 }

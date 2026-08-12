@@ -79,7 +79,7 @@ class DateFortuneViewModelTest {
 
             viewModel.test(this, initialState = initial) {
                 viewModel.toggleDate(today.plusDays(10))
-                expectSideEffect(DateFortuneSideEffect.ShowToast(R.string.date_fortune_max_dates_toast))
+                expectSideEffect(DateFortuneSideEffect.ShowToast)
             }
         }
 
@@ -182,7 +182,7 @@ class DateFortuneViewModelTest {
                 viewModel.submit()
                 expectState { copy(isLoading = true) }
                 expectState { copy(isLoading = false) }
-                expectSideEffect(DateFortuneSideEffect.ShowError(R.string.date_fortune_submit_error))
+                expectSideEffect(DateFortuneSideEffect.ShowError)
             }
         }
 }
