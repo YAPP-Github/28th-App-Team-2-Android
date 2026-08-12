@@ -5,6 +5,7 @@
     <string name="year_fortune_select_title">어느 해가 궁금하시나요?</string>
     <string name="year_fortune_year_this_year">%1$d (올해)</string>
     <string name="year_fortune_cta">무료로 연도별 운세 보기</string>
+    <string name="year_fortune_load_error">연도별 운세를 불러오지 못했어요. 다시 시도해주세요.</string>
 
     <!-- YearFortuneResultScreen -->
     <string name="year_fortune_result_header_title">연도별 운세 결과</string>

@@ -40,7 +40,8 @@ class YearFortuneViewModel
                         postSideEffect(YearFortuneSideEffect.NavigateToResult(year))
                     },
                     onFailure = {
-                        reduce { state.copy(isLoading = false, error = LOAD_ERROR_MESSAGE) }
+                        reduce { state.copy(isLoading = false) }
+                        postSideEffect(YearFortuneSideEffect.ShowError)
                     },
                 )
             }
@@ -60,11 +61,6 @@ class YearFortuneViewModel
                         reduce { state.copy(isLoading = false, error = LOAD_ERROR_MESSAGE) }
                     },
                 )
-            }
-
-        fun onErrorDismiss() =
-            intent {
-                reduce { state.copy(error = null) }
             }
 
         fun onShareIconClick() =
