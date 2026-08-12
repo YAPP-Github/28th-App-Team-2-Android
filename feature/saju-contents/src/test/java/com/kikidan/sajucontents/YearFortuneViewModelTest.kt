@@ -77,7 +77,7 @@ class YearFortuneViewModelTest {
         }
 
     @Test
-    fun `UseCase_실패_시_isLoading이_false로_돌아오고_error가_설정된다`() =
+    fun `UseCase_실패_시_isLoading이_false로_돌아오고_ShowError가_발생한다`() =
         runTest {
             val viewModel = viewModel()
             fakeRepository.result = Result.failure(IllegalStateException("서버 오류"))
@@ -86,7 +86,8 @@ class YearFortuneViewModelTest {
             viewModel.test(this, initialState = initial) {
                 viewModel.onSubmit()
                 expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false, error = LOAD_ERROR_MESSAGE) }
+                expectState { copy(isLoading = false) }
+                expectSideEffect(YearFortuneSideEffect.ShowError)
             }
         }
 
