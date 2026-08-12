@@ -1,8 +1,8 @@
 package com.kikidan.data.di
 
 import com.kikidan.data.repository.AuthRepositoryImpl
-import com.kikidan.data.repository.DayFortuneRepositoryImpl
 import com.kikidan.data.repository.ChatRepositoryImpl
+import com.kikidan.data.repository.DayFortuneRepositoryImpl
 import com.kikidan.data.repository.DeviceTokenRepositoryImpl
 import com.kikidan.data.repository.FortuneRepositoryImpl
 import com.kikidan.data.repository.LuckActionRepositoryImpl
@@ -12,8 +12,8 @@ import com.kikidan.data.repository.SajuRepositoryImpl
 import com.kikidan.data.repository.TokenRepositoryImpl
 import com.kikidan.data.repository.UserRepositoryImpl
 import com.kikidan.domain.repository.AuthRepository
-import com.kikidan.domain.repository.DayFortuneRepository
 import com.kikidan.domain.repository.ChatRepository
+import com.kikidan.domain.repository.DayFortuneRepository
 import com.kikidan.domain.repository.DeviceTokenRepository
 import com.kikidan.domain.repository.FortuneRepository
 import com.kikidan.domain.repository.LuckActionRepository
