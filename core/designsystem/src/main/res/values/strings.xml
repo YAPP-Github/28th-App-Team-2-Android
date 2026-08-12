@@ -47,4 +47,31 @@
     <string name="bottom_nav_todak">토닥이</string>
     <string name="bottom_nav_lucky_action">행운 액션</string>
     <string name="bottom_nav_my">마이</string>
+
+    <!-- LuckAction -->
+    <string name="luck_action_description">"사주 분석을 바탕으로\n행운을 올릴 수 있는\n액션을 추천드려요"</string>
+    <string name="luck_action_character_content_description">클로버 캐릭터</string>
+    <string name="luck_action_date_title">%1$d월 %2$d일 행운액션</string>
+    <string name="luck_action_prev_date_content_description">이전 날짜</string>
+    <string name="luck_action_next_date_content_description">다음 날짜</string>
+    <string name="luck_action_score_relationship">관계운</string>
+    <string name="luck_action_score_love">연애운</string>
+    <string name="luck_action_score_achievement">직장운</string>
+    <string name="luck_action_score_health">건강운</string>
+    <string name="luck_action_score_money">금전운</string>
+    <string name="luck_action_badge_relationship">관계</string>
+    <string name="luck_action_badge_love">연애</string>
+    <string name="luck_action_badge_achievement">직장</string>
+    <string name="luck_action_badge_health">건강</string>
+    <string name="luck_action_badge_money">금전</string>
+    <string name="luck_action_complete_title">행운 액션 완료!</string>
+    <string name="luck_action_complete_character_content_description">축하하는 캐릭터</string>
+    <string name="luck_action_complete_message_relationship">오늘의 관계운이 올랐어요 🤝</string>
+    <string name="luck_action_complete_message_love">오늘의 연애운이 올랐어요 💌</string>
+    <string name="luck_action_complete_message_achievement">오늘의 직장운이 올랐어요 💼</string>
+    <string name="luck_action_complete_message_health">오늘의 건강운이 올랐어요 💪</string>
+    <string name="luck_action_complete_message_money">오늘의 금전운이 올랐어요 💰</string>
+    <string name="luck_action_default_error">알 수 없는 에러가 발생했어요. 잠시 후 다시 시도해주세요</string>
+    <string name="luck_action_failure_message">"행운 액션을 불러오지 못했어요.\n잠시 후 다시 시도해주세요"</string>
+    <string name="luck_action_retry">다시 시도</string>
 </resources>
