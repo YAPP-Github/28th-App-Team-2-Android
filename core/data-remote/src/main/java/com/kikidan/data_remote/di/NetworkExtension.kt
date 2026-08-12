@@ -9,6 +9,7 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.sse.SSE
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
@@ -30,6 +31,7 @@ internal fun HttpClientConfig<*>.installTodakunDefaults(
         url(baseUrl)
         contentType(ContentType.Application.Json)
     }
+    install(SSE)
     expectSuccess = true
 }
 

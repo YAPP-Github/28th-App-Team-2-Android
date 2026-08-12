@@ -64,8 +64,10 @@ dependencies {
     implementation(projects.core.dataLocal)
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
+    implementation(projects.feature.onboarding)
     implementation(projects.feature.auth)
     implementation(projects.feature.luckAction)
+    implementation(projects.feature.chat)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)

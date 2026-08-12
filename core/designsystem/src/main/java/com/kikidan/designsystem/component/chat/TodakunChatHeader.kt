@@ -2,18 +2,19 @@ package com.kikidan.designsystem.component.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -31,7 +32,7 @@ import com.kikidan.designsystem.theme.TodakunTypography
 @Composable
 fun TodakunChatHeader(
     title: String,
-    freeChatUsed: Int,
+    freeChatRemaining: Int,
     freeChatTotal: Int,
     modifier: Modifier = Modifier,
     onCloseClick: () -> Unit = {},
@@ -53,7 +54,11 @@ fun TodakunChatHeader(
                 Modifier
                     .align(Alignment.CenterStart)
                     .size(20.dp)
-                    .clickable(onClick = onCloseClick),
+                    .clickable(
+                        onClick = onCloseClick,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ),
         )
 
         Row(
@@ -71,7 +76,7 @@ fun TodakunChatHeader(
                 buildAnnotatedString {
                     append(stringResource(R.string.todak_chat_today_free_amount))
                     withStyle(SpanStyle(color = TodakunColor.gray800)) {
-                        append(freeChatUsed.toString())
+                        append(freeChatRemaining.toString())
                     }
                     append("/$freeChatTotal")
                 },
@@ -90,7 +95,11 @@ fun TodakunChatHeader(
                 modifier =
                     Modifier
                         .size(20.dp)
-                        .clickable(onClick = onChatIconClick),
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onChatIconClick,
+                        ),
             )
             Icon(
                 painter = painterResource(id = R.drawable.ic_notes),
@@ -100,7 +109,11 @@ fun TodakunChatHeader(
                     Modifier
                         .padding(start = 16.dp)
                         .size(20.dp)
-                        .clickable(onClick = onNotesIconClick),
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = onNotesIconClick,
+                        ),
             )
         }
     }
@@ -112,7 +125,7 @@ private fun TodakunChatHeaderPreview() {
     TodakunTheme {
         TodakunChatHeader(
             title = "토닥이",
-            freeChatUsed = 2,
+            freeChatRemaining = 2,
             freeChatTotal = 3,
         )
     }

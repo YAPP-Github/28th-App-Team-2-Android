@@ -3,10 +3,12 @@ package com.kikidan.data.di
 import com.kikidan.data.repository.AuthRepositoryImpl
 import com.kikidan.data.repository.FortuneRepositoryImpl
 import com.kikidan.data.repository.LuckActionRepositoryImpl
+import com.kikidan.data.repository.ChatRepositoryImpl
 import com.kikidan.data.repository.TokenRepositoryImpl
 import com.kikidan.domain.repository.AuthRepository
 import com.kikidan.domain.repository.FortuneRepository
 import com.kikidan.domain.repository.LuckActionRepository
+import com.kikidan.domain.repository.ChatRepository
 import com.kikidan.domain.repository.TokenRepository
 import dagger.Binds
 import dagger.Module
@@ -32,4 +34,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFortuneRepository(impl: FortuneRepositoryImpl): FortuneRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindChatRepository(impl: ChatRepositoryImpl): ChatRepository
 }

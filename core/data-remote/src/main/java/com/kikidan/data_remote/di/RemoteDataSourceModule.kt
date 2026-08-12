@@ -4,10 +4,12 @@ import com.kikidan.data.auth.AuthTokenCacheInvalidator
 import com.kikidan.data.datasource.RemoteAuthDataSource
 import com.kikidan.data.datasource.RemoteFortuneDataSource
 import com.kikidan.data.datasource.RemoteLuckActionDataSource
+import com.kikidan.data.datasource.RemoteChatDataSource
 import com.kikidan.data_remote.auth.BearerTokenCacheInvalidator
 import com.kikidan.data_remote.datasource.RemoteAuthDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteFortuneDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteLuckActionDataSourceImpl
+import com.kikidan.data_remote.datasource.RemoteChatDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -32,4 +34,8 @@ abstract class RemoteDataSourceModule {
     @Binds
     @Singleton
     abstract fun bindLuckActionRemoteDataSource(impl: RemoteLuckActionDataSourceImpl): RemoteLuckActionDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindChatRemoteDataSource(impl: RemoteChatDataSourceImpl): RemoteChatDataSource
 }
