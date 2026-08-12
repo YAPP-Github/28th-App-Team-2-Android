@@ -66,6 +66,7 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.auth)
+    implementation(projects.feature.sajuContents)
     implementation(projects.feature.luckAction)
     implementation(projects.feature.chat)
 
