@@ -400,4 +400,67 @@
     <string name="onboarding_complete_description">환영해요, 이제 시작해볼까요?</string>
     <string name="onboarding_complete_welcome">환영해요!\n가입이 완료되었어요.</string>
     <string name="onboarding_complete_analyzing">토닥운이 사주 기반으로\n운세를 분석하고 있어요...</string>
+
+    <!-- DateFortuneInputScreen -->
+    <string name="date_fortune_header_title">무슨 날을 정하시나요?</string>
+    <string name="date_fortune_title">무슨 날을 정하시나요?</string>
+    <string name="date_fortune_gender_male">남성</string>
+    <string name="date_fortune_gender_female">여성</string>
+    <string name="date_fortune_purpose_contract_moving">계약・이사</string>
+    <string name="date_fortune_purpose_business_opening">개업</string>
+    <string name="date_fortune_purpose_travel">여행</string>
+    <string name="date_fortune_purpose_confession_dating">고백・소개팅</string>
+    <string name="date_fortune_purpose_exam_interview">시험・면접</string>
+    <string name="date_fortune_dates_label">후보 날짜</string>
+    <string name="date_fortune_dates_sub_label">(%1$d개까지 가능)</string>
+    <string name="date_fortune_dates_placeholder">날짜를 선택해주세요</string>
+    <string name="date_fortune_cta">무료로 택일 보기</string>
+    <string name="date_fortune_date_remove">날짜 삭제</string>
+
+    <!-- DateSelectBottomSheet / MultiSelectCalendar -->
+    <string name="date_fortune_sheet_title">후보 날짜 선택</string>
+    <string name="date_fortune_close_content_description">닫기</string>
+    <string name="date_fortune_sheet_subtitle">%1$d개까지 날짜 선택 가능해요</string>
+    <string name="date_fortune_reset">초기화</string>
+    <string name="date_fortune_confirm">선택 완료</string>
+    <string name="date_fortune_max_dates_toast">후보 날짜는 %1$d개까지만 선택 가능합니다.</string>
+    <string name="date_fortune_today_label">오늘</string>
+    <string name="date_fortune_weekday_sun">일</string>
+    <string name="date_fortune_weekday_mon">월</string>
+    <string name="date_fortune_weekday_tue">화</string>
+    <string name="date_fortune_weekday_wed">수</string>
+    <string name="date_fortune_weekday_thu">목</string>
+    <string name="date_fortune_weekday_fri">금</string>
+    <string name="date_fortune_weekday_sat">토</string>
+
+    <!-- DateFortune 공통 -->
+    <string name="date_fortune_submit_error">택일 운세를 불러오지 못했어요. 다시 시도해주세요.</string>
+
+    <!-- DateFortuneResultScreen -->
+    <string name="date_fortune_result_title">택일 운세 결과</string>
+    <string name="date_fortune_result_subtitle">"선택하신 후보 일자 중\n최고의 기운을 찾아봤어요"</string>
+    <string name="date_fortune_result_highlight">최고의 기운</string>
+    <string name="date_fortune_ask_time_hint">시간대는 언제가 좋아?</string>
+    <string name="date_fortune_score_label">운세 점수</string>
+    <string name="date_fortune_summary_title">요약 분석</string>
+    <string name="date_fortune_ask_todak">토닥이에게 더 물어보기</string>
+    <string name="date_fortune_share">공유</string>
+    <string name="date_fortune_export_calendar">캘린더에 저장</string>
+    <string name="date_fortune_result_load_error">결과를 불러오지 못했어요. 다시 시도해주세요.</string>
+
+    <!-- DateFortune 공유 -->
+    <string name="date_fortune_share_dialog_title">운세 공유하기</string>
+    <string name="date_fortune_share_kakao">카카오톡 공유</string>
+    <string name="date_fortune_share_copy_url">URL 복사</string>
+    <string name="date_fortune_share_cancel">취소</string>
+    <string name="date_fortune_share_message">%1$s\n토닥운에서 확인해보세요.</string>
+    <string name="date_fortune_share_kakao_error">카카오톡으로 공유할 수 없어요. 카카오톡 설치 여부를 확인해주세요.</string>
+    <string name="date_fortune_share_url_copied">링크를 복사했어요.</string>
+
+    <!-- DateFortune 카테고리 라벨: 임시값, 기획 확정 전(설계 문서 2-1절) -->
+    <string name="date_fortune_category_relationship">관계운</string>
+    <string name="date_fortune_category_love">애정운</string>
+    <string name="date_fortune_category_achievement">성취운</string>
+    <string name="date_fortune_category_money">재물운</string>
+    <string name="date_fortune_category_health">건강운</string>
 </resources>
