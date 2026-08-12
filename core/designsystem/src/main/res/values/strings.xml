@@ -446,6 +446,7 @@
     <string name="date_fortune_ask_todak">토닥이에게 더 물어보기</string>
     <string name="date_fortune_share">공유</string>
     <string name="date_fortune_export_calendar">캘린더에 저장</string>
+    <string name="date_fortune_export_calendar_error">캘린더 앱을 찾을 수 없어요.</string>
     <string name="date_fortune_result_load_error">결과를 불러오지 못했어요. 다시 시도해주세요.</string>
 
     <!-- Fortune 공유 다이얼로그: Day/Year 등 결과 화면 공용 -->
