@@ -45,9 +45,8 @@ import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
+import com.kikidan.sajucontents.BuildConfig
 import kotlinx.coroutines.launch
-
-private const val SHARE_DEEP_LINK_FORMAT = "https://todakun.com/day-fortune/%s"
 
 @Composable
 fun DateFortuneShareDialog(
@@ -86,6 +85,7 @@ private fun DateFortuneShareDialogContent(
     val kakaoLabel = stringResource(id = R.string.date_fortune_share_kakao)
     val copyUrlLabel = stringResource(id = R.string.date_fortune_share_copy_url)
     val cancelLabel = stringResource(id = R.string.date_fortune_share_cancel)
+    val url = "https://${BuildConfig.APP_LINK_HOST}/day-fortune?id=$fortuneId"
 
     Column(
         modifier =
@@ -110,7 +110,17 @@ private fun DateFortuneShareDialogContent(
             contentColor = TodakunColor.gray925,
             iconRes = R.drawable.ic_login_kakao,
             onClick = {
-                val template = TextTemplate(text = shareMessage, link = Link())
+                val template =
+                    TextTemplate(
+                        text = shareMessage,
+                        link =
+                            Link(
+                                webUrl = url,
+                                mobileWebUrl = url,
+                                androidExecutionParams = mapOf("id" to fortuneId),
+                                iosExecutionParams = mapOf("id" to fortuneId),
+                            ),
+                    )
                 if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
                     ShareClient.instance.shareDefault(context, template) { result, error ->
                         if (error != null || result == null) {
@@ -131,7 +141,6 @@ private fun DateFortuneShareDialogContent(
             contentColor = TodakunColor.white,
             iconRes = null,
             onClick = {
-                val url = SHARE_DEEP_LINK_FORMAT.format(fortuneId)
                 coroutineScope.launch {
                     clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(url, url)))
                     onUrlCopy()
