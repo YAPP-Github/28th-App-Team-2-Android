@@ -1,3 +1,6 @@
+import java.util.Properties
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,6 +8,12 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.todakun.android.signing)
 }
+
+val props =
+    Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) f.inputStream().use { load(it) }
+    }
 
 android {
     namespace = "com.kikidan.todakun"
@@ -21,7 +30,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            val kakaoKey = props.getProperty("KAKAO_NATIVE_APP_KEY_DEV") ?: error("KAKAO_NATIVE_APP_KEY_DEV가 null 입니다")
+            val appLinkHost = props.getProperty("APP_LINK_HOST_DEV") ?: error("APP_LINK_HOST_DEV가 null 입니다")
+            manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
+            manifestPlaceholders["APP_LINK_HOST"] = appLinkHost
+        }
         release {
+            val kakaoKey = props.getProperty("KAKAO_NATIVE_APP_KEY") ?: error("KAKAO_NATIVE_APP_KEY가 null 입니다")
+            val appLinkHost = props.getProperty("APP_LINK_HOST") ?: error("APP_LINK_HOST가 null 입니다")
+            manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
+            manifestPlaceholders["APP_LINK_HOST"] = appLinkHost
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
