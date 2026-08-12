@@ -2,8 +2,8 @@ package com.kikidan.data_remote.di
 
 import com.kikidan.data.auth.AuthTokenCacheInvalidator
 import com.kikidan.data.datasource.RemoteAuthDataSource
-import com.kikidan.data.datasource.RemoteDayFortuneDataSource
 import com.kikidan.data.datasource.RemoteChatDataSource
+import com.kikidan.data.datasource.RemoteDayFortuneDataSource
 import com.kikidan.data.datasource.RemoteDeviceTokenDataSource
 import com.kikidan.data.datasource.RemoteFortuneDataSource
 import com.kikidan.data.datasource.RemoteLuckActionDataSource
@@ -13,8 +13,8 @@ import com.kikidan.data.datasource.RemoteSajuDataSource
 import com.kikidan.data.datasource.RemoteUserDataSource
 import com.kikidan.data_remote.auth.BearerTokenCacheInvalidator
 import com.kikidan.data_remote.datasource.RemoteAuthDataSourceImpl
-import com.kikidan.data_remote.datasource.RemoteDayFortuneDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteChatDataSourceImpl
+import com.kikidan.data_remote.datasource.RemoteDayFortuneDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteDeviceTokenDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteFortuneDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteLuckActionDataSourceImpl
