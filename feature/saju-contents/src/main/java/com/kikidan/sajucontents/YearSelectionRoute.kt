@@ -15,7 +15,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun YearSelectionRoute(
     snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit,
-    onNavigateToResult: (year: Int) -> Unit,
+    onNavigateToResult: (id: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: YearFortuneViewModel = hiltViewModel(),
 ) {
@@ -24,7 +24,7 @@ fun YearSelectionRoute(
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
-            is YearFortuneSideEffect.NavigateToResult -> onNavigateToResult(effect.year)
+            is YearFortuneSideEffect.NavigateToResult -> onNavigateToResult(effect.id)
             YearFortuneSideEffect.ShowError -> snackbarHostState.showSnackbar(loadErrorMessage)
         }
     }

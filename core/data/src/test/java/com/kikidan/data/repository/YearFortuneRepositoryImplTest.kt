@@ -23,6 +23,52 @@ class YearFortuneRepositoryImplTest {
     }
 
     @Test
+    fun `createYearFortune이_성공하면_DataSource의_YearFortune이_그대로_Result_success로_반환된다`() =
+        runTest {
+            // given
+            val expected =
+                YearFortune(
+                    id = "f-2",
+                    year = 2027,
+                    score = 90,
+                    title = "title-2",
+                    content = "content-2",
+                    categories = listOf(FortuneCategoryStar(FortuneCategory.HEALTH, 5)),
+                )
+            fakeRemoteFortuneDataSource.yearFortune = expected
+
+            // when
+            val result = sut.createYearFortune(2027)
+
+            // then
+            assertEquals(expected, result.getOrNull())
+        }
+
+    @Test
+    fun `DataSource의_postYearFortune이_예외를_throw하면_Result_failure로_반환되고_예외가_누수되지_않는다`() =
+        runTest {
+            // given
+            fakeRemoteFortuneDataSource.throwOnPostYearFortune = IOException("network error")
+
+            // when
+            val result = sut.createYearFortune(2026)
+
+            // then
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is IOException)
+        }
+
+    @Test(expected = CancellationException::class)
+    fun `DataSource의_postYearFortune이_CancellationException을_throw하면_Result로_감싸지지_않고_그대로_전파된다`() =
+        runTest {
+            // given
+            fakeRemoteFortuneDataSource.throwOnPostYearFortune = CancellationException("cancelled")
+
+            // when
+            sut.createYearFortune(2026)
+        }
+
+    @Test
     fun `getYearFortune이_성공하면_DataSource의_YearFortune이_그대로_Result_success로_반환된다`() =
         runTest {
             // given
@@ -38,20 +84,20 @@ class YearFortuneRepositoryImplTest {
             fakeRemoteFortuneDataSource.yearFortune = expected
 
             // when
-            val result = sut.getYearFortune(2027)
+            val result = sut.getYearFortune("f-2")
 
             // then
             assertEquals(expected, result.getOrNull())
         }
 
     @Test
-    fun `DataSource의_postYearFortune이_예외를_throw하면_Result_failure로_반환되고_예외가_누수되지_않는다`() =
+    fun `DataSource의_getYearFortune이_예외를_throw하면_Result_failure로_반환되고_예외가_누수되지_않는다`() =
         runTest {
             // given
-            fakeRemoteFortuneDataSource.throwOnPostYearFortune = IOException("network error")
+            fakeRemoteFortuneDataSource.throwOnGetYearFortune = IOException("network error")
 
             // when
-            val result = sut.getYearFortune(2026)
+            val result = sut.getYearFortune("f-1")
 
             // then
             assertTrue(result.isFailure)
@@ -59,12 +105,12 @@ class YearFortuneRepositoryImplTest {
         }
 
     @Test(expected = CancellationException::class)
-    fun `DataSource의_postYearFortune이_CancellationException을_throw하면_Result로_감싸지지_않고_그대로_전파된다`() =
+    fun `DataSource의_getYearFortune이_CancellationException을_throw하면_Result로_감싸지지_않고_그대로_전파된다`() =
         runTest {
             // given
-            fakeRemoteFortuneDataSource.throwOnPostYearFortune = CancellationException("cancelled")
+            fakeRemoteFortuneDataSource.throwOnGetYearFortune = CancellationException("cancelled")
 
             // when
-            sut.getYearFortune(2026)
+            sut.getYearFortune("f-1")
         }
 }

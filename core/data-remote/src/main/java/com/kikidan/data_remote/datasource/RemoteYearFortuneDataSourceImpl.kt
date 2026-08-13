@@ -7,6 +7,7 @@ import com.kikidan.data_remote.util.bodyNotNull
 import com.kikidan.domain.model.fortune.YearFortune
 import dagger.Lazy
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import javax.inject.Inject
 
@@ -19,6 +20,13 @@ class RemoteYearFortuneDataSourceImpl
             client
                 .get()
                 .post("api/v1/year-fortunes/$year")
+                .bodyNotNull<YearFortuneResponse>()
+                .toDomain()
+
+        override suspend fun getYearFortune(id: String): YearFortune =
+            client
+                .get()
+                .get("api/v1/year-fortunes/$id")
                 .bodyNotNull<YearFortuneResponse>()
                 .toDomain()
     }

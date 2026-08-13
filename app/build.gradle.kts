@@ -91,6 +91,7 @@ dependencies {
     implementation(projects.feature.sajuContents)
     implementation(projects.feature.luckAction)
     implementation(projects.feature.chat)
+    implementation(projects.feature.sajuContents)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)

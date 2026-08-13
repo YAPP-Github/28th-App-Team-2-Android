@@ -11,8 +11,13 @@ class YearFortuneRepositoryImpl
     constructor(
         private val remoteFortuneDataSource: RemoteYearFortuneDataSource,
     ) : YearFortuneRepository {
-        override suspend fun getYearFortune(year: Int): Result<YearFortune> =
+        override suspend fun createYearFortune(year: Int): Result<YearFortune> =
             runCatchingCancellable {
                 remoteFortuneDataSource.postYearFortune(year)
+            }
+
+        override suspend fun getYearFortune(id: String): Result<YearFortune> =
+            runCatchingCancellable {
+                remoteFortuneDataSource.getYearFortune(id)
             }
     }

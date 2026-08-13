@@ -84,4 +84,57 @@ class RemoteYearFortuneDataSourceImplTest {
             // then
             assertTrue(result.isFailure)
         }
+
+    @Test
+    fun `getYearFortune을_호출하면_id_기준_GET_요청으로_YearFortune_도메인_모델이_반환된다`() =
+        runTest {
+            // given
+            val body =
+                """{"success":true,"code":"200","message":"ok",""" +
+                    """"data":{"id":"f-1","year":2026,"score":85,"title":"t","content":"c",""" +
+                    """"fortuneCategories":[{"fortuneCategory":"MONEY","star":3}]}}"""
+            val sut =
+                buildSut { request ->
+                    // GET /api/v1/year-fortunes/{id}와 어긋나도 통과하지 않도록 요청 자체를 검증한다.
+                    assertEquals(HttpMethod.Get, request.method)
+                    assertEquals("/api/v1/year-fortunes/f-1", request.url.encodedPath)
+                    respond(
+                        content = body,
+                        status = HttpStatusCode.OK,
+                        headers = jsonHeaders,
+                    )
+                }
+
+            // when
+            val result = sut.getYearFortune("f-1")
+
+            // then
+            assertEquals(
+                YearFortune(
+                    id = "f-1",
+                    year = 2026,
+                    score = 85,
+                    title = "t",
+                    content = "c",
+                    categories = listOf(FortuneCategoryStar(FortuneCategory.MONEY, 3)),
+                ),
+                result,
+            )
+        }
+
+    @Test
+    fun `getYearFortune_응답이_404이면_예외가_삼켜지지_않고_그대로_throw된다`() =
+        runTest {
+            // given
+            val sut =
+                buildSut {
+                    respond("", HttpStatusCode.NotFound)
+                }
+
+            // when
+            val result = runCatching { sut.getYearFortune("missing-id") }
+
+            // then
+            assertTrue(result.isFailure)
+        }
 }
