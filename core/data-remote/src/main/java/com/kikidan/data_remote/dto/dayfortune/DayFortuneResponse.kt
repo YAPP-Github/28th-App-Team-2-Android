@@ -2,8 +2,8 @@ package com.kikidan.data_remote.dto.dayfortune
 
 import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
-import com.kikidan.domain.model.dayfortune.FortuneCategoryStar
 import com.kikidan.domain.model.fortune.FortuneCategory
+import com.kikidan.domain.model.fortune.FortuneCategoryStar
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
