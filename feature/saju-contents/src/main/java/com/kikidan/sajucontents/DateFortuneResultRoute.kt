@@ -34,8 +34,8 @@ fun DateFortuneResultRoute(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val loadErrorMessage = stringResource(R.string.date_fortune_result_load_error)
-    val shareErrorMessage = stringResource(R.string.date_fortune_share_kakao_error)
-    val urlCopiedMessage = stringResource(R.string.date_fortune_share_url_copied)
+    val shareErrorMessage = stringResource(R.string.fortune_share_kakao_error)
+    val urlCopiedMessage = stringResource(R.string.fortune_share_url_copied)
     val calendarErrorMessage = stringResource(R.string.date_fortune_export_calendar_error)
 
     LaunchedEffect(ids) {

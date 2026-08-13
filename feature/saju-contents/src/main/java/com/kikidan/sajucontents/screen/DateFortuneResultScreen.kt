@@ -50,15 +50,18 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
-import com.kikidan.domain.model.dayfortune.FortuneCategoryStar
 import com.kikidan.domain.model.fortune.FortuneCategory
-import com.kikidan.sajucontents.component.DateFortuneShareDialog
+import com.kikidan.domain.model.fortune.FortuneCategoryStar
+import com.kikidan.sajucontents.BuildConfig
 import com.kikidan.sajucontents.component.FortuneScoreCard
+import com.kikidan.sajucontents.component.FortuneShareDialog
 import com.kikidan.sajucontents.component.ResultDateTabRow
 import com.kikidan.sajucontents.model.DateFortuneResultState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import java.time.LocalDate
+
+private fun shareUrlFor(id: String): String = "https://${BuildConfig.APP_LINK_HOST}/day-fortune?id=$id"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,9 +108,10 @@ internal fun DateFortuneResultScreen(
         )
 
         if (state.isShareDialogVisible) {
-            DateFortuneShareDialog(
+            FortuneShareDialog(
                 fortuneTitle = selectedFortune.title,
                 fortuneId = selectedFortune.id,
+                shareUrl = shareUrlFor(selectedFortune.id),
                 onKakaoShareFail = onKakaoShareFail,
                 onUrlCopy = onUrlCopy,
                 onDismiss = onShareDismiss,
