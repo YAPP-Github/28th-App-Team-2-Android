@@ -3,10 +3,9 @@ package com.kikidan.sajucontents
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneCategoryStar
 import com.kikidan.domain.model.fortune.YearFortune
-import com.kikidan.domain.usecase.CreateYearFortuneUseCase
+import com.kikidan.domain.usecase.GetYearFortuneUseCase
 import com.kikidan.sajucontents.fake.FakeYearFortuneRepository
-import com.kikidan.sajucontents.model.YearFortuneSideEffect
-import com.kikidan.sajucontents.model.YearFortuneState
+import com.kikidan.sajucontents.model.YearFortuneResultSideEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -20,16 +19,16 @@ import org.junit.Test
 import org.orbitmvi.orbit.test.test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class YearFortuneViewModelTest {
+class YearFortuneResultViewModelTest {
     private lateinit var fakeRepository: FakeYearFortuneRepository
-    private lateinit var createYearFortune: CreateYearFortuneUseCase
+    private lateinit var getYearFortune: GetYearFortuneUseCase
 
     @Before
     fun setUp() {
-        // YearFortuneViewModel의 container(...)는 viewModelScope(Dispatchers.Main.immediate)를 쓴다.
+        // YearFortuneResultViewModel의 container(...)는 viewModelScope(Dispatchers.Main.immediate)를 쓴다.
         Dispatchers.setMain(StandardTestDispatcher())
         fakeRepository = FakeYearFortuneRepository()
-        createYearFortune = CreateYearFortuneUseCase(fakeRepository)
+        getYearFortune = GetYearFortuneUseCase(fakeRepository)
     }
 
     @After
@@ -37,21 +36,10 @@ class YearFortuneViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = YearFortuneViewModel(createYearFortune)
+    private fun viewModel() = YearFortuneResultViewModel(getYearFortune)
 
     @Test
-    fun `연도_선택_시_selectedYear가_변경된다`() =
-        runTest {
-            val viewModel = viewModel()
-
-            viewModel.test(this) {
-                viewModel.onYearSelect(2030)
-                expectState { copy(selectedYear = 2030) }
-            }
-        }
-
-    @Test
-    fun `제출_성공_시_생성된_결과의_id로_NavigateToResult가_발생한다`() =
+    fun `load_성공_시_fortuneResult가_설정된다`() =
         runTest {
             val viewModel = viewModel()
             val fortune =
@@ -64,30 +52,41 @@ class YearFortuneViewModelTest {
                     categories = listOf(FortuneCategoryStar(FortuneCategory.MONEY, 3)),
                 )
             fakeRepository.result = Result.success(fortune)
-            val initial = YearFortuneState(selectedYear = 2026)
 
-            viewModel.test(this, initialState = initial) {
-                viewModel.onSubmit()
+            viewModel.test(this) {
+                viewModel.load("id-1")
                 expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false) }
-                expectSideEffect(YearFortuneSideEffect.NavigateToResult("id-1"))
+                expectState { copy(isLoading = false, fortuneResult = fortune) }
             }
 
-            assertEquals(2026, fakeRepository.lastYear)
+            assertEquals("id-1", fakeRepository.lastId)
         }
 
     @Test
-    fun `UseCase_실패_시_isLoading이_false로_돌아오고_ShowError가_발생한다`() =
+    fun `load_실패_시_isLoading이_false로_돌아오고_ShowError가_발생한다`() =
         runTest {
             val viewModel = viewModel()
             fakeRepository.result = Result.failure(IllegalStateException("서버 오류"))
-            val initial = YearFortuneState(selectedYear = 2026)
 
-            viewModel.test(this, initialState = initial) {
-                viewModel.onSubmit()
+            viewModel.test(this) {
+                viewModel.load("id-1")
                 expectState { copy(isLoading = true) }
                 expectState { copy(isLoading = false) }
-                expectSideEffect(YearFortuneSideEffect.ShowError)
+                expectSideEffect(YearFortuneResultSideEffect.ShowError)
+            }
+        }
+
+    @Test
+    fun `공유_아이콘_클릭과_닫기로_isShareSheetVisible이_토글된다`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.test(this) {
+                viewModel.onShareIconClick()
+                expectState { copy(isShareSheetVisible = true) }
+
+                viewModel.onShareSheetDismiss()
+                expectState { copy(isShareSheetVisible = false) }
             }
         }
 }

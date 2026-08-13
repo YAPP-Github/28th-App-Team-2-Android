@@ -4,19 +4,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +42,7 @@ import com.kikidan.domain.model.fortune.YearFortune
 import com.kikidan.domain.util.yearToGanji
 import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.component.ShareBottomSheet
-import com.kikidan.sajucontents.model.YearFortuneState
+import com.kikidan.sajucontents.model.YearFortuneResultState
 import com.kikidan.designsystem.R as DesignSystemR
 
 // ponytail: 공유용 웹 랜딩 페이지가 아직 없어(설계 문서 4절) 연도 기반 placeholder URL을 복사한다.
@@ -49,72 +51,27 @@ private fun shareUrlFor(year: Int): String = "https://todakun.com/year-fortune/$
 
 @Composable
 internal fun YearFortuneResultScreen(
-    state: YearFortuneState,
+    state: YearFortuneResultState,
     onBackClick: () -> Unit,
     onShareIconClick: () -> Unit,
     onShareSheetDismiss: () -> Unit,
     onAskTodakClick: () -> Unit,
-    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val fortune = state.fortuneResult
 
-    Box(modifier = modifier.fillMaxSize().background(TodakunColor.black)) {
-        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-            // 로딩/실패/프로세스 사망 복귀 상태를 구분하기 위해 헤더(뒤로가기 포함)는 항상 렌더링한다.
-            YearFortuneResultHeader(
-                onBackClick = onBackClick,
-                onShareIconClick = onShareIconClick,
-                shareEnabled = fortune != null,
-            )
-
-            when {
-                fortune != null -> {
-                    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
-                        TodakunChip2(
-                            text = yearToGanji(fortune.year),
-                            modifier = Modifier.padding(top = 16.dp),
-                        )
-                        Text(
-                            text = stringResource(id = R.string.year_fortune_result_title, fortune.year),
-                            style = TodakunTypography.heading3Bold,
-                            color = TodakunColor.white,
-                            modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
-                        )
-                        YearScoreBadge(
-                            score = fortune.score,
-                            headline = fortune.title,
-                            categories = fortune.categories,
-                            modifier = Modifier.padding(bottom = 16.dp),
-                        )
-                        SummaryCard(content = fortune.content, modifier = Modifier.padding(bottom = 24.dp))
-                        PrimaryButton(
-                            text = stringResource(id = R.string.year_fortune_ask_todak),
-                            onClick = onAskTodakClick,
-                            size = TodakunButtonSize.Large,
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-                        )
-                    }
-                }
-
-                state.error != null -> {
-                    YearFortuneErrorContent(
-                        message = state.error,
-                        onRetry = onRetry,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 80.dp),
-                    )
-                }
-
-                else -> {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 80.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(color = TodakunColor.white)
-                    }
-                }
-            }
-        }
+    Box(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(TodakunColor.black),
+    ) {
+        YearFortuneResultContent(
+            fortune = fortune,
+            onBackClick = onBackClick,
+            onShareIconClick = onShareIconClick,
+            onAskTodakClick = onAskTodakClick,
+        )
 
         if (state.isShareSheetVisible && fortune != null) {
             ShareBottomSheet(
@@ -126,70 +83,132 @@ internal fun YearFortuneResultScreen(
 }
 
 @Composable
-private fun YearFortuneResultHeader(
+private fun BoxScope.YearFortuneResultContent(
+    fortune: YearFortune?,
     onBackClick: () -> Unit,
     onShareIconClick: () -> Unit,
-    shareEnabled: Boolean,
+    onAskTodakClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(top = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .systemBarsPadding(),
     ) {
-        Box(
-            modifier = Modifier.size(48.dp).clickable(onClick = onBackClick),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(id = DesignSystemR.drawable.ic_chevron_left),
-                contentDescription = stringResource(id = DesignSystemR.string.header_back_content_description),
-                tint = TodakunColor.white,
-                modifier = Modifier.size(24.dp),
-            )
-        }
-        Text(
-            text = stringResource(id = R.string.year_fortune_result_header_title),
-            style = TodakunTypography.body2SemiBold,
-            color = TodakunColor.white,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f),
+        ResultHeader(
+            title = stringResource(id = R.string.year_fortune_result_header_title),
+            onBackClick = onBackClick,
+            onShareClick = onShareIconClick,
+            shareEnabled = fortune != null,
         )
-        // ⚠️ 전용 공유 아이콘 에셋이 없어(설계 문서 2-6절) 기존 designsystem 아이콘을 임시로 사용한다.
-        Box(
-            modifier = Modifier.size(48.dp).clickable(enabled = shareEnabled, onClick = onShareIconClick),
-            contentAlignment = Alignment.Center,
+        if (fortune != null) {
+            Column(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 24.dp, bottom = 120.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                ResultHeadline(
+                    ganjiLabel = yearToGanji(fortune.year),
+                    title = stringResource(id = R.string.year_fortune_result_title, fortune.year),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                YearScoreBadge(
+                    score = fortune.score,
+                    headline = fortune.title,
+                    categories = fortune.categories,
+                )
+                SummaryCard(content = fortune.content)
+            }
+        }
+    }
+
+    if (fortune != null) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
         ) {
-            Icon(
-                painter = painterResource(id = DesignSystemR.drawable.ic_arrow_upward),
-                contentDescription = stringResource(id = R.string.year_fortune_share),
-                tint = if (shareEnabled) TodakunColor.white else TodakunColor.whiteOpacity60,
-                modifier = Modifier.size(24.dp),
+            PrimaryButton(
+                text = stringResource(id = R.string.year_fortune_ask_todak),
+                onClick = onAskTodakClick,
+                size = TodakunButtonSize.Large,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
 }
 
 @Composable
-private fun YearFortuneErrorContent(
-    message: String,
-    onRetry: () -> Unit,
+private fun ResultHeader(
+    title: String,
+    onBackClick: () -> Unit,
+    onShareClick: () -> Unit,
+    shareEnabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(horizontal = 20.dp),
+    ) {
+        Icon(
+            painter = painterResource(id = DesignSystemR.drawable.ic_chevron_left),
+            contentDescription = stringResource(id = DesignSystemR.string.header_back_content_description),
+            tint = TodakunColor.white,
+            modifier =
+                Modifier
+                    .align(Alignment.CenterStart)
+                    .size(20.dp)
+                    .clickable(onClick = onBackClick),
+        )
+        Text(
+            text = title,
+            style = TodakunTypography.body2SemiBold,
+            color = TodakunColor.white,
+            modifier = Modifier.align(Alignment.Center),
+        )
+        // ⚠️ 전용 공유 아이콘 에셋이 없어(설계 문서 2-6절) 기존 designsystem 아이콘을 임시로 사용한다.
+        Icon(
+            painter = painterResource(id = DesignSystemR.drawable.ic_arrow_upward),
+            contentDescription = stringResource(id = R.string.year_fortune_share),
+            tint = if (shareEnabled) TodakunColor.white else TodakunColor.whiteOpacity60,
+            modifier =
+                Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(20.dp)
+                    .clickable(enabled = shareEnabled, onClick = onShareClick),
+        )
+    }
+}
+
+@Composable
+private fun ResultHeadline(
+    ganjiLabel: String,
+    title: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        TodakunChip2(text = ganjiLabel)
         Text(
-            text = message,
-            style = TodakunTypography.body2Regular,
+            text = title,
+            style = TodakunTypography.heading3Bold,
             color = TodakunColor.white,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 20.dp),
-        )
-        PrimaryButton(
-            text = stringResource(id = R.string.year_fortune_retry),
-            onClick = onRetry,
-            size = TodakunButtonSize.Medium,
         )
     }
 }
@@ -296,18 +315,18 @@ private fun SummaryCard(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
                 .background(TodakunColor.whiteOpacity10)
-                .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         Text(
             text = stringResource(id = R.string.year_fortune_summary_title),
-            style = TodakunTypography.heading4Bold,
+            style = TodakunTypography.body1Bold,
             color = TodakunColor.white,
         )
         Text(
             text = content,
             style = TodakunTypography.body2Regular,
-            color = TodakunColor.whiteOpacity80,
+            color = TodakunColor.white,
         )
     }
 }
@@ -331,12 +350,11 @@ private fun YearFortuneResultScreenPreview() {
         )
     TodakunTheme {
         YearFortuneResultScreen(
-            state = YearFortuneState(selectedYear = 2026, fortuneResult = sample),
+            state = YearFortuneResultState(fortuneResult = sample),
             onBackClick = {},
             onShareIconClick = {},
             onShareSheetDismiss = {},
             onAskTodakClick = {},
-            onRetry = {},
         )
     }
 }

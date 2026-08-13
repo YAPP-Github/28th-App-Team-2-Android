@@ -61,8 +61,9 @@ internal fun YearSelectionScreen(
                         text = stringResource(id = R.string.year_fortune_select_title),
                         style = TodakunTypography.heading3Bold,
                         color = TodakunColor.gray975,
-                        modifier = Modifier
-                            .padding(top = 24.dp, bottom = 35.dp)
+                        modifier =
+                            Modifier
+                                .padding(top = 24.dp, bottom = 35.dp),
                     )
                 }
                 items(state.years) { year ->
@@ -75,25 +76,27 @@ internal fun YearSelectionScreen(
                             },
                         selected = year == state.selectedYear,
                         onClick = { onYearSelect(year) },
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
                     )
                 }
             }
         }
 
         Box(
-            modifier = Modifier.padding(
-                vertical = 14.dp,
-                horizontal = 20.dp
-            )
+            modifier =
+                Modifier.padding(
+                    vertical = 14.dp,
+                    horizontal = 20.dp,
+                ),
         ) {
             PrimaryButton(
                 text = stringResource(id = R.string.year_fortune_cta),
                 onClick = onSubmit,
                 size = TodakunButtonSize.Large,
                 enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }

@@ -4,4 +4,6 @@ import com.kikidan.domain.model.fortune.YearFortune
 
 interface RemoteYearFortuneDataSource {
     suspend fun postYearFortune(year: Int): YearFortune
+
+    suspend fun getYearFortune(id: String): YearFortune
 }

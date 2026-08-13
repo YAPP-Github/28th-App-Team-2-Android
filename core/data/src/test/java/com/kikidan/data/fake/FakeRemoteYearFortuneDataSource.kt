@@ -16,9 +16,15 @@ class FakeRemoteYearFortuneDataSource : RemoteYearFortuneDataSource {
             categories = listOf(FortuneCategoryStar(FortuneCategory.MONEY, 3)),
         )
     var throwOnPostYearFortune: Throwable? = null
+    var throwOnGetYearFortune: Throwable? = null
 
     override suspend fun postYearFortune(year: Int): YearFortune {
         throwOnPostYearFortune?.let { throw it }
+        return yearFortune
+    }
+
+    override suspend fun getYearFortune(id: String): YearFortune {
+        throwOnGetYearFortune?.let { throw it }
         return yearFortune
     }
 }
