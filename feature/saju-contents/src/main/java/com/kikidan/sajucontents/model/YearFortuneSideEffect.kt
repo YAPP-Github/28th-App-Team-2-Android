@@ -2,7 +2,7 @@ package com.kikidan.sajucontents.model
 
 sealed interface YearFortuneSideEffect {
     data class NavigateToResult(
-        val year: Int,
+        val id: String,
     ) : YearFortuneSideEffect
 
     data object ShowError : YearFortuneSideEffect

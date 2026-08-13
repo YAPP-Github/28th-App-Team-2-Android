@@ -97,6 +97,7 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.chat)
     implementation(projects.feature.notification)
+    implementation(projects.feature.sajuContents)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)

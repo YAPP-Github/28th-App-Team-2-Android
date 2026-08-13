@@ -21,9 +21,16 @@ class FakeYearFortuneRepository : YearFortuneRepository {
         )
     var lastYear: Int? = null
         private set
+    var lastId: String? = null
+        private set
 
-    override suspend fun getYearFortune(year: Int): Result<YearFortune> {
+    override suspend fun createYearFortune(year: Int): Result<YearFortune> {
         lastYear = year
+        return result
+    }
+
+    override suspend fun getYearFortune(id: String): Result<YearFortune> {
+        lastId = id
         return result
     }
 }

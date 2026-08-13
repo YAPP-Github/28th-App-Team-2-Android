@@ -1,26 +1,39 @@
 package com.kikidan.sajucontents
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.sajucontents.model.YearFortuneResultSideEffect
 import com.kikidan.sajucontents.screen.YearFortuneResultScreen
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
-// year를 직접 전달받아 스스로 데이터를 불러온다(연도 선택 화면과 별개 ViewModel 인스턴스여도 무방).
+// id를 직접 전달받아 스스로 데이터를 불러온다. 공유 딥링크로 바로 진입할 수 있도록
+// 연도 선택 화면과 별개인 YearFortuneResultViewModel을 사용한다.
 @Composable
 fun YearFortuneResultRoute(
-    year: Int,
+    id: String,
+    snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit,
     onAskTodakClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: YearFortuneViewModel = hiltViewModel(),
+    viewModel: YearFortuneResultViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
+    val loadErrorMessage = stringResource(R.string.year_fortune_load_error)
 
-    LaunchedEffect(year) {
-        viewModel.load(year)
+    LaunchedEffect(id) {
+        viewModel.load(id)
+    }
+
+    viewModel.collectSideEffect { effect ->
+        when (effect) {
+            YearFortuneResultSideEffect.ShowError -> snackbarHostState.showSnackbar(loadErrorMessage)
+        }
     }
 
     YearFortuneResultScreen(
@@ -29,7 +42,6 @@ fun YearFortuneResultRoute(
         onShareIconClick = viewModel::onShareIconClick,
         onShareSheetDismiss = viewModel::onShareSheetDismiss,
         onAskTodakClick = onAskTodakClick,
-        onRetry = { viewModel.load(year) },
         modifier = modifier,
     )
 }
