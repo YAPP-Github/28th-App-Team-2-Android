@@ -66,58 +66,59 @@ internal fun DateFortuneInputScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
         ) {
             TodakunSubHeader(
                 title = stringResource(R.string.date_fortune_header_title),
             )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = stringResource(id = R.string.date_fortune_title),
-                style = TodakunTypography.heading3Bold,
-                color = TodakunColor.gray975,
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            PurposeChipGroup(
-                selectedPurpose = state.selectedPurpose,
-                onPurposeSelect = onPurposeSelect,
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = stringResource(id = R.string.date_fortune_dates_label),
+                    text = stringResource(id = R.string.date_fortune_title),
                     style = TodakunTypography.heading3Bold,
                     color = TodakunColor.gray975,
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Text(
-                    text =
-                        stringResource(
-                            id = R.string.date_fortune_dates_sub_label,
-                            DateFortuneDefaults.MAX_TARGET_DATES,
-                        ),
-                    style = TodakunTypography.body3Regular,
-                    color = TodakunColor.gray700,
+                PurposeChipGroup(
+                    selectedPurpose = state.selectedPurpose,
+                    onPurposeSelect = onPurposeSelect,
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.date_fortune_dates_label),
+                        style = TodakunTypography.heading3Bold,
+                        color = TodakunColor.gray975,
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text =
+                            stringResource(
+                                id = R.string.date_fortune_dates_sub_label,
+                                DateFortuneDefaults.MAX_TARGET_DATES,
+                            ),
+                        style = TodakunTypography.body3Regular,
+                        color = TodakunColor.gray700,
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+
+                TodakunSelectField(
+                    value = state.selectedDates.joinToString(", ") { it.format(DateSummaryFormatter) },
+                    onClick = onOpenDateSheet,
+                    onClear = onReset,
+                    placeholder = stringResource(id = R.string.date_fortune_dates_placeholder),
+                    expanded = state.isSheetVisible,
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
-
-            TodakunSelectField(
-                value = state.selectedDates.joinToString(", ") { it.format(DateSummaryFormatter) },
-                onClick = onOpenDateSheet,
-                onClear = onReset,
-                placeholder = stringResource(id = R.string.date_fortune_dates_placeholder),
-                expanded = state.isSheetVisible,
-            )
         }
 
         Box(
