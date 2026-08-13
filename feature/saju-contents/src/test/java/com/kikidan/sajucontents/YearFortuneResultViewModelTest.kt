@@ -77,16 +77,54 @@ class YearFortuneResultViewModelTest {
         }
 
     @Test
-    fun `공유_아이콘_클릭과_닫기로_isShareSheetVisible이_토글된다`() =
+    fun `공유_아이콘_탭_시_isShareDialogVisible이_true가_된다`() =
         runTest {
             val viewModel = viewModel()
 
             viewModel.test(this) {
-                viewModel.onShareIconClick()
-                expectState { copy(isShareSheetVisible = true) }
+                viewModel.showShareDialog()
+                expectState { copy(isShareDialogVisible = true) }
+            }
+        }
 
-                viewModel.onShareSheetDismiss()
-                expectState { copy(isShareSheetVisible = false) }
+    @Test
+    fun `취소_시_isShareDialogVisible이_false가_된다`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.test(this) {
+                viewModel.showShareDialog()
+                expectState { copy(isShareDialogVisible = true) }
+                viewModel.hideShareDialog()
+                expectState { copy(isShareDialogVisible = false) }
+            }
+        }
+
+    @Test
+    fun `카카오_공유_실패_시_팝업이_닫히고_ShowShareError가_발생한다`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.test(this) {
+                viewModel.showShareDialog()
+                expectState { copy(isShareDialogVisible = true) }
+                viewModel.notifyShareUnavailable()
+                expectState { copy(isShareDialogVisible = false) }
+                expectSideEffect(YearFortuneResultSideEffect.ShowShareError)
+            }
+        }
+
+    @Test
+    fun `URL_복사_시_팝업이_닫히고_ShowUrlCopied가_발생한다`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.test(this) {
+                viewModel.showShareDialog()
+                expectState { copy(isShareDialogVisible = true) }
+                viewModel.notifyUrlCopied()
+                expectState { copy(isShareDialogVisible = false) }
+                expectSideEffect(YearFortuneResultSideEffect.ShowUrlCopied)
             }
         }
 }

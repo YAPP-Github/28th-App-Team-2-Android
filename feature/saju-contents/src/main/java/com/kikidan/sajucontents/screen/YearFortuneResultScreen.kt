@@ -1,13 +1,12 @@
 package com.kikidan.sajucontents.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -24,7 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,21 +40,24 @@ import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneCategoryStar
 import com.kikidan.domain.model.fortune.YearFortune
 import com.kikidan.domain.util.yearToGanji
+import com.kikidan.sajucontents.BuildConfig
 import com.kikidan.sajucontents.R
-import com.kikidan.sajucontents.component.ShareBottomSheet
+import com.kikidan.sajucontents.component.FortuneScoreCard
+import com.kikidan.sajucontents.component.FortuneShareDialog
 import com.kikidan.sajucontents.model.YearFortuneResultState
+import kotlinx.collections.immutable.toImmutableList
 import com.kikidan.designsystem.R as DesignSystemR
 
-// ponytail: 공유용 웹 랜딩 페이지가 아직 없어(설계 문서 4절) 연도 기반 placeholder URL을 복사한다.
-// 실제 공유 링크 API/페이지가 정해지면 교체.
-private fun shareUrlFor(year: Int): String = "https://todakun.com/year-fortune/$year"
+private fun shareUrlFor(id: String): String = "https://${BuildConfig.APP_LINK_HOST}/year-fortune?id=$id"
 
 @Composable
 internal fun YearFortuneResultScreen(
     state: YearFortuneResultState,
     onBackClick: () -> Unit,
-    onShareIconClick: () -> Unit,
-    onShareSheetDismiss: () -> Unit,
+    onShareClick: () -> Unit,
+    onShareDismiss: () -> Unit,
+    onKakaoShareFail: () -> Unit,
+    onUrlCopy: () -> Unit,
     onAskTodakClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -66,17 +69,31 @@ internal fun YearFortuneResultScreen(
                 .fillMaxSize()
                 .background(TodakunColor.black),
     ) {
+        Image(
+            painter = painterResource(id = DesignSystemR.drawable.img_result_background),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .alpha(0.5f),
+        )
+
         YearFortuneResultContent(
             fortune = fortune,
             onBackClick = onBackClick,
-            onShareIconClick = onShareIconClick,
+            onShareClick = onShareClick,
             onAskTodakClick = onAskTodakClick,
         )
 
-        if (state.isShareSheetVisible && fortune != null) {
-            ShareBottomSheet(
-                shareUrl = shareUrlFor(fortune.year),
-                onDismissRequest = onShareSheetDismiss,
+        if (state.isShareDialogVisible && fortune != null) {
+            FortuneShareDialog(
+                fortuneTitle = fortune.title,
+                fortuneId = fortune.id,
+                shareUrl = shareUrlFor(fortune.id),
+                onKakaoShareFail = onKakaoShareFail,
+                onUrlCopy = onUrlCopy,
+                onDismiss = onShareDismiss,
             )
         }
     }
@@ -86,7 +103,7 @@ internal fun YearFortuneResultScreen(
 private fun BoxScope.YearFortuneResultContent(
     fortune: YearFortune?,
     onBackClick: () -> Unit,
-    onShareIconClick: () -> Unit,
+    onShareClick: () -> Unit,
     onAskTodakClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -99,7 +116,7 @@ private fun BoxScope.YearFortuneResultContent(
         ResultHeader(
             title = stringResource(id = R.string.year_fortune_result_header_title),
             onBackClick = onBackClick,
-            onShareClick = onShareIconClick,
+            onShareClick = onShareClick,
             shareEnabled = fortune != null,
         )
         if (fortune != null) {
@@ -117,10 +134,11 @@ private fun BoxScope.YearFortuneResultContent(
                     title = stringResource(id = R.string.year_fortune_result_title, fortune.year),
                     modifier = Modifier.fillMaxWidth(),
                 )
-                YearScoreBadge(
+                FortuneScoreCard(
                     score = fortune.score,
-                    headline = fortune.title,
-                    categories = fortune.categories,
+                    title = fortune.title,
+                    categoryStars = fortune.categories.toImmutableList(),
+                    scoreLabel = stringResource(id = R.string.year_fortune_score_label),
                 )
                 SummaryCard(content = fortune.content)
             }
@@ -178,9 +196,8 @@ private fun ResultHeader(
             color = TodakunColor.white,
             modifier = Modifier.align(Alignment.Center),
         )
-        // ⚠️ 전용 공유 아이콘 에셋이 없어(설계 문서 2-6절) 기존 designsystem 아이콘을 임시로 사용한다.
         Icon(
-            painter = painterResource(id = DesignSystemR.drawable.ic_arrow_upward),
+            painter = painterResource(id = DesignSystemR.drawable.ic_share),
             contentDescription = stringResource(id = R.string.year_fortune_share),
             tint = if (shareEnabled) TodakunColor.white else TodakunColor.whiteOpacity60,
             modifier =
@@ -212,97 +229,6 @@ private fun ResultHeadline(
         )
     }
 }
-
-@Composable
-private fun YearScoreBadge(
-    score: Int,
-    headline: String,
-    categories: List<FortuneCategoryStar>,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(TodakunColor.whiteOpacity10)
-                .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(180.dp)
-                    .clip(CircleShape)
-                    .background(TodakunColor.primary400),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = score.toString(), style = TodakunTypography.heading1Bold, color = TodakunColor.white)
-                Text(
-                    text = stringResource(id = R.string.year_fortune_score_label),
-                    style = TodakunTypography.body3Regular,
-                    color = TodakunColor.whiteOpacity60,
-                )
-            }
-        }
-        Text(
-            text = headline,
-            style = TodakunTypography.heading4Bold,
-            color = TodakunColor.white,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 20.dp, bottom = if (categories.isEmpty()) 0.dp else 20.dp),
-        )
-        if (categories.isNotEmpty()) {
-            YearFortuneCategoryStars(categories = categories)
-        }
-    }
-}
-
-// ponytail: 전용 별 아이콘(ic_star_fill)이 이 워크트리의 designsystem에는 아직 없어 유니코드 별 문자로 대체.
-// 아이콘 에셋이 추가되면 Icon(ic_star_fill)로 교체.
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun YearFortuneCategoryStars(
-    categories: List<FortuneCategoryStar>,
-    modifier: Modifier = Modifier,
-) {
-    FlowRow(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        categories.forEach { categoryStar ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = categoryStar.category.label(),
-                    style = TodakunTypography.caption1Regular,
-                    color = TodakunColor.whiteOpacity60,
-                )
-                if (categoryStar.star > 0) {
-                    Text(
-                        text = "★".repeat(categoryStar.star),
-                        style = TodakunTypography.body3Regular,
-                        color = TodakunColor.primary400,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun FortuneCategory.label(): String =
-    stringResource(
-        id =
-            when (this) {
-                FortuneCategory.RELATIONSHIP -> R.string.year_fortune_category_relationship
-                FortuneCategory.LOVE -> R.string.year_fortune_category_love
-                FortuneCategory.ACHIEVEMENT -> R.string.year_fortune_category_achievement
-                FortuneCategory.MONEY -> R.string.year_fortune_category_money
-                FortuneCategory.HEALTH -> R.string.year_fortune_category_health
-            },
-    )
 
 @Composable
 private fun SummaryCard(
@@ -343,17 +269,19 @@ private fun YearFortuneResultScreenPreview() {
             content = "요약 분석 예시 본문입니다.",
             categories =
                 listOf(
-                    FortuneCategoryStar(FortuneCategory.ACHIEVEMENT, 4),
-                    FortuneCategoryStar(FortuneCategory.MONEY, 3),
-                    FortuneCategoryStar(FortuneCategory.RELATIONSHIP, 5),
+                    FortuneCategoryStar(FortuneCategory.ACHIEVEMENT, 3),
+                    FortuneCategoryStar(FortuneCategory.MONEY, 2),
+                    FortuneCategoryStar(FortuneCategory.RELATIONSHIP, 1),
                 ),
         )
     TodakunTheme {
         YearFortuneResultScreen(
             state = YearFortuneResultState(fortuneResult = sample),
             onBackClick = {},
-            onShareIconClick = {},
-            onShareSheetDismiss = {},
+            onShareClick = {},
+            onShareDismiss = {},
+            onKakaoShareFail = {},
+            onUrlCopy = {},
             onAskTodakClick = {},
         )
     }
