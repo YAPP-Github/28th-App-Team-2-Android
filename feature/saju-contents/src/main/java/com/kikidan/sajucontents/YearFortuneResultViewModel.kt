@@ -38,13 +38,25 @@ class YearFortuneResultViewModel
                 )
             }
 
-        fun onShareIconClick() =
+        fun showShareDialog() =
             intent {
-                reduce { state.copy(isShareSheetVisible = true) }
+                reduce { state.copy(isShareDialogVisible = true) }
             }
 
-        fun onShareSheetDismiss() =
+        fun hideShareDialog() =
             intent {
-                reduce { state.copy(isShareSheetVisible = false) }
+                reduce { state.copy(isShareDialogVisible = false) }
+            }
+
+        fun notifyShareUnavailable() =
+            intent {
+                reduce { state.copy(isShareDialogVisible = false) }
+                postSideEffect(YearFortuneResultSideEffect.ShowShareError)
+            }
+
+        fun notifyUrlCopied() =
+            intent {
+                reduce { state.copy(isShareDialogVisible = false) }
+                postSideEffect(YearFortuneResultSideEffect.ShowUrlCopied)
             }
     }
