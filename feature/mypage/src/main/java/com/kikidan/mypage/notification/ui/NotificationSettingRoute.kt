@@ -29,7 +29,7 @@ fun NotificationSettingRoute(
         onBackClick = onNavigateBack,
         onMorningReportToggle = viewModel::toggleMorningReport,
         onMorningReportTimeChange = viewModel::updateMorningReportTime,
-        onTodakAlarmToggle = viewModel::toggleTodakAlarm,
+        onTodakiToggle = viewModel::toggleTodaki,
         onLuckyActionReminderToggle = viewModel::toggleLuckyActionReminder,
     )
 }

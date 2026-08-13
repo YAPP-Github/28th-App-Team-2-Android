@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,12 +39,9 @@ class NotificationSettingViewModel
 
         fun toggleMorningReport() = updateModel { copy(morningReportEnabled = !morningReportEnabled) }
 
-        fun updateMorningReportTime(
-            hour: Int,
-            minute: Int,
-        ) = updateModel { copy(morningReportHour = hour, morningReportMinute = minute) }
+        fun updateMorningReportTime(time: LocalTime) = updateModel { copy(morningReportTime = time) }
 
-        fun toggleTodakAlarm() = updateModel { copy(todakAlarmEnabled = !todakAlarmEnabled) }
+        fun toggleTodaki() = updateModel { copy(todakiEnabled = !todakiEnabled) }
 
         fun toggleLuckyActionReminder() = updateModel { copy(luckyActionReminderEnabled = !luckyActionReminderEnabled) }
 
@@ -59,17 +57,15 @@ class NotificationSettingViewModel
 private fun NotificationSetting.toUiModel() =
     NotificationSettingUiModel(
         morningReportEnabled = morningReportEnabled,
-        morningReportHour = morningReportHour,
-        morningReportMinute = morningReportMinute,
-        todakAlarmEnabled = todakAlarmEnabled,
+        morningReportTime = morningReportTime,
+        todakiEnabled = todakiEnabled,
         luckyActionReminderEnabled = luckyActionReminderEnabled,
     )
 
 private fun NotificationSettingUiModel.toDomain() =
     NotificationSetting(
         morningReportEnabled = morningReportEnabled,
-        morningReportHour = morningReportHour,
-        morningReportMinute = morningReportMinute,
-        todakAlarmEnabled = todakAlarmEnabled,
+        morningReportTime = morningReportTime,
+        todakiEnabled = todakiEnabled,
         luckyActionReminderEnabled = luckyActionReminderEnabled,
     )

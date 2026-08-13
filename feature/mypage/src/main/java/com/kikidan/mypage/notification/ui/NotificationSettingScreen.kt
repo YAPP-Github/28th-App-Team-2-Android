@@ -48,8 +48,8 @@ fun NotificationSettingScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onMorningReportToggle: () -> Unit = {},
-    onMorningReportTimeChange: (Int, Int) -> Unit = { _, _ -> },
-    onTodakAlarmToggle: () -> Unit = {},
+    onMorningReportTimeChange: (LocalTime) -> Unit = {},
+    onTodakiToggle: () -> Unit = {},
     onLuckyActionReminderToggle: () -> Unit = {},
 ) {
     Column(
@@ -77,7 +77,7 @@ fun NotificationSettingScreen(
                     model = uiState.model,
                     onMorningReportToggle = onMorningReportToggle,
                     onMorningReportTimeChange = onMorningReportTimeChange,
-                    onTodakAlarmToggle = onTodakAlarmToggle,
+                    onTodakiToggle = onTodakiToggle,
                     onLuckyActionReminderToggle = onLuckyActionReminderToggle,
                     modifier = Modifier.weight(1f),
                 )
@@ -90,8 +90,8 @@ fun NotificationSettingScreen(
 private fun NotificationSettingContent(
     model: NotificationSettingUiModel,
     onMorningReportToggle: () -> Unit,
-    onMorningReportTimeChange: (Int, Int) -> Unit,
-    onTodakAlarmToggle: () -> Unit,
+    onMorningReportTimeChange: (LocalTime) -> Unit,
+    onTodakiToggle: () -> Unit,
     onLuckyActionReminderToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -129,10 +129,7 @@ private fun NotificationSettingContent(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(
-                            text =
-                                MorningReportTimeFormatter.format(
-                                    LocalTime.of(model.morningReportHour, model.morningReportMinute),
-                                ),
+                            text = MorningReportTimeFormatter.format(model.morningReportTime),
                             style = TodakunTypography.body3Medium,
                             color = TodakunColor.gray925,
                         )
@@ -149,8 +146,8 @@ private fun NotificationSettingContent(
         NotificationSettingCard(
             title = stringResource(R.string.notification_setting_todak_alarm_title),
             subtitle = stringResource(R.string.notification_setting_todak_alarm_subtitle),
-            checked = model.todakAlarmEnabled,
-            onCheckedChange = { onTodakAlarmToggle() },
+            checked = model.todakiEnabled,
+            onCheckedChange = { onTodakiToggle() },
         )
 
         NotificationSettingCard(
@@ -162,15 +159,15 @@ private fun NotificationSettingContent(
     }
 
     if (showTimePicker) {
-        var selectedHour by remember(model.morningReportHour) { mutableIntStateOf(model.morningReportHour) }
-        var selectedMinute by remember(model.morningReportMinute) { mutableIntStateOf(model.morningReportMinute) }
+        var selectedHour by remember(model.morningReportTime) { mutableIntStateOf(model.morningReportTime.hour) }
+        var selectedMinute by remember(model.morningReportTime) { mutableIntStateOf(model.morningReportTime.minute) }
         TimeWheelPicker(
-            hour = model.morningReportHour,
-            minute = model.morningReportMinute,
+            hour = model.morningReportTime.hour,
+            minute = model.morningReportTime.minute,
             onHourChange = { selectedHour = it },
             onMinuteChange = { selectedMinute = it },
             onSaveClick = {
-                onMorningReportTimeChange(selectedHour, selectedMinute)
+                onMorningReportTimeChange(LocalTime.of(selectedHour, selectedMinute))
                 showTimePicker = false
             },
             onDismissRequest = { showTimePicker = false },
@@ -224,9 +221,8 @@ private fun NotificationSettingScreenPreview() {
                 NotificationSettingUiState.Success(
                     NotificationSettingUiModel(
                         morningReportEnabled = true,
-                        morningReportHour = 8,
-                        morningReportMinute = 0,
-                        todakAlarmEnabled = true,
+                        morningReportTime = LocalTime.of(8, 0),
+                        todakiEnabled = true,
                         luckyActionReminderEnabled = true,
                     ),
                 ),

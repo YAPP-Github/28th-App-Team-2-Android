@@ -2,6 +2,7 @@ package com.kikidan.data.repository
 
 import com.kikidan.domain.model.notification.NotificationSetting
 import com.kikidan.domain.repository.NotificationRepository
+import java.time.LocalTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,9 +13,8 @@ class FakeNotificationRepository
         private var setting =
             NotificationSetting(
                 morningReportEnabled = true,
-                morningReportHour = 8,
-                morningReportMinute = 0,
-                todakAlarmEnabled = true,
+                morningReportTime = LocalTime.of(8, 0),
+                todakiEnabled = true,
                 luckyActionReminderEnabled = true,
             )
 

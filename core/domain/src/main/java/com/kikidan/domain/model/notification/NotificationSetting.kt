@@ -1,9 +1,10 @@
 package com.kikidan.domain.model.notification
 
+import java.time.LocalTime
+
 data class NotificationSetting(
     val morningReportEnabled: Boolean,
-    val morningReportHour: Int,
-    val morningReportMinute: Int,
-    val todakAlarmEnabled: Boolean,
+    val morningReportTime: LocalTime,
+    val todakiEnabled: Boolean,
     val luckyActionReminderEnabled: Boolean,
 )
