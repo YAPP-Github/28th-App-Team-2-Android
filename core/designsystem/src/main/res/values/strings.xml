@@ -163,6 +163,16 @@
     <string name="mansaeryeok_ohaeng_info_geum">금(金): 결실과 결단의 기운 (가을, 쇠)</string>
     <string name="mansaeryeok_ohaeng_info_su">수(水): 지혜와 휴식의 기운 (겨울, 물)</string>
 
+    <!-- MyPage Notification Setting -->
+    <string name="notification_setting_title">알림 설정</string>
+    <string name="notification_setting_morning_report_title">아침 운 리포트</string>
+    <string name="notification_setting_morning_report_subtitle">매일 아침 오늘의 운세</string>
+    <string name="notification_setting_morning_report_time_label">받을 시간</string>
+    <string name="notification_setting_todak_alarm_title">토닥이 알림</string>
+    <string name="notification_setting_todak_alarm_subtitle">토닥이 답변 완료 시 안내</string>
+    <string name="notification_setting_lucky_action_title">행운 액션 리마인드</string>
+    <string name="notification_setting_lucky_action_subtitle">매일 오후 8시 고정</string>
+
     <!-- Common -->
     <string name="separator_dot">·</string>
     <string name="gender_male">남성</string>
