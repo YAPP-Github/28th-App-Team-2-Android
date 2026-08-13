@@ -441,26 +441,26 @@
     <string name="date_fortune_result_subtitle">"선택하신 후보 일자 중\n최고의 기운을 찾아봤어요"</string>
     <string name="date_fortune_result_highlight">최고의 기운</string>
     <string name="date_fortune_ask_time_hint">시간대는 언제가 좋아?</string>
-    <string name="date_fortune_score_label">운세 점수</string>
+    <string name="fortune_score_label">운세 점수</string>
     <string name="date_fortune_summary_title">요약 분석</string>
     <string name="date_fortune_ask_todak">토닥이에게 더 물어보기</string>
     <string name="date_fortune_share">공유</string>
     <string name="date_fortune_export_calendar">캘린더에 저장</string>
     <string name="date_fortune_result_load_error">결과를 불러오지 못했어요. 다시 시도해주세요.</string>
 
-    <!-- DateFortune 공유 -->
-    <string name="date_fortune_share_dialog_title">운세 공유하기</string>
-    <string name="date_fortune_share_kakao">카카오톡 공유</string>
-    <string name="date_fortune_share_copy_url">URL 복사</string>
-    <string name="date_fortune_share_cancel">취소</string>
-    <string name="date_fortune_share_message">%1$s\n토닥운에서 확인해보세요.</string>
-    <string name="date_fortune_share_kakao_error">카카오톡으로 공유할 수 없어요. 카카오톡 설치 여부를 확인해주세요.</string>
-    <string name="date_fortune_share_url_copied">링크를 복사했어요.</string>
+    <!-- Fortune 공유 다이얼로그: Day/Year 등 결과 화면 공용 -->
+    <string name="fortune_share_dialog_title">운세 공유하기</string>
+    <string name="fortune_share_kakao">카카오톡 공유</string>
+    <string name="fortune_share_copy_url">URL 복사</string>
+    <string name="fortune_share_cancel">취소</string>
+    <string name="fortune_share_message">%1$s\n토닥운에서 확인해보세요.</string>
+    <string name="fortune_share_kakao_error">카카오톡으로 공유할 수 없어요. 카카오톡 설치 여부를 확인해주세요.</string>
+    <string name="fortune_share_url_copied">링크를 복사했어요.</string>
 
-    <!-- DateFortune 카테고리 라벨: 임시값, 기획 확정 전(설계 문서 2-1절) -->
-    <string name="date_fortune_category_relationship">관계운</string>
-    <string name="date_fortune_category_love">애정운</string>
-    <string name="date_fortune_category_achievement">성취운</string>
-    <string name="date_fortune_category_money">재물운</string>
-    <string name="date_fortune_category_health">건강운</string>
+    <!-- Fortune 카테고리 라벨: Day/Year 등 결과 화면 공용, 임시값(설계 문서 2-1절) -->
+    <string name="fortune_category_relationship">관계운</string>
+    <string name="fortune_category_love">애정운</string>
+    <string name="fortune_category_achievement">성취운</string>
+    <string name="fortune_category_money">재물운</string>
+    <string name="fortune_category_health">건강운</string>
 </resources>
