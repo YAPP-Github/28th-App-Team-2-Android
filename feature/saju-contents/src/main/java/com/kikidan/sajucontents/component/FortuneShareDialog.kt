@@ -45,22 +45,25 @@ import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
-import com.kikidan.sajucontents.BuildConfig
 import kotlinx.coroutines.launch
 
+// Day/Year 등 결과 화면 공용 공유 다이얼로그. shareUrl은 화면(도메인)별 경로가 달라(예: day-fortune, year-fortune)
+// 호출부가 직접 만들어 전달한다.
 @Composable
-fun DateFortuneShareDialog(
+fun FortuneShareDialog(
     fortuneTitle: String,
     fortuneId: String,
+    shareUrl: String,
     onKakaoShareFail: () -> Unit,
     onUrlCopy: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Dialog(onDismissRequest = onDismiss) {
-        DateFortuneShareDialogContent(
+        FortuneShareDialogContent(
             fortuneTitle = fortuneTitle,
             fortuneId = fortuneId,
+            shareUrl = shareUrl,
             onKakaoShareFail = onKakaoShareFail,
             onUrlCopy = onUrlCopy,
             onDismiss = onDismiss,
@@ -70,9 +73,10 @@ fun DateFortuneShareDialog(
 }
 
 @Composable
-private fun DateFortuneShareDialogContent(
+private fun FortuneShareDialogContent(
     fortuneTitle: String,
     fortuneId: String,
+    shareUrl: String,
     onKakaoShareFail: () -> Unit,
     onUrlCopy: () -> Unit,
     onDismiss: () -> Unit,
@@ -81,11 +85,10 @@ private fun DateFortuneShareDialogContent(
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
-    val shareMessage = stringResource(id = R.string.date_fortune_share_message, fortuneTitle)
-    val kakaoLabel = stringResource(id = R.string.date_fortune_share_kakao)
-    val copyUrlLabel = stringResource(id = R.string.date_fortune_share_copy_url)
-    val cancelLabel = stringResource(id = R.string.date_fortune_share_cancel)
-    val url = "https://${BuildConfig.APP_LINK_HOST}/day-fortune?id=$fortuneId"
+    val shareMessage = stringResource(id = R.string.fortune_share_message, fortuneTitle)
+    val kakaoLabel = stringResource(id = R.string.fortune_share_kakao)
+    val copyUrlLabel = stringResource(id = R.string.fortune_share_copy_url)
+    val cancelLabel = stringResource(id = R.string.fortune_share_cancel)
 
     Column(
         modifier =
@@ -97,7 +100,7 @@ private fun DateFortuneShareDialogContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
-            text = stringResource(id = R.string.date_fortune_share_dialog_title),
+            text = stringResource(id = R.string.fortune_share_dialog_title),
             style = TodakunTypography.body2SemiBold,
             color = TodakunColor.gray975,
             textAlign = TextAlign.Center,
@@ -115,8 +118,8 @@ private fun DateFortuneShareDialogContent(
                         text = shareMessage,
                         link =
                             Link(
-                                webUrl = url,
-                                mobileWebUrl = url,
+                                webUrl = shareUrl,
+                                mobileWebUrl = shareUrl,
                                 androidExecutionParams = mapOf("id" to fortuneId),
                                 iosExecutionParams = mapOf("id" to fortuneId),
                             ),
@@ -130,8 +133,8 @@ private fun DateFortuneShareDialogContent(
                         }
                     }
                 } else {
-                    val url = WebSharerClient.instance.makeDefaultUrl(template)
-                    KakaoCustomTabsClient.open(context, url)
+                    val webUrl = WebSharerClient.instance.makeDefaultUrl(template)
+                    KakaoCustomTabsClient.open(context, webUrl)
                 }
             },
         )
@@ -142,7 +145,7 @@ private fun DateFortuneShareDialogContent(
             iconRes = null,
             onClick = {
                 coroutineScope.launch {
-                    clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(url, url)))
+                    clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(shareUrl, shareUrl)))
                     onUrlCopy()
                 }
             },
@@ -201,11 +204,12 @@ private fun ShareActionButton(
 
 @Composable
 @Preview(showBackground = true)
-private fun DateFortuneShareDialogPreview() {
+private fun FortuneShareDialogPreview() {
     TodakunTheme {
-        DateFortuneShareDialogContent(
+        FortuneShareDialogContent(
             fortuneTitle = "이 날짜엔 새로운 시작이 아주 잘 맞아요.",
             fortuneId = "preview-id",
+            shareUrl = "https://todakun.com/day-fortune?id=preview-id",
             onKakaoShareFail = {},
             onUrlCopy = {},
             onDismiss = {},
