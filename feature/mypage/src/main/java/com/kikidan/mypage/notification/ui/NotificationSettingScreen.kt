@@ -164,6 +164,7 @@ private fun NotificationSettingContent(
         TimeWheelPicker(
             hour = model.morningReportTime.hour,
             minute = model.morningReportTime.minute,
+            minuteStep = MORNING_REPORT_MINUTE_STEP,
             onHourChange = { selectedHour = it },
             onMinuteChange = { selectedMinute = it },
             onSaveClick = {
@@ -211,6 +212,7 @@ private fun NotificationSettingCard(
 }
 
 private val MorningReportTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("a h:mm", Locale.KOREAN)
+private const val MORNING_REPORT_MINUTE_STEP = 30
 
 @Preview(showBackground = true)
 @Composable
