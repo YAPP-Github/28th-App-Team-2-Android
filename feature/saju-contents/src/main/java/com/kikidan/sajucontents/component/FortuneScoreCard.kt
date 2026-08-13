@@ -32,8 +32,8 @@ import androidx.compose.ui.unit.sp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
-import com.kikidan.domain.model.dayfortune.FortuneCategoryStar
 import com.kikidan.domain.model.fortune.FortuneCategory
+import com.kikidan.domain.model.fortune.FortuneCategoryStar
 import kotlinx.collections.immutable.ImmutableList
 
 private object FortuneScoreCardDefaults {
@@ -50,6 +50,7 @@ internal fun FortuneScoreCard(
     title: String,
     categoryStars: ImmutableList<FortuneCategoryStar>,
     modifier: Modifier = Modifier,
+    scoreLabel: String = stringResource(id = R.string.fortune_score_label),
 ) {
     Column(
         modifier =
@@ -61,7 +62,7 @@ internal fun FortuneScoreCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        ScoreGauge(score = score)
+        ScoreGauge(score = score, scoreLabel = scoreLabel)
         Text(
             text = title,
             style = TodakunTypography.heading4Bold,
@@ -76,6 +77,7 @@ internal fun FortuneScoreCard(
 @Composable
 private fun ScoreGauge(
     score: Int,
+    scoreLabel: String,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.size(FortuneScoreCardDefaults.GaugeSize), contentAlignment = Alignment.Center) {
@@ -115,7 +117,7 @@ private fun ScoreGauge(
                 color = TodakunColor.white,
             )
             Text(
-                text = stringResource(id = R.string.date_fortune_score_label),
+                text = scoreLabel,
                 style = TodakunTypography.body3Regular,
                 color = TodakunColor.whiteOpacity60,
             )
@@ -178,10 +180,10 @@ private fun FortuneCategory.label(): String =
     stringResource(
         id =
             when (this) {
-                FortuneCategory.RELATIONSHIP -> R.string.date_fortune_category_relationship
-                FortuneCategory.LOVE -> R.string.date_fortune_category_love
-                FortuneCategory.ACHIEVEMENT -> R.string.date_fortune_category_achievement
-                FortuneCategory.MONEY -> R.string.date_fortune_category_money
-                FortuneCategory.HEALTH -> R.string.date_fortune_category_health
+                FortuneCategory.RELATIONSHIP -> R.string.fortune_category_relationship
+                FortuneCategory.LOVE -> R.string.fortune_category_love
+                FortuneCategory.ACHIEVEMENT -> R.string.fortune_category_achievement
+                FortuneCategory.MONEY -> R.string.fortune_category_money
+                FortuneCategory.HEALTH -> R.string.fortune_category_health
             },
     )

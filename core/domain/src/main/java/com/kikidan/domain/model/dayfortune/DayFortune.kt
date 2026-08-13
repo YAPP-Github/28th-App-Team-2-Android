@@ -1,6 +1,6 @@
 package com.kikidan.domain.model.dayfortune
 
-import com.kikidan.domain.model.fortune.FortuneCategory
+import com.kikidan.domain.model.fortune.FortuneCategoryStar
 import java.time.LocalDate
 
 data class DayFortune(
@@ -20,8 +20,3 @@ enum class DayFortunePurpose {
     CONFESSION_DATING,
     EXAM_INTERVIEW,
 }
-
-data class FortuneCategoryStar(
-    val category: FortuneCategory,
-    val star: Int,
-)
