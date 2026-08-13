@@ -35,7 +35,8 @@ fun TodakunSubHeader(
             modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .background(TodakunColor.white),
+                .background(TodakunColor.white)
+                .padding(horizontal = 20.dp),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_chevron_left),
