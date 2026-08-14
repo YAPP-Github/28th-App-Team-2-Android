@@ -65,7 +65,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import java.time.LocalDate
 
-private fun shareUrlFor(id: String): String = "https://${BuildConfig.APP_LINK_HOST}/day-fortune?id=$id"
+private fun shareUrlFor(id: String): String = "${BuildConfig.APP_LINK_HOST}/day-fortune?id=$id"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
