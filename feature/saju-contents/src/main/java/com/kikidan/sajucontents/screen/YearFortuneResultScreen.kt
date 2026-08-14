@@ -45,6 +45,10 @@ import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.component.FortuneScoreCard
 import com.kikidan.sajucontents.component.FortuneShareDialog
 import com.kikidan.sajucontents.model.YearFortuneResultState
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.collections.immutable.toImmutableList
 import com.kikidan.designsystem.R as DesignSystemR
 
@@ -62,6 +66,7 @@ internal fun YearFortuneResultScreen(
     modifier: Modifier = Modifier,
 ) {
     val fortune = state.fortuneResult
+    val hazeState = rememberHazeState()
 
     Box(
         modifier =
@@ -76,7 +81,8 @@ internal fun YearFortuneResultScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .alpha(0.5f),
+                    .alpha(0.5f)
+                    .hazeSource(state = hazeState),
         )
 
         YearFortuneResultContent(
@@ -84,6 +90,7 @@ internal fun YearFortuneResultScreen(
             onBackClick = onBackClick,
             onShareClick = onShareClick,
             onAskTodakClick = onAskTodakClick,
+            hazeState = hazeState,
         )
 
         if (state.isShareDialogVisible && fortune != null) {
@@ -105,6 +112,7 @@ private fun BoxScope.YearFortuneResultContent(
     onBackClick: () -> Unit,
     onShareClick: () -> Unit,
     onAskTodakClick: () -> Unit,
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -138,9 +146,10 @@ private fun BoxScope.YearFortuneResultContent(
                     score = fortune.score,
                     title = fortune.title,
                     categoryStars = fortune.categories.toImmutableList(),
+                    hazeState = hazeState,
                     scoreLabel = stringResource(id = R.string.year_fortune_score_label),
                 )
-                SummaryCard(content = fortune.content)
+                SummaryCard(content = fortune.content, hazeState = hazeState)
             }
         }
     }
@@ -233,6 +242,7 @@ private fun ResultHeadline(
 @Composable
 private fun SummaryCard(
     content: String,
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -240,6 +250,7 @@ private fun SummaryCard(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
+                .hazeEffect(state = hazeState) { blurRadius = 20.dp }
                 .background(TodakunColor.whiteOpacity10)
                 .padding(horizontal = 20.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
