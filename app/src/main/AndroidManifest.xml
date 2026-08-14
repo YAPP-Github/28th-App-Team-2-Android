@@ -37,9 +37,11 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                    android:host="${APP_LINK_HOST}"
-                    android:pathPrefix="/day-fortune" />
+                <data android:scheme="https"/>
+                <data android:host="${APP_LINK_HOST}"/>
+                <data android:path="/day-fortune" />
+                <data android:path="/year-fortune" />
+                <data android:path="/compatibility" />
             </intent-filter>
         </activity>
     </application>
