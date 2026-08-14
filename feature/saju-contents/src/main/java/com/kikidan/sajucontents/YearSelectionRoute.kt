@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.sajucontents.model.YearFortuneSideEffect
-import com.kikidan.sajucontents.screen.YearSelectionScreen
+import com.kikidan.sajucontents.screen.YearFortuneInputScreen
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -29,7 +29,7 @@ fun YearSelectionRoute(
         }
     }
 
-    YearSelectionScreen(
+    YearFortuneInputScreen(
         state = state,
         onBackClick = onNavigateBack,
         onYearSelect = viewModel::onYearSelect,
