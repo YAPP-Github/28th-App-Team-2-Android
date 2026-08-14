@@ -1,7 +1,8 @@
 package com.kikidan.data_remote.dto.fortune
 
-import com.kikidan.domain.model.fortune.FortuneScore
+import com.kikidan.domain.model.fortune.TodayFortune
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
 @Serializable
 data class TodayFortuneResponse(
@@ -12,4 +13,11 @@ data class TodayFortuneResponse(
     val luckActionScores: List<LuckActionScoreResponse> = emptyList(),
 )
 
-internal fun TodayFortuneResponse.toFortuneScores(): List<FortuneScore> = luckActionScores.map { it.toDomain() }
+internal fun TodayFortuneResponse.toDomain(): TodayFortune =
+    TodayFortune(
+        id = id,
+        date = LocalDate.parse(fortuneDate),
+        totalScore = score,
+        scoreLabel = title,
+        scores = luckActionScores.map { it.toDomain() },
+    )

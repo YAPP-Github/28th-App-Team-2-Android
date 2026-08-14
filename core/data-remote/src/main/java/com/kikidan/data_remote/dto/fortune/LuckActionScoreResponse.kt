@@ -15,4 +15,5 @@ internal fun LuckActionScoreResponse.toDomain(): FortuneScore =
     FortuneScore(
         category = FortuneCategory.valueOf(fortuneCategory),
         score = score,
+        luckActionId = id,
     )

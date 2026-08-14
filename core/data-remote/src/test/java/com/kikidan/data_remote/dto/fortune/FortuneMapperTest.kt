@@ -7,17 +7,18 @@ import java.time.LocalDate
 
 class FortuneMapperTest {
     @Test
-    fun `LuckActionScoreResponse가 FortuneScore 도메인으로 변환된다`() {
+    fun `LuckActionScoreResponse가 FortuneScore 도메인으로 변환되고 luckActionId가 채워진다`() {
         val response = LuckActionScoreResponse(id = "s-1", fortuneCategory = "LOVE", score = 21)
 
         val domain = response.toDomain()
 
         assertEquals(FortuneCategory.LOVE, domain.category)
         assertEquals(21, domain.score)
+        assertEquals("s-1", domain.luckActionId)
     }
 
     @Test
-    fun `TodayFortuneResponse의 luckActionScores가 FortuneScore 목록으로 변환된다`() {
+    fun `TodayFortuneResponse가 TodayFortune 도메인으로 변환된다`() {
         val response =
             TodayFortuneResponse(
                 id = "f-1",
@@ -31,11 +32,16 @@ class FortuneMapperTest {
                     ),
             )
 
-        val domain = response.toFortuneScores()
+        val domain = response.toDomain()
 
-        assertEquals(2, domain.size)
-        assertEquals(FortuneCategory.RELATIONSHIP, domain[0].category)
-        assertEquals(93, domain[1].score)
+        assertEquals("f-1", domain.id)
+        assertEquals(LocalDate.of(2026, 7, 24), domain.date)
+        assertEquals(60, domain.totalScore)
+        assertEquals("오늘의 운세", domain.scoreLabel)
+        assertEquals(2, domain.scores.size)
+        assertEquals(FortuneCategory.RELATIONSHIP, domain.scores[0].category)
+        assertEquals(93, domain.scores[1].score)
+        assertEquals("s-2", domain.scores[1].luckActionId)
     }
 
     @Test
@@ -74,6 +80,28 @@ class FortuneMapperTest {
         assertEquals("a-1", domain.id)
         assertEquals(FortuneCategory.ACHIEVEMENT, domain.category)
         assertEquals(true, domain.achieved)
+    }
+
+    @Test
+    fun `LuckActionResponse가 LuckActionDetail 도메인으로 변환된다`() {
+        val response =
+            LuckActionResponse(
+                id = "a-1",
+                fortuneCategory = "LOVE",
+                score = 80,
+                title = "사랑 액션",
+                content = "오늘 소중한 사람에게 연락해보세요",
+                achieved = false,
+            )
+
+        val domain = response.toDetail()
+
+        assertEquals("a-1", domain.id)
+        assertEquals(FortuneCategory.LOVE, domain.category)
+        assertEquals(80, domain.score)
+        assertEquals("사랑 액션", domain.title)
+        assertEquals("오늘 소중한 사람에게 연락해보세요", domain.content)
+        assertEquals(false, domain.achieved)
     }
 
     @Test

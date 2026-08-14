@@ -61,4 +61,24 @@ class RemoteLuckActionDataSourceImplTest {
             assertEquals("a-1", result.id)
             assertTrue(result.achieved)
         }
+
+    @Test
+    fun `getLuckAction이 정상 응답이면 LuckActionDetail 도메인으로 반환된다`() =
+        runTest {
+            val body =
+                """
+                {"success":true,"code":"200","message":"ok","data":
+                    {"id":"a-1","fortuneCategory":"LOVE","score":80,"title":"사랑 액션","content":"오늘 소중한 사람에게 연락해보세요","achieved":false}
+                }
+                """.trimIndent()
+            val sut = buildSut { respond(body, HttpStatusCode.OK, jsonHeaders) }
+
+            val result = sut.getLuckAction("a-1")
+
+            assertEquals("a-1", result.id)
+            assertEquals(80, result.score)
+            assertEquals("사랑 액션", result.title)
+            assertEquals("오늘 소중한 사람에게 연락해보세요", result.content)
+            assertEquals(false, result.achieved)
+        }
 }

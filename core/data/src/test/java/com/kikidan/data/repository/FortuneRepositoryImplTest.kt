@@ -5,6 +5,7 @@ import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.model.fortune.LuckAction
+import com.kikidan.domain.model.fortune.TodayFortune
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,31 +26,39 @@ class FortuneRepositoryImplTest {
     }
 
     @Test
-    fun `getTodayFortuneScores가 성공하면 Result success로 반환된다`() =
+    fun `getTodayFortune가 성공하면 Result success로 반환된다`() =
         runTest {
-            fake.scores = listOf(FortuneScore(FortuneCategory.LOVE, 21))
+            val today =
+                TodayFortune(
+                    id = "f-today",
+                    date = LocalDate.now(),
+                    totalScore = 60,
+                    scoreLabel = "좋은 날",
+                    scores = listOf(FortuneScore(FortuneCategory.LOVE, 21)),
+                )
+            fake.todayFortune = today
 
-            val result = sut.getTodayFortuneScores()
+            val result = sut.getTodayFortune()
 
-            assertEquals(Result.success(fake.scores), result)
+            assertEquals(Result.success(today), result)
         }
 
     @Test
-    fun `getTodayFortuneScores가 IOException을 throw하면 Result failure로 반환된다`() =
+    fun `getTodayFortune가 IOException을 throw하면 Result failure로 반환된다`() =
         runTest {
-            fake.throwOnGetTodayFortuneScores = IOException("network")
+            fake.throwOnGetTodayFortune = IOException("network")
 
-            val result = sut.getTodayFortuneScores()
+            val result = sut.getTodayFortune()
 
             assertTrue(result.isFailure)
             assertTrue(result.exceptionOrNull() is IOException)
         }
 
     @Test(expected = CancellationException::class)
-    fun `getTodayFortuneScores가 CancellationException을 throw하면 그대로 전파된다`() =
+    fun `getTodayFortune가 CancellationException을 throw하면 그대로 전파된다`() =
         runTest {
-            fake.throwOnGetTodayFortuneScores = CancellationException("cancelled")
-            sut.getTodayFortuneScores()
+            fake.throwOnGetTodayFortune = CancellationException("cancelled")
+            sut.getTodayFortune()
         }
 
     @Test

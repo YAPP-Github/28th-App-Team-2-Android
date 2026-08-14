@@ -3,11 +3,12 @@ package com.kikidan.data.fake
 import com.kikidan.data.datasource.RemoteFortuneDataSource
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneScore
+import com.kikidan.domain.model.fortune.TodayFortune
 import java.time.LocalDate
 
 class FakeRemoteFortuneDataSource : RemoteFortuneDataSource {
-    var scores: List<FortuneScore> = emptyList()
-    var throwOnGetTodayFortuneScores: Throwable? = null
+    var todayFortune: TodayFortune? = null
+    var throwOnGetTodayFortune: Throwable? = null
 
     var history: List<DailyFortuneHistoryEntry> = emptyList()
     var throwOnGetFortuneHistory: Throwable? = null
@@ -18,9 +19,9 @@ class FakeRemoteFortuneDataSource : RemoteFortuneDataSource {
     var throwOnGetFortuneDetailScores: Throwable? = null
     var lastRequestedDailyFortuneId: String? = null
 
-    override suspend fun getTodayFortuneScores(): List<FortuneScore> {
-        throwOnGetTodayFortuneScores?.let { throw it }
-        return scores
+    override suspend fun getTodayFortune(): TodayFortune {
+        throwOnGetTodayFortune?.let { throw it }
+        return todayFortune!!
     }
 
     override suspend fun getFortuneHistory(to: LocalDate): List<DailyFortuneHistoryEntry> {

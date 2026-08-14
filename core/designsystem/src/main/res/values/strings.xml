@@ -178,6 +178,34 @@
     <string name="onboarding_extra_relationship_married">기혼</string>
     <string name="onboarding_extra_relationship_remarried">재혼</string>
 
+    <!-- Home -->
+    <string name="home_greeting">흘렸던 땀방울이 달콤한 결실로 돌아오는 하루예요</string>
+    <string name="home_today_score_label">오늘의 점수</string>
+    <string name="home_today_score_value">%1$d점</string>
+    <string name="home_fortune_report_button">운세 리포트</string>
+    <string name="home_section_detail_fortune">상세 운세</string>
+    <string name="home_section_saju">사주 풀이</string>
+    <string name="home_saju_compatibility_title">상대랑 궁합</string>
+    <string name="home_saju_compatibility_subtitle">그 사람과 나, 잘 맞을까요?</string>
+    <string name="home_saju_date_selection_title">택일 운세</string>
+    <string name="home_saju_date_selection_subtitle">좋은 날을 골라드려요!</string>
+    <string name="home_saju_yearly_fortune_title">연도별 운세</string>
+    <string name="home_saju_yearly_fortune_subtitle">올해의 큰 흐름 보기</string>
+    <string name="home_saju_cta">풀이 보기</string>
+    <string name="home_luck_action_banner_title">운세 기반 행운 액션</string>
+    <string name="home_luck_action_banner_subtitle">5개 행운 액션으로 하루 시작하기!</string>
+    <string name="home_default_error">알 수 없는 에러가 발생했어요. 잠시 후 다시 시도해주세요</string>
+    <string name="home_failure_message">"홈 화면을 불러오지 못했어요.\n잠시 후 다시 시도해주세요"</string>
+    <string name="home_detail_today_action">오늘의 행운 액션</string>
+    <string name="home_detail_sheet_cta">토닥이에게 더 물어보기</string>
+    <string name="home_category_score_relationship">관계운</string>
+    <string name="home_category_score_love">연애운</string>
+    <string name="home_category_score_achievement">성취운</string>
+    <string name="home_category_score_health">건강운</string>
+    <string name="home_category_score_money">금전운</string>
+    <string name="home_character_description">토닥운 캐릭터</string>
+    <string name="home_detail_sheet_title_format">오늘의 %s</string>
+
     <!-- 완료 -->
     <string name="onboarding_complete_title">계정이 생성되었어요!</string>
     <string name="onboarding_complete_description">환영해요, 이제 시작해볼까요?</string>

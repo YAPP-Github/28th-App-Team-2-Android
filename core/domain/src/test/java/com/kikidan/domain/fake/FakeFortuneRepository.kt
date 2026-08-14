@@ -1,17 +1,17 @@
 package com.kikidan.domain.fake
 
 import com.kikidan.domain.model.fortune.FortuneRecord
-import com.kikidan.domain.model.fortune.FortuneScore
+import com.kikidan.domain.model.fortune.TodayFortune
 import com.kikidan.domain.repository.FortuneRepository
 import java.time.LocalDate
 
 class FakeFortuneRepository : FortuneRepository {
-    var scoresResult: Result<List<FortuneScore>> = Result.failure(NotImplementedError())
+    var todayFortuneResult: Result<TodayFortune> = Result.failure(NotImplementedError())
     var recordResult: Result<FortuneRecord?> = Result.failure(NotImplementedError())
     var earliestDateResult: Result<LocalDate?> = Result.success(null)
     var lastRequestedDate: LocalDate? = null
 
-    override suspend fun getTodayFortuneScores(): Result<List<FortuneScore>> = scoresResult
+    override suspend fun getTodayFortune(): Result<TodayFortune> = todayFortuneResult
 
     override suspend fun getFortuneRecordForDate(date: LocalDate): Result<FortuneRecord?> {
         lastRequestedDate = date

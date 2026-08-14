@@ -9,6 +9,7 @@ import com.kikidan.data_remote.dto.fortune.toFortuneScores
 import com.kikidan.data_remote.util.bodyNotNull
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneScore
+import com.kikidan.domain.model.fortune.TodayFortune
 import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -21,12 +22,12 @@ class RemoteFortuneDataSourceImpl
     constructor(
         private val client: Lazy<HttpClient>,
     ) : RemoteFortuneDataSource {
-        override suspend fun getTodayFortuneScores(): List<FortuneScore> =
+        override suspend fun getTodayFortune(): TodayFortune =
             client
                 .get()
                 .get(TODAY_FORTUNE_URL)
                 .bodyNotNull<TodayFortuneResponse>()
-                .toFortuneScores()
+                .toDomain()
 
         override suspend fun getFortuneHistory(to: LocalDate): List<DailyFortuneHistoryEntry> =
             client

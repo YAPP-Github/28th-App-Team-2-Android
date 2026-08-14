@@ -28,7 +28,7 @@ class RemoteFortuneDataSourceImplTest {
     }
 
     @Test
-    fun `getTodayFortuneScores가 정상 응답이면 FortuneScore 목록으로 반환된다`() =
+    fun `getTodayFortune이 정상 응답이면 TodayFortune 도메인으로 반환된다`() =
         runTest {
             val body =
                 """
@@ -39,10 +39,15 @@ class RemoteFortuneDataSourceImplTest {
                 """.trimIndent()
             val sut = buildSut { respond(body, HttpStatusCode.OK, jsonHeaders) }
 
-            val result = sut.getTodayFortuneScores()
+            val result = sut.getTodayFortune()
 
-            assertEquals(1, result.size)
-            assertEquals(21, result[0].score)
+            assertEquals("f-1", result.id)
+            assertEquals(LocalDate.of(2026, 7, 24), result.date)
+            assertEquals(60, result.totalScore)
+            assertEquals("오늘의 운세", result.scoreLabel)
+            assertEquals(1, result.scores.size)
+            assertEquals(21, result.scores[0].score)
+            assertEquals("s-1", result.scores[0].luckActionId)
         }
 
     @Test
