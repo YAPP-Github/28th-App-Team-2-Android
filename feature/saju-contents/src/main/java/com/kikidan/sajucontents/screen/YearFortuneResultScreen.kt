@@ -52,7 +52,7 @@ import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.collections.immutable.toImmutableList
 import com.kikidan.designsystem.R as DesignSystemR
 
-private fun shareUrlFor(id: String): String = "https://${BuildConfig.APP_LINK_HOST}/year-fortune?id=$id"
+private fun shareUrlFor(id: String): String = "${BuildConfig.APP_LINK_HOST}/year-fortune?id=$id"
 
 @Composable
 internal fun YearFortuneResultScreen(

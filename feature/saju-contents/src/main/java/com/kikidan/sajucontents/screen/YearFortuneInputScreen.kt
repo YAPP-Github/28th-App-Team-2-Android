@@ -4,10 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -31,7 +29,7 @@ import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.model.YearFortuneState
 
 @Composable
-internal fun YearSelectionScreen(
+internal fun YearFortuneInputScreen(
     state: YearFortuneState,
     onBackClick: () -> Unit,
     onYearSelect: (Int) -> Unit,
@@ -104,9 +102,9 @@ internal fun YearSelectionScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun YearSelectionScreenPreview() {
+private fun YearFortuneInputScreenPreview() {
     TodakunTheme {
-        YearSelectionScreen(
+        YearFortuneInputScreen(
             state = YearFortuneState(selectedYear = 2026, currentYear = 2026),
             onBackClick = {},
             onYearSelect = {},
