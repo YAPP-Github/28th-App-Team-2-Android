@@ -163,6 +163,15 @@
     <string name="mansaeryeok_ohaeng_info_geum">금(金): 결실과 결단의 기운 (가을, 쇠)</string>
     <string name="mansaeryeok_ohaeng_info_su">수(水): 지혜와 휴식의 기운 (겨울, 물)</string>
 
+    <!-- MyPage Saju Info Management -->
+    <string name="saju_info_management_title">사주 정보 관리</string>
+    <string name="saju_info_management_registered_count_label">등록된 사주 정보</string>
+    <string name="saju_info_management_add_button">사주 정보 추가(최대 10명)</string>
+    <string name="saju_info_management_edit_menu">수정하기</string>
+    <string name="saju_info_management_delete_menu">삭제하기</string>
+    <string name="saju_info_management_more_content_description">더보기</string>
+    <string name="saju_info_management_birth_time_format">%1$s(%2$s)</string>
+
     <!-- MyPage Notification Setting -->
     <string name="notification_setting_title">알림 설정</string>
     <string name="notification_setting_morning_report_title">아침 운 리포트</string>
