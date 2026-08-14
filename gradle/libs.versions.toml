@@ -31,6 +31,7 @@ googleid = "1.2.0"
 kotlinx-collections-immutable = "0.5.1"
 kizitonwoseCalendar = "2.10.1"
 material3 = "1.4.0"
+haze = "1.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -90,6 +91,7 @@ ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref =
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 kizitonwose-calendar-compose = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "kizitonwoseCalendar" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 
 
 [plugins]

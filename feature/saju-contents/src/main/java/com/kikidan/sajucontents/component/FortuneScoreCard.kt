@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -34,6 +35,8 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneCategoryStar
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
 import kotlinx.collections.immutable.ImmutableList
 
 private object FortuneScoreCardDefaults {
@@ -49,6 +52,7 @@ internal fun FortuneScoreCard(
     score: Int,
     title: String,
     categoryStars: ImmutableList<FortuneCategoryStar>,
+    hazeState: HazeState,
     modifier: Modifier = Modifier,
     scoreLabel: String = stringResource(id = R.string.fortune_score_label),
 ) {
@@ -57,6 +61,7 @@ internal fun FortuneScoreCard(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
+                .hazeEffect(state = hazeState) { blurRadius = 20.dp }
                 .background(TodakunColor.white.copy(alpha = 0.1f))
                 .padding(horizontal = 20.dp, vertical = 23.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
