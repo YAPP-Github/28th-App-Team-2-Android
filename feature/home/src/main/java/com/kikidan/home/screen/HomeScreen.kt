@@ -43,6 +43,8 @@ import com.kikidan.home.component.SajuContents
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.HomeState
 import com.kikidan.home.util.characterPainter
+import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
@@ -59,6 +61,7 @@ internal fun HomeScreen(
     onNavigateToLuckAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val backdrop = rememberLayerBackdrop()
     Box(
         modifier =
             modifier
@@ -70,7 +73,7 @@ internal fun HomeScreen(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             alignment = Alignment.TopCenter,
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier.matchParentSize().layerBackdrop(backdrop),
             alpha = 0.5f,
         )
         Column(
@@ -89,6 +92,7 @@ internal fun HomeScreen(
                     SajuSummary(
                         totalScore = state.totalScore,
                         scoreLabel = state.scoreLabel,
+                        backdrop = backdrop,
                         onFortuneReportClick = { onNavigateToReport(state.fortuneId) },
                     )
                     HomeContents(
@@ -113,6 +117,7 @@ internal fun HomeScreen(
 private fun SajuSummary(
     totalScore: Int,
     scoreLabel: String,
+    backdrop: LayerBackdrop,
     onFortuneReportClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -132,14 +137,13 @@ private fun SajuSummary(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (scoreLabel.isNotEmpty()) {
-                    Text(
-                        text = scoreLabel,
-                        style = TodakunTypography.heading3Bold,
-                        color = TodakunColor.white,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                Text(
+                    text = scoreLabel,
+                    style = TodakunTypography.heading3Bold,
+                    color = TodakunColor.white,
+                    modifier = Modifier.weight(1f),
+                )
+
                 Spacer(modifier = Modifier.width(20.dp))
                 Image(
                     painter = totalScore.characterPainter(),
@@ -150,28 +154,26 @@ private fun SajuSummary(
             }
             Spacer(modifier = Modifier.height(24.dp))
 
-            if (scoreLabel.isNotEmpty()) {
-                HomeTodayScoreCard(
-                    totalScore = totalScore,
-                    onFortuneReportClick = onFortuneReportClick,
-                    modifier =
-                        Modifier.drawBackdrop(
-                            backdrop = rememberLayerBackdrop(),
-                            shape = { RoundedCornerShape(16.dp) },
-                            effects = {
-                                vibrancy()
-                                blur(Glass.Frost.toPx())
-                                lens(
-                                    refractionHeight = Glass.Depth.toPx(),
-                                    refractionAmount = Glass.Refraction.toPx(),
-                                    depthEffect = true,
-                                    chromaticAberration = true,
-                                )
-                            },
-                            onDrawSurface = { drawRect(TodakunColor.whiteOpacity10) },
-                        ),
-                )
-            }
+            HomeTodayScoreCard(
+                totalScore = totalScore,
+                onFortuneReportClick = onFortuneReportClick,
+                modifier =
+                    Modifier.drawBackdrop(
+                        backdrop = backdrop,
+                        shape = { RoundedCornerShape(16.dp) },
+                        effects = {
+                            vibrancy()
+                            blur(Glass.Frost.toPx())
+                            lens(
+                                refractionHeight = Glass.Depth.toPx(),
+                                refractionAmount = Glass.Refraction.toPx(),
+                                depthEffect = true,
+                                chromaticAberration = true,
+                            )
+                        },
+                        onDrawSurface = { drawRect(TodakunColor.whiteOpacity10) },
+                    ),
+            )
 
             Spacer(modifier = Modifier.height(44.dp))
         }
