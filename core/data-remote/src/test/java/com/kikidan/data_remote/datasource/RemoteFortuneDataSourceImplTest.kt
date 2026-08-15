@@ -86,4 +86,27 @@ class RemoteFortuneDataSourceImplTest {
             assertEquals(1, result.size)
             assertEquals(93, result[0].score)
         }
+
+    @Test
+    fun `getDailyFortuneDetail이 정상 응답이면 DailyFortuneDetail 도메인으로 반환된다`() =
+        runTest {
+            val body =
+                """
+                {"success":true,"code":"200","message":"ok","data":
+                    {"id":"f-1","score":72,"content":"오늘은 좋은 하루예요.",
+                     "luckyItems":["노란색"],"cautionaryItems":["셔츠"],
+                     "luckActionScores":[{"id":"s-1","fortuneCategory":"MONEY","score":90}]}
+                }
+                """.trimIndent()
+            val sut = buildSut { respond(body, HttpStatusCode.OK, jsonHeaders) }
+
+            val result = sut.getDailyFortuneDetail("f-1")
+
+            assertEquals("f-1", result.id)
+            assertEquals(72, result.totalScore)
+            assertEquals("오늘은 좋은 하루예요.", result.content)
+            assertEquals(listOf("노란색"), result.luckyItems)
+            assertEquals(listOf("셔츠"), result.cautionaryItems)
+            assertEquals(1, result.scores.size)
+        }
 }
