@@ -38,10 +38,11 @@ internal fun FortuneScoreGauge(
             val strokeWidthDp = 16.dp
             val sw = strokeWidthDp.toPx()
             val d = 170.dp.toPx()
-            val topLeft = Offset(
-                x = (size.width - d) / 2f,
-                y = sw / 2f
-            )
+            val topLeft =
+                Offset(
+                    x = (size.width - d) / 2f,
+                    y = sw / 2f,
+                )
             val stroke = Stroke(width = strokeWidthDp.toPx(), cap = StrokeCap.Round)
             drawArc(
                 color = TodakunColor.gray50,
@@ -50,7 +51,7 @@ internal fun FortuneScoreGauge(
                 useCenter = false,
                 style = stroke,
                 topLeft = topLeft,
-                size = Size(d, d)
+                size = Size(d, d),
             )
             drawArc(
                 brush = Brush.horizontalGradient(listOf(band.start, band.end)),
@@ -59,14 +60,14 @@ internal fun FortuneScoreGauge(
                 useCenter = false,
                 style = stroke,
                 topLeft = topLeft,
-                size = Size(d, d)
+                size = Size(d, d),
             )
         }
         Text(
             text = stringResource(R.string.home_today_score_value, score),
             style = TodakunTypography.heading2ExtraBold,
             color = band.end,
-            modifier = Modifier.padding(bottom = 14.dp)
+            modifier = Modifier.padding(bottom = 14.dp),
         )
     }
 }

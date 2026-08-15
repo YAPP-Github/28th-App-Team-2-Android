@@ -65,11 +65,12 @@ internal fun HomeLuckActionBanner(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Box(
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clip(CircleShape)
-                            .background(TodakunColor.white),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .size(16.dp)
+                                .clip(CircleShape)
+                                .background(TodakunColor.white),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_chevron_small_right),

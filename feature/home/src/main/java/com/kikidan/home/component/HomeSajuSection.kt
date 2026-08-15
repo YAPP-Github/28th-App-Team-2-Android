@@ -95,10 +95,12 @@ private fun SajuCard(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier.size(44.dp)
-                .clip(CircleShape)
-                .background(TodakunColor.coolGray50),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(TodakunColor.coolGray50),
+            contentAlignment = Alignment.Center,
         ) {
             Image(
                 painter = painterResource(item.iconRes),

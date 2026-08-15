@@ -68,7 +68,7 @@ internal fun HomeScreen(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             alignment = Alignment.TopCenter,
-            modifier = Modifier.matchParentSize()
+            modifier = Modifier.matchParentSize(),
         )
         Column(
             modifier =
@@ -117,17 +117,19 @@ private fun HomeDarkSection(
 ) {
     Box(
         modifier =
-            modifier.fillMaxSize()
+            modifier.fillMaxSize(),
     ) {
-        Column(modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 20.dp)
+        Column(
+            modifier =
+                Modifier
+                    .statusBarsPadding()
+                    .padding(horizontal = 20.dp),
         ) {
             HomeHeader()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (scoreLabel.isNotEmpty()) {
                     Text(
@@ -216,7 +218,7 @@ private fun HomeWhiteSection(
             modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .background(TodakunColor.white)
+                .background(TodakunColor.white),
     ) {
         Spacer(modifier = Modifier.height(36.dp))
         HomeCategoryScoreRow(
@@ -237,7 +239,7 @@ private fun HomeWhiteSection(
 private object Glass {
     val Frost = 15.dp
     val Depth = 20.dp
-    val Refraction = 80.dp     // refraction 80  (0~100 → 0~50dp)
+    val Refraction = 80.dp // refraction 80  (0~100 → 0~50dp)
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF0A0E27, widthDp = 393, heightDp = 852)

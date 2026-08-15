@@ -41,7 +41,6 @@ import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.home.model.DetailSheetUiState
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FortuneDetailBottomSheet(
@@ -59,12 +58,12 @@ internal fun FortuneDetailBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = TodakunColor.white,
-        dragHandle = {  },
+        dragHandle = { },
         modifier = modifier,
     ) {
         Column(
             modifier =
-                Modifier.heightIn(max = screenHeight * 0.8f)
+                Modifier.heightIn(max = screenHeight * 0.8f),
         ) {
             SheetHeader(
                 detail = detail,
@@ -103,7 +102,7 @@ internal fun FortuneDetailBottomSheet(
                             Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp, vertical = 16.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         PrimaryButton(
                             modifier = Modifier.fillMaxWidth(),
@@ -133,18 +132,18 @@ private fun SheetHeader(
         }
     Column(
         modifier =
-            modifier.fillMaxWidth()
+            modifier.fillMaxWidth(),
     ) {
         IconButton(
             onClick = onDismissRequest,
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(
-                    top = 24.dp,
-                )
-                .padding(
-                    horizontal = 24.dp
-                )
+            modifier =
+                Modifier
+                    .align(Alignment.End)
+                    .padding(
+                        top = 24.dp,
+                    ).padding(
+                        horizontal = 24.dp,
+                    ),
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_close),
@@ -157,11 +156,13 @@ private fun SheetHeader(
             text = stringResource(R.string.home_detail_sheet_title_format, categoryLabel(category)),
             style = TodakunTypography.heading4Bold,
             color = TodakunColor.gray975,
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(
-                    vertical = 12.dp, horizontal = 20.dp
-                ),
+            modifier =
+                Modifier
+                    .align(Alignment.Start)
+                    .padding(
+                        vertical = 12.dp,
+                        horizontal = 20.dp,
+                    ),
         )
     }
 }
