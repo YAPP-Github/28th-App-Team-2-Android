@@ -38,8 +38,8 @@ import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.home.component.FortuneDetailBottomSheet
 import com.kikidan.home.component.HomeCategoryScoreRow
 import com.kikidan.home.component.HomeLuckActionBanner
-import com.kikidan.home.component.SajuContents
 import com.kikidan.home.component.HomeTodayScoreCard
+import com.kikidan.home.component.SajuContents
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.HomeState
 import com.kikidan.home.util.characterPainter
@@ -59,9 +59,11 @@ internal fun HomeScreen(
     onNavigateToLuckAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier
-        .fillMaxSize()
-        .background(Color(0xFF00010B))
+    Box(
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Color(0xFF00010B)),
     ) {
         Image(
             painter = painterResource(R.drawable.img_result_background),
@@ -69,7 +71,7 @@ internal fun HomeScreen(
             contentScale = ContentScale.Crop,
             alignment = Alignment.TopCenter,
             modifier = Modifier.matchParentSize(),
-            alpha = 0.5f
+            alpha = 0.5f,
         )
         Column(
             modifier =
@@ -152,21 +154,22 @@ private fun SajuSummary(
                 HomeTodayScoreCard(
                     totalScore = totalScore,
                     onFortuneReportClick = onFortuneReportClick,
-                    modifier = Modifier.drawBackdrop(
-                        backdrop = rememberLayerBackdrop(),
-                        shape = { RoundedCornerShape(16.dp) },
-                        effects = {
-                            vibrancy()
-                            blur(Glass.Frost.toPx())
-                            lens(
-                                refractionHeight = Glass.Depth.toPx(),
-                                refractionAmount = Glass.Refraction.toPx(),
-                                depthEffect = true,
-                                chromaticAberration = true,
-                            )
-                        },
-                        onDrawSurface = { drawRect(TodakunColor.whiteOpacity10) },
-                    )
+                    modifier =
+                        Modifier.drawBackdrop(
+                            backdrop = rememberLayerBackdrop(),
+                            shape = { RoundedCornerShape(16.dp) },
+                            effects = {
+                                vibrancy()
+                                blur(Glass.Frost.toPx())
+                                lens(
+                                    refractionHeight = Glass.Depth.toPx(),
+                                    refractionAmount = Glass.Refraction.toPx(),
+                                    depthEffect = true,
+                                    chromaticAberration = true,
+                                )
+                            },
+                            onDrawSurface = { drawRect(TodakunColor.whiteOpacity10) },
+                        ),
                 )
             }
 
@@ -238,7 +241,6 @@ private object Glass {
     val Depth = 20.dp
     val Refraction = 80.dp
 }
-
 
 @Preview(showBackground = true, backgroundColor = 0xFF0A0E27, widthDp = 393, heightDp = 852)
 @Composable

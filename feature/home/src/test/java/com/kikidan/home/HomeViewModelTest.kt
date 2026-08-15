@@ -10,9 +10,9 @@ import com.kikidan.domain.usecase.GetHomeFortuneUseCase
 import com.kikidan.domain.usecase.GetLuckActionDetailUseCase
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.DetailSheetUiState
+import com.kikidan.home.model.FortuneReportState
 import com.kikidan.home.model.HomeSideEffect
 import com.kikidan.home.model.HomeState
-import com.kikidan.home.model.FortuneReportState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest

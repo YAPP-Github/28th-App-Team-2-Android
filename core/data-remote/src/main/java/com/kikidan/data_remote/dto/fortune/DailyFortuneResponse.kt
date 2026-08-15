@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class DailyFortuneResponse(
     val id: String,
     val score: Int = 0,
-    val title:String = "",
+    val title: String = "",
     val content: String = "",
     val luckyItems: List<String> = emptyList(),
     val cautionaryItems: List<String> = emptyList(),

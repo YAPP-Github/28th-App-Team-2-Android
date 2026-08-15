@@ -55,9 +55,9 @@ import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.fortune.FortuneCategory
-import com.kikidan.home.util.categoryLabel
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.FortuneReportState
+import com.kikidan.home.util.categoryLabel
 import com.kikidan.home.util.characterPainter
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -77,19 +77,21 @@ internal fun FortuneReportScreen(
     val hazeState = rememberHazeState()
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFF00010B))
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(Color(0xFF00010B)),
     ) {
         Image(
             painter = painterResource(R.drawable.img_result_background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             alignment = Alignment.TopCenter,
-            modifier = Modifier
-                .matchParentSize()
-                .hazeSource(state = hazeState),
-            alpha = 0.5f
+            modifier =
+                Modifier
+                    .matchParentSize()
+                    .hazeSource(state = hazeState),
+            alpha = 0.5f,
         )
         Column(
             modifier =
@@ -98,20 +100,20 @@ internal fun FortuneReportScreen(
                     .verticalScroll(rememberScrollState())
                     .statusBarsPadding()
                     .padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             FortuneReportHeader(onBackClick = onBackClick)
             Spacer(Modifier.height(24.dp))
 
             when (state) {
-                FortuneReportState.Loading, FortuneReportState.Failure  -> {
+                FortuneReportState.Loading, FortuneReportState.Failure -> {
                     Unit
                 }
 
                 is FortuneReportState.Success -> {
                     FortuneSummary(
                         scoreLabel = state.title,
-                        totalScore = state.totalScore
+                        totalScore = state.totalScore,
                     )
                     Spacer(Modifier.height(134.dp))
                     FortuneReportContentCard(
@@ -152,7 +154,7 @@ internal fun FortuneReportScreen(
 @Composable
 private fun ColumnScope.FortuneSummary(
     scoreLabel: String,
-    totalScore: Int
+    totalScore: Int,
 ) {
     val tooltipState = rememberTooltipState(isPersistent = true)
     LaunchedEffect(Unit) {
@@ -169,12 +171,12 @@ private fun ColumnScope.FortuneSummary(
         Spacer(modifier = Modifier.width(4.dp))
         TodakunWhiteTooltip(
             state = tooltipState,
-            text = stringResource(R.string.home_report_tooltip_contents)
+            text = stringResource(R.string.home_report_tooltip_contents),
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_tooltip_info),
                 contentDescription = null,
-                tint = TodakunColor.whiteOpacity50
+                tint = TodakunColor.whiteOpacity50,
             )
         }
     }
@@ -213,18 +215,20 @@ private fun FortuneReportHeader(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_chevron_left),
             contentDescription = stringResource(R.string.header_back_content_description),
             tint = TodakunColor.white,
-            modifier = Modifier
-                .size(20.dp)
-                .clickable(onClick = onBackClick),
+            modifier =
+                Modifier
+                    .size(20.dp)
+                    .clickable(onClick = onBackClick),
         )
     }
 }
@@ -239,31 +243,34 @@ private fun FortuneReportContentCard(
     val density = LocalDensity.current
 
     Box(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
         Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clip(RoundedCornerShape(16.dp))
-                .hazeEffect(hazeState) { blurRadius = 20.dp }
+            modifier =
+                Modifier
+                    .matchParentSize()
+                    .clip(RoundedCornerShape(16.dp))
+                    .hazeEffect(hazeState) { blurRadius = 20.dp },
         )
 
         Image(
             painter = totalScore.characterPainter(),
             contentDescription = stringResource(R.string.home_character_description),
             contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .height(180.dp)
-                .offset {
-                    IntOffset(x = 0, y = with(density) { -90.dp.toPx().toInt() })
-                },
+            modifier =
+                Modifier
+                    .align(Alignment.TopCenter)
+                    .height(180.dp)
+                    .offset {
+                        IntOffset(x = 0, y = with(density) { -90.dp.toPx().toInt() })
+                    },
         )
 
         Text(
-            modifier = Modifier
-                .padding(20.dp)
-                .padding(top = 112.dp),
+            modifier =
+                Modifier
+                    .padding(20.dp)
+                    .padding(top = 112.dp),
             text = content,
             style = TodakunTypography.body1Medium,
             color = TodakunColor.white,
@@ -279,13 +286,13 @@ private fun FortuneReportScoreCard(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .hazeEffect(hazeState) {
-                blurRadius = 20.dp
-            }
-            .padding(20.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .hazeEffect(hazeState) {
+                    blurRadius = 20.dp
+                }.padding(20.dp),
     ) {
         Text(
             text = stringResource(R.string.home_report_detail_score_title),
@@ -309,8 +316,9 @@ private fun FortuneReportScoreCard(
             shape = RoundedCornerShape(12.dp),
             border = BorderStroke(1.dp, TodakunColor.primary600),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent),
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
         ) {
             Text(
                 modifier = Modifier.padding(vertical = 10.dp),
@@ -337,12 +345,12 @@ private fun CategoryScoreProgressRow(
             Spacer(modifier = Modifier.width(4.dp))
             Box(
                 modifier = Modifier.size(20.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_right),
                     contentDescription = null,
-                    tint = TodakunColor.white
+                    tint = TodakunColor.white,
                 )
             }
         }
@@ -386,18 +394,18 @@ private fun FortuneReportItemsCard(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .hazeEffect(hazeState) { blurRadius = 20.dp }
-            .padding(20.dp)
-        ,
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .hazeEffect(hazeState) { blurRadius = 20.dp }
+                .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
             painter = painter,
             contentDescription = null,
-            modifier = Modifier.size(72.dp)
+            modifier = Modifier.size(72.dp),
         )
         Spacer(Modifier.height(20.dp))
         Text(
@@ -409,7 +417,7 @@ private fun FortuneReportItemsCard(
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(horizontal = 38.dp)
+            modifier = Modifier.padding(horizontal = 38.dp),
         ) {
             items.forEach { item ->
                 Box(
@@ -447,7 +455,7 @@ private fun FortuneReportScreenPreview() {
                         ),
                     luckyItems = listOf("노란색", "마스크", "운동화").toPersistentList(),
                     cautionaryItems = listOf("노란색", "마스크", "운동화").toPersistentList(),
-                    title = "오늘은 새로운 사람이나 기회가 자연스럽게 다가오는 흐름이 있어요."
+                    title = "오늘은 새로운 사람이나 기회가 자연스럽게 다가오는 흐름이 있어요.",
                 ),
             onBackClick = {},
             onNavigateToLuckAction = {},

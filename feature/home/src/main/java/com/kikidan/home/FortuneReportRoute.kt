@@ -16,10 +16,10 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun FortuneReportRoute(
-    fortuneId:String,
+    fortuneId: String,
     snackbarHostState: SnackbarHostState,
-    onNavigateToBack:()-> Unit,
-    onNavigateToLuckAction:()-> Unit,
+    onNavigateToBack: () -> Unit,
+    onNavigateToLuckAction: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FortuneReportViewModel = hiltViewModel(),
 ) {
@@ -37,6 +37,6 @@ fun FortuneReportRoute(
         state = state,
         onBackClick = onNavigateToBack,
         onNavigateToLuckAction = onNavigateToLuckAction,
-        modifier = modifier
+        modifier = modifier,
     )
 }

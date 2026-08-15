@@ -18,7 +18,6 @@ sealed interface HomeState {
     data object Failure : HomeState
 }
 
-
 data class CategoryScoreUiModel(
     val luckActionId: String,
     val category: FortuneCategory,
