@@ -1,5 +1,6 @@
 package com.kikidan.domain.repository
 
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.FortuneRecord
 import com.kikidan.domain.model.fortune.TodayFortune
 import java.time.LocalDate
@@ -12,4 +13,6 @@ interface FortuneRepository {
 
     // 조회 가능한 범위(이번 달 + 지난달) 중 기록이 존재하는 가장 오래된 날짜. 기록이 전혀 없으면 null.
     suspend fun getEarliestFortuneDate(): Result<LocalDate?>
+
+    suspend fun getDailyFortuneDetail(dailyFortuneId: String): Result<DailyFortuneDetail>
 }

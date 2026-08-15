@@ -1,6 +1,7 @@
 package com.kikidan.data.fake
 
 import com.kikidan.data.datasource.RemoteFortuneDataSource
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.model.fortune.TodayFortune
@@ -19,6 +20,10 @@ class FakeRemoteFortuneDataSource : RemoteFortuneDataSource {
     var throwOnGetFortuneDetailScores: Throwable? = null
     var lastRequestedDailyFortuneId: String? = null
 
+    var dailyFortuneDetail: DailyFortuneDetail? = null
+    var throwOnGetDailyFortuneDetail: Throwable? = null
+    var lastRequestedDailyFortuneDetailId: String? = null
+
     override suspend fun getTodayFortune(): TodayFortune {
         throwOnGetTodayFortune?.let { throw it }
         return todayFortune!!
@@ -34,5 +39,11 @@ class FakeRemoteFortuneDataSource : RemoteFortuneDataSource {
         lastRequestedDailyFortuneId = dailyFortuneId
         throwOnGetFortuneDetailScores?.let { throw it }
         return detailScores
+    }
+
+    override suspend fun getDailyFortuneDetail(dailyFortuneId: String): DailyFortuneDetail {
+        lastRequestedDailyFortuneDetailId = dailyFortuneId
+        throwOnGetDailyFortuneDetail?.let { throw it }
+        return dailyFortuneDetail!!
     }
 }

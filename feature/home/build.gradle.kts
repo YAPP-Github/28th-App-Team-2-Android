@@ -16,6 +16,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kyant.backdrop)
     implementation(libs.kotlinx.coroutines.core)
-
+    implementation(libs.haze)
     testImplementation(libs.kotlinx.coroutines.test)
 }

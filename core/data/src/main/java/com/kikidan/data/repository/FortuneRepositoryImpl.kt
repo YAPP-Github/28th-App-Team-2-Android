@@ -1,6 +1,7 @@
 package com.kikidan.data.repository
 
 import com.kikidan.data.datasource.RemoteFortuneDataSource
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneRecord
 import com.kikidan.domain.model.fortune.TodayFortune
@@ -31,6 +32,9 @@ class FortuneRepositoryImpl
 
         override suspend fun getEarliestFortuneDate(): Result<LocalDate?> =
             runCatchingCancellable { allowedHistoryEntries().minOfOrNull { it.fortuneDate } }
+
+        override suspend fun getDailyFortuneDetail(dailyFortuneId: String): Result<DailyFortuneDetail> =
+            runCatchingCancellable { remoteFortuneDataSource.getDailyFortuneDetail(dailyFortuneId) }
 
         // API가 허용하는 조회 범위(이번 달 1일~오늘, 지난달 전체)를 합쳐서 반환한다.
         private suspend fun allowedHistoryEntries(): List<DailyFortuneHistoryEntry> {

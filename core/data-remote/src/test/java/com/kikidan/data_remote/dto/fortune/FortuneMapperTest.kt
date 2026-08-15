@@ -144,4 +144,27 @@ class FortuneMapperTest {
         assertEquals(1, domain.size)
         assertEquals(FortuneCategory.HEALTH, domain[0].category)
     }
+
+    @Test
+    fun `DailyFortuneResponse가 DailyFortuneDetail 도메인으로 변환된다`() {
+        val response =
+            DailyFortuneResponse(
+                id = "f-1",
+                score = 72,
+                content = "오늘은 좋은 하루예요.",
+                luckyItems = listOf("노란색", "운동화"),
+                cautionaryItems = listOf("셔츠"),
+                luckActionScores = listOf(LuckActionScoreResponse("s-1", "MONEY", 90)),
+            )
+
+        val domain = response.toDetail()
+
+        assertEquals("f-1", domain.id)
+        assertEquals(72, domain.totalScore)
+        assertEquals("오늘은 좋은 하루예요.", domain.content)
+        assertEquals(listOf("노란색", "운동화"), domain.luckyItems)
+        assertEquals(listOf("셔츠"), domain.cautionaryItems)
+        assertEquals(1, domain.scores.size)
+        assertEquals(FortuneCategory.MONEY, domain.scores[0].category)
+    }
 }

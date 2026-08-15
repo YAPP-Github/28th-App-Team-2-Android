@@ -4,9 +4,11 @@ import com.kikidan.data.datasource.RemoteFortuneDataSource
 import com.kikidan.data_remote.dto.fortune.DailyFortuneHistoryResponse
 import com.kikidan.data_remote.dto.fortune.DailyFortuneResponse
 import com.kikidan.data_remote.dto.fortune.TodayFortuneResponse
+import com.kikidan.data_remote.dto.fortune.toDetail
 import com.kikidan.data_remote.dto.fortune.toDomain
 import com.kikidan.data_remote.dto.fortune.toFortuneScores
 import com.kikidan.data_remote.util.bodyNotNull
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.model.fortune.TodayFortune
@@ -42,6 +44,13 @@ class RemoteFortuneDataSourceImpl
                 .get(detailUrl(dailyFortuneId))
                 .bodyNotNull<DailyFortuneResponse>()
                 .toFortuneScores()
+
+        override suspend fun getDailyFortuneDetail(dailyFortuneId: String): DailyFortuneDetail =
+            client
+                .get()
+                .get(detailUrl(dailyFortuneId))
+                .bodyNotNull<DailyFortuneResponse>()
+                .toDetail()
 
         companion object {
             private const val DAILY_FORTUNES_URL = "api/v1/daily-fortunes"
