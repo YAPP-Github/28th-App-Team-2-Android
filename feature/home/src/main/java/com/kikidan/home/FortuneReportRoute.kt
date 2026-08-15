@@ -20,6 +20,7 @@ fun FortuneReportRoute(
     snackbarHostState: SnackbarHostState,
     onNavigateToBack: () -> Unit,
     onNavigateToLuckAction: () -> Unit,
+    onNavigateToChat: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FortuneReportViewModel = hiltViewModel(),
 ) {
@@ -37,6 +38,7 @@ fun FortuneReportRoute(
         state = state,
         onBackClick = onNavigateToBack,
         onNavigateToLuckAction = onNavigateToLuckAction,
+        onNavigateToChat = onNavigateToChat,
         modifier = modifier,
     )
 }

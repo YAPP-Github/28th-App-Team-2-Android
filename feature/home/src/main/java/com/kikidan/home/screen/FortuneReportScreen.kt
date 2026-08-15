@@ -1,8 +1,15 @@
 package com.kikidan.home.screen
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,7 +40,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
@@ -54,6 +69,7 @@ import com.kikidan.designsystem.component.TodakunWhiteTooltip
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
+import com.kikidan.designsystem.util.noRippleClickable
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.FortuneReportState
@@ -66,15 +82,28 @@ import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.first
 
 @Composable
 internal fun FortuneReportScreen(
     state: FortuneReportState,
     onBackClick: () -> Unit,
     onNavigateToLuckAction: () -> Unit,
+    onNavigateToChat: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hazeState = rememberHazeState()
+    val scrollState = rememberScrollState()
+    val density = LocalDensity.current
+    var isTooltipVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(scrollState) {
+        val threshold = with(density) { 1100.dp.toPx() }
+        snapshotFlow {
+            scrollState.value + scrollState.viewportSize > threshold
+        }.first { it }
+        isTooltipVisible = true
+    }
 
     Box(
         modifier =
@@ -97,7 +126,7 @@ internal fun FortuneReportScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .statusBarsPadding()
                     .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -145,8 +174,18 @@ internal fun FortuneReportScreen(
                     )
                 }
             }
-            Spacer(Modifier.height(44.dp))
+            Spacer(Modifier.height(158.dp))
         }
+
+        AskToChatFloatingButton(
+            isTooltipVisible = isTooltipVisible,
+            modifier =
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(16.dp)
+                    .noRippleClickable(onClick = onNavigateToChat),
+        )
     }
 }
 
@@ -434,6 +473,76 @@ private fun FortuneReportItemsCard(
     }
 }
 
+@Composable
+private fun AskToChatFloatingButton(
+    isTooltipVisible: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val density = LocalDensity.current
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AnimatedVisibility(
+            visible = isTooltipVisible,
+            enter =
+                expandHorizontally(
+                    expandFrom = Alignment.End,
+                ) + fadeIn(),
+            exit =
+                shrinkHorizontally(
+                    shrinkTowards = Alignment.End,
+                ) + fadeOut(),
+        ) {
+            Box(
+                modifier =
+                    Modifier.background(
+                        color = TodakunColor.whiteOpacity90,
+                        shape = RoundedCornerShape(99.dp),
+                    ),
+            ) {
+                Text(
+                    modifier = Modifier.padding(vertical = 5.dp, horizontal = 16.dp),
+                    text = stringResource(R.string.home_report_floating_button_tooltip),
+                    style = TodakunTypography.body3Medium,
+                    color = TodakunColor.gray975,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Box {
+            Box(
+                modifier =
+                    Modifier
+                        .size(60.dp)
+                        .border(width = 1.dp, color = TodakunColor.primary300, shape = CircleShape)
+                        .clip(CircleShape),
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.img_todak_chat_thumbnail),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    alignment =
+                        BiasAlignment(
+                            horizontalBias = 0f,
+                            verticalBias = 0.2f,
+                        ),
+                )
+            }
+            Image(
+                modifier =
+                    Modifier.offset {
+                        IntOffset(x = 0, y = with(density) { -10.dp.toPx().toInt() })
+                    },
+                painter = painterResource(R.drawable.ic_todak_floating_bubble),
+                contentDescription = null,
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFF0A0E27, widthDp = 393, heightDp = 1400)
 @Composable
 private fun FortuneReportScreenPreview() {
@@ -459,6 +568,7 @@ private fun FortuneReportScreenPreview() {
                 ),
             onBackClick = {},
             onNavigateToLuckAction = {},
+            onNavigateToChat = {},
         )
     }
 }
