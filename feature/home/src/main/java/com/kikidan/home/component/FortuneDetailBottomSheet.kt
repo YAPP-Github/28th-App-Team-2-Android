@@ -197,18 +197,6 @@ private fun LuckActionBox(
     }
 }
 
-@Composable
-private fun categoryLabel(category: FortuneCategory): String =
-    stringResource(
-        when (category) {
-            FortuneCategory.RELATIONSHIP -> R.string.home_category_score_relationship
-            FortuneCategory.LOVE -> R.string.home_category_score_love
-            FortuneCategory.ACHIEVEMENT -> R.string.home_category_score_achievement
-            FortuneCategory.HEALTH -> R.string.home_category_score_health
-            FortuneCategory.MONEY -> R.string.home_category_score_money
-        },
-    )
-
 @Preview
 @Composable
 private fun FortuneDetailBottomSheetSuccessPreview() {

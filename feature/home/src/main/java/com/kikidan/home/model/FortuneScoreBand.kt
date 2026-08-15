@@ -1,4 +1,4 @@
-package com.kikidan.home.component
+package com.kikidan.home.model
 
 import androidx.compose.ui.graphics.Color
 import com.kikidan.designsystem.theme.TodakunColor

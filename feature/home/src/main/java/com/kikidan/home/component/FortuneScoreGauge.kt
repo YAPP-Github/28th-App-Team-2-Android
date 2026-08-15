@@ -23,6 +23,7 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
+import com.kikidan.home.model.FortuneScoreBand
 
 @Composable
 internal fun FortuneScoreGauge(

@@ -1,5 +1,6 @@
 package com.kikidan.home.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -38,20 +38,12 @@ import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.home.component.FortuneDetailBottomSheet
 import com.kikidan.home.component.HomeCategoryScoreRow
 import com.kikidan.home.component.HomeLuckActionBanner
-import com.kikidan.home.component.HomeSajuSection
+import com.kikidan.home.component.SajuContents
 import com.kikidan.home.component.HomeTodayScoreCard
+import com.kikidan.home.component.glassCard
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.HomeState
-import com.kyant.backdrop.backdrops.layerBackdrop
-import com.kyant.backdrop.backdrops.rememberLayerBackdrop
-import com.kyant.backdrop.drawBackdrop
-import com.kyant.backdrop.effects.blur
-import com.kyant.backdrop.effects.lens
-import com.kyant.backdrop.effects.vibrancy
-import com.kyant.backdrop.highlight.Highlight
-import com.kyant.backdrop.highlight.HighlightStyle
-import com.kyant.backdrop.shadow.InnerShadow
-import com.kyant.backdrop.shadow.Shadow
+import com.kikidan.home.util.toCharacterPainter
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -59,9 +51,23 @@ internal fun HomeScreen(
     state: HomeState,
     onCategoryClick: (String) -> Unit,
     onDetailDismiss: () -> Unit,
+    onReportClick: () -> Unit,
+    onReportDismiss: () -> Unit,
     onNavigateToLuckAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (state is HomeState.Success && state.report != null) {
+        BackHandler(onBack = onReportDismiss)
+        FortuneReportScreen(
+            totalScore = state.totalScore,
+            report = state.report,
+            onBackClick = onReportDismiss,
+            onNavigateToLuckAction = onNavigateToLuckAction,
+            modifier = modifier,
+        )
+        return
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(R.drawable.img_result_background),
@@ -83,14 +89,12 @@ internal fun HomeScreen(
                 }
 
                 is HomeState.Success -> {
-                    HomeDarkSection(
+                    SajuSummary(
                         totalScore = state.totalScore,
                         scoreLabel = state.scoreLabel,
-                        onFortuneReportClick = {
-                            // TODO(#38): feature:fortune-report 머지 후 연결
-                        },
+                        onFortuneReportClick = onReportClick,
                     )
-                    HomeWhiteSection(
+                    HomeContents(
                         state = state,
                         onCategoryClick = onCategoryClick,
                         onNavigateToLuckAction = onNavigateToLuckAction,
@@ -109,7 +113,7 @@ internal fun HomeScreen(
 }
 
 @Composable
-private fun HomeDarkSection(
+private fun SajuSummary(
     totalScore: Int,
     scoreLabel: String,
     onFortuneReportClick: () -> Unit,
@@ -136,16 +140,15 @@ private fun HomeDarkSection(
                         text = scoreLabel,
                         style = TodakunTypography.heading3Bold,
                         color = TodakunColor.white,
-                        modifier = Modifier.weight(1f).padding(bottom = 24.dp),
+                        modifier = Modifier.weight(1f),
                     )
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 Image(
-                    painter = painterResource(R.drawable.img_home_character),
+                    painter = totalScore.toCharacterPainter(),
                     contentDescription = stringResource(R.string.home_character_description),
                     contentScale = ContentScale.Fit,
-                    modifier =
-                        Modifier.height(102.dp),
+                    modifier = Modifier.height(102.dp),
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -154,22 +157,7 @@ private fun HomeDarkSection(
                 HomeTodayScoreCard(
                     totalScore = totalScore,
                     onFortuneReportClick = onFortuneReportClick,
-                    modifier =
-                        Modifier.drawBackdrop(
-                            backdrop = rememberLayerBackdrop(),
-                            shape = { RoundedCornerShape(16.dp) },
-                            effects = {
-                                vibrancy()
-                                blur(Glass.Frost.toPx())
-                                lens(
-                                    refractionHeight = Glass.Depth.toPx(),
-                                    refractionAmount = Glass.Refraction.toPx(),
-                                    depthEffect = true,
-                                    chromaticAberration = true,
-                                )
-                            },
-                            onDrawSurface = { drawRect(TodakunColor.whiteOpacity10) },
-                        ),
+                    modifier = Modifier.glassCard(),
                 )
             }
 
@@ -207,7 +195,7 @@ private fun HomeHeader(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun HomeWhiteSection(
+private fun HomeContents(
     state: HomeState.Success,
     onCategoryClick: (String) -> Unit,
     onNavigateToLuckAction: () -> Unit,
@@ -226,7 +214,7 @@ private fun HomeWhiteSection(
             onCategoryClick = onCategoryClick,
         )
         Spacer(Modifier.height(44.dp))
-        HomeSajuSection()
+        SajuContents()
         Spacer(Modifier.height(30.dp))
         HomeLuckActionBanner(
             onNavigateToLuckAction = onNavigateToLuckAction,
@@ -236,11 +224,6 @@ private fun HomeWhiteSection(
     }
 }
 
-private object Glass {
-    val Frost = 15.dp
-    val Depth = 20.dp
-    val Refraction = 80.dp // refraction 80  (0~100 → 0~50dp)
-}
 
 @Preview(showBackground = true, backgroundColor = 0xFF0A0E27, widthDp = 393, heightDp = 852)
 @Composable
@@ -262,6 +245,8 @@ private fun HomeScreenSuccessPreview() {
                 ),
             onCategoryClick = {},
             onDetailDismiss = {},
+            onReportClick = {},
+            onReportDismiss = {},
             onNavigateToLuckAction = {},
         )
     }

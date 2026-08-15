@@ -55,7 +55,7 @@ private val SajuItems =
     )
 
 @Composable
-internal fun HomeSajuSection(modifier: Modifier = Modifier) {
+internal fun SajuContents(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -125,6 +125,6 @@ private fun SajuCard(
 
 @Preview(showBackground = true)
 @Composable
-private fun HomeSajuSectionPreview() {
-    TodakunTheme { HomeSajuSection() }
+private fun SajuContentsPreview() {
+    TodakunTheme { SajuContents() }
 }
