@@ -38,7 +38,9 @@ fun FortuneReportRoute(
         state = state,
         onBackClick = onNavigateToBack,
         onNavigateToLuckAction = onNavigateToLuckAction,
+        onDetailDismiss = viewModel::closeDetail,
         onNavigateToChat = onNavigateToChat,
+        onScoreProgressRowClick = viewModel::openDetail,
         modifier = modifier,
     )
 }

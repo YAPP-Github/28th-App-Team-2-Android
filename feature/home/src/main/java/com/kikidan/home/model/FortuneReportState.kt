@@ -12,6 +12,7 @@ sealed interface FortuneReportState {
         val categories: PersistentList<CategoryScoreUiModel>,
         val luckyItems: PersistentList<String>,
         val cautionaryItems: PersistentList<String>,
+        val detail: DetailSheetUiState? = null
     ) : FortuneReportState
 
     data object Failure : FortuneReportState

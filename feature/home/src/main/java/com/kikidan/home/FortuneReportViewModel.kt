@@ -2,7 +2,9 @@ package com.kikidan.home
 
 import androidx.lifecycle.ViewModel
 import com.kikidan.domain.usecase.GetDailyFortuneDetailUseCase
+import com.kikidan.domain.usecase.GetLuckActionDetailUseCase
 import com.kikidan.home.model.CategoryScoreUiModel
+import com.kikidan.home.model.DetailSheetUiState
 import com.kikidan.home.model.FortuneReportSideEffect
 import com.kikidan.home.model.FortuneReportState
 import com.kikidan.home.model.HomeSideEffect
@@ -18,6 +20,7 @@ class FortuneReportViewModel
     @Inject
     constructor(
         private val getDailyFortuneDetail: GetDailyFortuneDetailUseCase,
+        private val getLuckActionDetail: GetLuckActionDetailUseCase
     ) : ViewModel(),
         ContainerHost<FortuneReportState, FortuneReportSideEffect> {
         override val container = container<FortuneReportState, FortuneReportSideEffect>(FortuneReportState.Loading)
@@ -46,4 +49,35 @@ class FortuneReportViewModel
                         reduce { FortuneReportState.Failure }
                     }
             }
+
+    fun openDetail(luckActionId: String) =
+        intent {
+            val current = state as? FortuneReportState.Success ?: return@intent
+            val category = current.categories.first { it.luckActionId == luckActionId }.category
+            reduce { (state as? FortuneReportState.Success)?.copy(detail = DetailSheetUiState.Loading(category)) ?: state }
+            getLuckActionDetail(luckActionId)
+                .onSuccess { detail ->
+                    reduce {
+                        (state as? FortuneReportState.Success)?.copy(
+                            detail =
+                                DetailSheetUiState.Success(
+                                    category = detail.category,
+                                    score = detail.score,
+                                    actionTitle = detail.title,
+                                    content = detail.content,
+                                ),
+                        ) ?: state
+                    }
+                }.onFailure {
+                    postSideEffect(FortuneReportSideEffect.Error(it))
+                    reduce { (state as? FortuneReportState.Success)?.copy(detail = null) ?: state }
+                }
+        }
+
+    fun closeDetail() =
+        intent {
+            reduce { (state as? FortuneReportState.Success)?.copy(detail = null) ?: state }
+        }
+
+
     }

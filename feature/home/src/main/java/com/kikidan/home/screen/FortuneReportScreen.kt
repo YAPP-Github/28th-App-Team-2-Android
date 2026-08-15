@@ -1,6 +1,5 @@
 package com.kikidan.home.screen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -40,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,10 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -63,7 +59,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunWhiteTooltip
 import com.kikidan.designsystem.theme.TodakunColor
@@ -71,8 +66,10 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.designsystem.util.noRippleClickable
 import com.kikidan.domain.model.fortune.FortuneCategory
+import com.kikidan.home.component.FortuneDetailBottomSheet
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.FortuneReportState
+import com.kikidan.home.model.HomeState
 import com.kikidan.home.util.categoryLabel
 import com.kikidan.home.util.characterPainter
 import dev.chrisbanes.haze.HazeState
@@ -88,6 +85,8 @@ import kotlinx.coroutines.flow.first
 internal fun FortuneReportScreen(
     state: FortuneReportState,
     onBackClick: () -> Unit,
+    onScoreProgressRowClick:(String) -> Unit,
+    onDetailDismiss:()->Unit,
     onNavigateToLuckAction: () -> Unit,
     onNavigateToChat: () -> Unit,
     modifier: Modifier = Modifier,
@@ -155,6 +154,7 @@ internal fun FortuneReportScreen(
                         categories = state.categories,
                         onNavigateToLuckAction = onNavigateToLuckAction,
                         hazeState = hazeState,
+                        onScoreProgressRowClick = onScoreProgressRowClick
                     )
                     Spacer(Modifier.height(20.dp))
                     FortuneReportItemsCard(
@@ -186,6 +186,13 @@ internal fun FortuneReportScreen(
                     .padding(16.dp)
                     .noRippleClickable(onClick = onNavigateToChat),
         )
+
+        if (state is FortuneReportState.Success && state.detail != null) {
+            FortuneDetailBottomSheet(
+                detail = state.detail,
+                onDismissRequest = onDetailDismiss,
+            )
+        }
     }
 }
 
@@ -320,6 +327,7 @@ private fun FortuneReportContentCard(
 @Composable
 private fun FortuneReportScoreCard(
     categories: PersistentList<CategoryScoreUiModel>,
+    onScoreProgressRowClick:(String)->Unit,
     hazeState: HazeState,
     onNavigateToLuckAction: () -> Unit,
     modifier: Modifier = Modifier,
@@ -331,7 +339,8 @@ private fun FortuneReportScoreCard(
                 .clip(RoundedCornerShape(16.dp))
                 .hazeEffect(hazeState) {
                     blurRadius = 20.dp
-                }.padding(20.dp),
+                }
+                .padding(20.dp),
     ) {
         Text(
             text = stringResource(R.string.home_report_detail_score_title),
@@ -346,7 +355,9 @@ private fun FortuneReportScoreCard(
         )
         Spacer(Modifier.height(16.dp))
         categories.forEach { category ->
-            CategoryScoreProgressRow(category = category)
+            CategoryScoreProgressRow(category = category, modifier = Modifier.noRippleClickable(
+                onClick = { onScoreProgressRowClick(category.luckActionId) }
+            ))
             Spacer(Modifier.height(16.dp))
         }
         Spacer(Modifier.height(16.dp))
@@ -569,6 +580,8 @@ private fun FortuneReportScreenPreview() {
             onBackClick = {},
             onNavigateToLuckAction = {},
             onNavigateToChat = {},
+            onScoreProgressRowClick = {},
+            onDetailDismiss = {}
         )
     }
 }
