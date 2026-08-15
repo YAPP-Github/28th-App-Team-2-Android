@@ -1,15 +1,18 @@
 package com.kikidan.home
 
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.model.fortune.LuckActionDetail
 import com.kikidan.domain.model.fortune.TodayFortune
+import com.kikidan.domain.usecase.GetDailyFortuneDetailUseCase
 import com.kikidan.domain.usecase.GetHomeFortuneUseCase
 import com.kikidan.domain.usecase.GetLuckActionDetailUseCase
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.DetailSheetUiState
 import com.kikidan.home.model.HomeSideEffect
 import com.kikidan.home.model.HomeState
+import com.kikidan.home.model.FortuneReportState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
@@ -273,6 +276,92 @@ class HomeViewModelTest {
             }
         }
 
+    @Test
+    fun `openReport 성공 시 report가 Loading에서 Success로 전이된다`() =
+        runTest {
+            val detail =
+                DailyFortuneDetail(
+                    id = "f-today",
+                    totalScore = 72,
+                    content = "오늘은 좋은 하루예요.",
+                    luckyItems = listOf("노란색"),
+                    cautionaryItems = listOf("셔츠"),
+                    scores = listOf(FortuneScore(FortuneCategory.LOVE, 84, "la-1")),
+                )
+            val fakeFortuneRepository =
+                FakeFortuneRepository().apply {
+                    dailyFortuneDetailResult =
+                        Result.success(detail)
+                }
+            val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
+            val initial =
+                HomeState.Success(
+                    totalScore = 72,
+                    scoreLabel = "흐름 좋은 날",
+                    fortuneId = "f-today",
+                    categories = persistentListOf(CategoryScoreUiModel("la-1", FortuneCategory.LOVE, 84)),
+                )
+
+            vm.test(this, initialState = initial) {
+                containerHost.openReport()
+                val loading = awaitState() as HomeState.Success
+                assertTrue(loading.report is FortuneReportState.Loading)
+                assertEquals("f-today", fakeFortuneRepository.lastRequestedDailyFortuneId)
+
+                val success = awaitState() as HomeState.Success
+                val reportSuccess = success.report as FortuneReportState.Success
+                assertEquals(72, reportSuccess.totalScore)
+                assertEquals("오늘은 좋은 하루예요.", reportSuccess.content)
+                assertEquals(listOf("노란색"), reportSuccess.luckyItems)
+                assertEquals(listOf("셔츠"), reportSuccess.cautionaryItems)
+            }
+        }
+
+    @Test
+    fun `openReport 실패 시 Error 사이드이펙트와 report null로 복귀한다`() =
+        runTest {
+            val fakeFortuneRepository =
+                FakeFortuneRepository().apply { dailyFortuneDetailResult = Result.failure(IllegalStateException()) }
+            val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
+            val initial =
+                HomeState.Success(
+                    totalScore = 72,
+                    scoreLabel = "흐름 좋은 날",
+                    fortuneId = "f-today",
+                    categories = persistentListOf(CategoryScoreUiModel("la-1", FortuneCategory.LOVE, 84)),
+                )
+
+            vm.test(this, initialState = initial) {
+                containerHost.openReport()
+                awaitState() // Loading report
+                val se = awaitSideEffect()
+                assertTrue(se is HomeSideEffect.Error)
+                val settled = awaitState() as HomeState.Success
+                assertNull(settled.report)
+            }
+        }
+
+    @Test
+    fun `closeReport 호출 시 report가 null이 되고 나머지 상태는 유지된다`() =
+        runTest {
+            val vm = viewModel(FakeFortuneRepository(), FakeLuckActionRepository())
+            val initial =
+                HomeState.Success(
+                    totalScore = 72,
+                    scoreLabel = "흐름 좋은 날",
+                    fortuneId = "f-today",
+                    categories = persistentListOf(CategoryScoreUiModel("la-1", FortuneCategory.LOVE, 84)),
+                    report = FortuneReportState.Loading,
+                )
+
+            vm.test(this, initialState = initial) {
+                containerHost.closeReport()
+                val settled = awaitState() as HomeState.Success
+                assertNull(settled.report)
+                assertEquals(72, settled.totalScore)
+            }
+        }
+
     private fun viewModel(
         fakeFortuneRepository: FakeFortuneRepository,
         fakeLuckActionRepository: FakeLuckActionRepository,
@@ -280,5 +369,6 @@ class HomeViewModelTest {
         HomeViewModel(
             getHomeFortune = GetHomeFortuneUseCase(fakeFortuneRepository),
             getLuckActionDetail = GetLuckActionDetailUseCase(fakeLuckActionRepository),
+            getDailyFortuneDetail = GetDailyFortuneDetailUseCase(fakeFortuneRepository),
         )
 }
