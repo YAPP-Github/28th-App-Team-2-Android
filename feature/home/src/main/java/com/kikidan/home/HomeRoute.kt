@@ -17,6 +17,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun HomeRoute(
     snackbarHostState: SnackbarHostState,
     onNavigateToLuckAction: () -> Unit,
+    onNavigateToReport:(String)-> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -35,6 +36,7 @@ fun HomeRoute(
         state = state,
         onCategoryClick = viewModel::openDetail,
         onDetailDismiss = viewModel::closeDetail,
+        onNavigateToReport = onNavigateToReport,
         onNavigateToLuckAction = onNavigateToLuckAction,
         modifier = modifier,
     )

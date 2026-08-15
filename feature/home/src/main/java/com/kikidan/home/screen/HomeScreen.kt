@@ -1,6 +1,5 @@
 package com.kikidan.home.screen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,10 +40,14 @@ import com.kikidan.home.component.HomeCategoryScoreRow
 import com.kikidan.home.component.HomeLuckActionBanner
 import com.kikidan.home.component.SajuContents
 import com.kikidan.home.component.HomeTodayScoreCard
-import com.kikidan.home.component.glassCard
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.HomeState
-import com.kikidan.home.util.toCharacterPainter
+import com.kikidan.home.util.characterPainter
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.lens
+import com.kyant.backdrop.effects.vibrancy
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -51,30 +55,21 @@ internal fun HomeScreen(
     state: HomeState,
     onCategoryClick: (String) -> Unit,
     onDetailDismiss: () -> Unit,
-    onReportClick: () -> Unit,
-    onReportDismiss: () -> Unit,
+    onNavigateToReport: (String) -> Unit,
     onNavigateToLuckAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (state is HomeState.Success && state.report != null) {
-        BackHandler(onBack = onReportDismiss)
-        FortuneReportScreen(
-            totalScore = state.totalScore,
-            report = state.report,
-            onBackClick = onReportDismiss,
-            onNavigateToLuckAction = onNavigateToLuckAction,
-            modifier = modifier,
-        )
-        return
-    }
-
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .background(Color(0xFF00010B))
+    ) {
         Image(
             painter = painterResource(R.drawable.img_result_background),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             alignment = Alignment.TopCenter,
             modifier = Modifier.matchParentSize(),
+            alpha = 0.5f
         )
         Column(
             modifier =
@@ -92,7 +87,7 @@ internal fun HomeScreen(
                     SajuSummary(
                         totalScore = state.totalScore,
                         scoreLabel = state.scoreLabel,
-                        onFortuneReportClick = onReportClick,
+                        onFortuneReportClick = { onNavigateToReport(state.fortuneId) },
                     )
                     HomeContents(
                         state = state,
@@ -145,7 +140,7 @@ private fun SajuSummary(
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 Image(
-                    painter = totalScore.toCharacterPainter(),
+                    painter = totalScore.characterPainter(),
                     contentDescription = stringResource(R.string.home_character_description),
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.height(102.dp),
@@ -157,7 +152,21 @@ private fun SajuSummary(
                 HomeTodayScoreCard(
                     totalScore = totalScore,
                     onFortuneReportClick = onFortuneReportClick,
-                    modifier = Modifier.glassCard(),
+                    modifier = Modifier.drawBackdrop(
+                        backdrop = rememberLayerBackdrop(),
+                        shape = { RoundedCornerShape(16.dp) },
+                        effects = {
+                            vibrancy()
+                            blur(Glass.Frost.toPx())
+                            lens(
+                                refractionHeight = Glass.Depth.toPx(),
+                                refractionAmount = Glass.Refraction.toPx(),
+                                depthEffect = true,
+                                chromaticAberration = true,
+                            )
+                        },
+                        onDrawSurface = { drawRect(TodakunColor.whiteOpacity10) },
+                    )
                 )
             }
 
@@ -224,6 +233,12 @@ private fun HomeContents(
     }
 }
 
+private object Glass {
+    val Frost = 15.dp
+    val Depth = 20.dp
+    val Refraction = 80.dp
+}
+
 
 @Preview(showBackground = true, backgroundColor = 0xFF0A0E27, widthDp = 393, heightDp = 852)
 @Composable
@@ -245,8 +260,7 @@ private fun HomeScreenSuccessPreview() {
                 ),
             onCategoryClick = {},
             onDetailDismiss = {},
-            onReportClick = {},
-            onReportDismiss = {},
+            onNavigateToReport = {},
             onNavigateToLuckAction = {},
         )
     }

@@ -10,12 +10,14 @@ sealed interface HomeState {
     data class Success(
         val totalScore: Int,
         val scoreLabel: String,
+        val fortuneId: String = "",
         val categories: PersistentList<CategoryScoreUiModel> = persistentListOf(),
         val detail: DetailSheetUiState? = null,
     ) : HomeState
 
     data object Failure : HomeState
 }
+
 
 data class CategoryScoreUiModel(
     val luckActionId: String,
