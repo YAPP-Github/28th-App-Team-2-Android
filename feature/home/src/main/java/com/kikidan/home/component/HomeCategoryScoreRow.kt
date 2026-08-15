@@ -107,7 +107,7 @@ private fun CategoryScoreCard(
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "${item.score}점",
+            text = stringResource(R.string.home_today_score_value, item.score),
             style = TodakunTypography.body1Bold,
             color = TodakunColor.gray975,
         )

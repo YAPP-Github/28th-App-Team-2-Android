@@ -30,7 +30,8 @@ internal fun FortuneScoreGauge(
     score: Int,
     modifier: Modifier = Modifier,
 ) {
-    val band = FortuneScoreBand.of(score)
+    val safeScore = score.coerceIn(0, 100)
+    val band = FortuneScoreBand.of(safeScore)
     Box(
         modifier = modifier.size(width = 200.dp, height = 114.dp),
         contentAlignment = Alignment.BottomCenter,
@@ -57,7 +58,7 @@ internal fun FortuneScoreGauge(
             drawArc(
                 brush = Brush.horizontalGradient(listOf(band.start, band.end)),
                 startAngle = 180f,
-                sweepAngle = 180f * (score.coerceIn(0, 100) / 100f),
+                sweepAngle = 180f * (safeScore / 100f),
                 useCenter = false,
                 style = stroke,
                 topLeft = topLeft,
@@ -65,7 +66,7 @@ internal fun FortuneScoreGauge(
             )
         }
         Text(
-            text = stringResource(R.string.home_today_score_value, score),
+            text = stringResource(R.string.home_today_score_value, safeScore),
             style = TodakunTypography.heading2ExtraBold,
             color = band.end,
             modifier = Modifier.padding(bottom = 14.dp),

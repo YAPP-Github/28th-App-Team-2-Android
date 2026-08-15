@@ -26,7 +26,7 @@ fun FortuneReportRoute(
 ) {
     val state by viewModel.collectAsState()
     val defaultErrorMessage = stringResource(R.string.home_default_error)
-    LaunchedEffect(Unit) { viewModel.load(fortuneId) }
+    LaunchedEffect(fortuneId) { viewModel.load(fortuneId) }
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
