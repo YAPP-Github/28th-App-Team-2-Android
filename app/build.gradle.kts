@@ -69,6 +69,7 @@ dependencies {
     implementation(projects.feature.luckAction)
     implementation(projects.feature.home)
     implementation(projects.feature.chat)
+    implementation(projects.feature.notification)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
