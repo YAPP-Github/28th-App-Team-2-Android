@@ -35,7 +35,6 @@ private val CardShape = RoundedCornerShape(16.dp)
 @Composable
 internal fun HomeTodayScoreCard(
     totalScore: Int,
-    scoreLabel: String,
     onFortuneReportClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -55,19 +54,11 @@ internal fun HomeTodayScoreCard(
                 style = TodakunTypography.caption3Regular,
                 color = TodakunColor.whiteOpacity60,
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(R.string.home_today_score_value, totalScore),
-                    style = TodakunTypography.body2SemiBold,
-                    color = TodakunColor.white,
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = "∙ $scoreLabel",
-                    style = TodakunTypography.body3Medium,
-                    color = TodakunColor.primary300,
-                )
-            }
+            Text(
+                text = stringResource(R.string.home_today_score_value, totalScore),
+                style = TodakunTypography.body2SemiBold,
+                color = TodakunColor.white,
+            )
         }
         OutlinedButton(
             onClick = onFortuneReportClick,
@@ -98,7 +89,6 @@ private fun HomeTodayScoreCardPreview() {
     TodakunTheme {
         HomeTodayScoreCard(
             totalScore = 72,
-            scoreLabel = "흐름 좋은 날",
             onFortuneReportClick = {},
         )
     }

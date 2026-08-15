@@ -179,7 +179,6 @@
     <string name="onboarding_extra_relationship_remarried">재혼</string>
 
     <!-- Home -->
-    <string name="home_greeting">흘렸던 땀방울이 달콤한 결실로 돌아오는 하루예요</string>
     <string name="home_today_score_label">오늘의 점수</string>
     <string name="home_today_score_value">%1$d점</string>
     <string name="home_fortune_report_button">운세 리포트</string>

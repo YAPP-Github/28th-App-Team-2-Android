@@ -47,11 +47,10 @@ class HomeViewModelTest {
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
 
             vm.test(this) {
-                containerHost.load("안녕하세요")
+                containerHost.load()
                 val success = awaitState() as HomeState.Success
                 assertEquals(72, success.totalScore)
                 assertEquals("흐름 좋은 날", success.scoreLabel)
-                assertEquals("안녕하세요", success.greeting)
                 assertEquals(5, success.categories.size)
                 assertNull(success.detail)
             }
@@ -81,7 +80,7 @@ class HomeViewModelTest {
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
 
             vm.test(this) {
-                containerHost.load("안녕하세요")
+                containerHost.load()
                 val success = awaitState() as HomeState.Success
                 assertEquals(
                     listOf(FortuneCategory.RELATIONSHIP, FortuneCategory.MONEY, FortuneCategory.HEALTH),
@@ -100,7 +99,7 @@ class HomeViewModelTest {
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
 
             vm.test(this) {
-                containerHost.load("안녕하세요")
+                containerHost.load()
                 val se = awaitSideEffect()
                 assertTrue(se is HomeSideEffect.Error)
                 val failure = awaitState()
@@ -127,7 +126,6 @@ class HomeViewModelTest {
                 HomeState.Success(
                     totalScore = 72,
                     scoreLabel = "흐름 좋은 날",
-                    greeting = "안녕하세요",
                     categories = persistentListOf(CategoryScoreUiModel("la-1", FortuneCategory.LOVE, 84)),
                 )
 
@@ -156,7 +154,6 @@ class HomeViewModelTest {
                 HomeState.Success(
                     totalScore = 72,
                     scoreLabel = "흐름 좋은 날",
-                    greeting = "안녕하세요",
                     categories = persistentListOf(CategoryScoreUiModel("la-1", FortuneCategory.LOVE, 84)),
                 )
 
@@ -178,7 +175,6 @@ class HomeViewModelTest {
                 HomeState.Success(
                     totalScore = 72,
                     scoreLabel = "흐름 좋은 날",
-                    greeting = "안녕하세요",
                     categories = persistentListOf(CategoryScoreUiModel("la-1", FortuneCategory.LOVE, 84)),
                     detail = DetailSheetUiState.Loading(FortuneCategory.LOVE),
                 )
@@ -209,7 +205,6 @@ class HomeViewModelTest {
                 HomeState.Success(
                     totalScore = 72,
                     scoreLabel = "흐름 좋은 날",
-                    greeting = "안녕하세요",
                     categories = categories,
                 )
 
@@ -257,7 +252,6 @@ class HomeViewModelTest {
                 HomeState.Success(
                     totalScore = 72,
                     scoreLabel = "흐름 좋은 날",
-                    greeting = "안녕하세요",
                     categories = persistentListOf(CategoryScoreUiModel("la-1", FortuneCategory.LOVE, 84)),
                 )
             val detail = LuckActionDetail("la-1", FortuneCategory.LOVE, 84, "사랑 액션", "내용", false)
@@ -268,7 +262,7 @@ class HomeViewModelTest {
                 awaitState() // detail = Loading
 
                 // 대기 중 load() 완료 → totalScore=99로 갱신
-                containerHost.load("새 인사말")
+                containerHost.load()
                 awaitState() // totalScore=99, detail=null
 
                 // openDetail 응답 도착 — reduce는 최신 state(totalScore=99)를 기준으로 동작해야 함

@@ -84,7 +84,6 @@ internal fun HomeScreen(
 
                 is HomeState.Success -> {
                     HomeDarkSection(
-                        greeting = state.greeting,
                         totalScore = state.totalScore,
                         scoreLabel = state.scoreLabel,
                         onFortuneReportClick = {
@@ -111,7 +110,6 @@ internal fun HomeScreen(
 
 @Composable
 private fun HomeDarkSection(
-    greeting: String,
     totalScore: Int,
     scoreLabel: String,
     onFortuneReportClick: () -> Unit,
@@ -131,9 +129,9 @@ private fun HomeDarkSection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (greeting.isNotEmpty()) {
+                if (scoreLabel.isNotEmpty()) {
                     Text(
-                        text = greeting,
+                        text = scoreLabel,
                         style = TodakunTypography.heading3Bold,
                         color = TodakunColor.white,
                         modifier = Modifier.weight(1f).padding(bottom = 24.dp),
@@ -153,7 +151,6 @@ private fun HomeDarkSection(
             if (scoreLabel.isNotEmpty()) {
                 HomeTodayScoreCard(
                     totalScore = totalScore,
-                    scoreLabel = scoreLabel,
                     onFortuneReportClick = onFortuneReportClick,
                     modifier =
                         Modifier.drawBackdrop(
@@ -252,7 +249,6 @@ private fun HomeScreenSuccessPreview() {
                 HomeState.Success(
                     totalScore = 72,
                     scoreLabel = "흐름 좋은 날",
-                    greeting = stringResource(R.string.home_greeting),
                     categories =
                         persistentListOf(
                             CategoryScoreUiModel("la-1", FortuneCategory.RELATIONSHIP, 45),

@@ -23,7 +23,7 @@ class HomeViewModel
         ContainerHost<HomeState, HomeSideEffect> {
         override val container = container<HomeState, HomeSideEffect>(HomeState.Loading)
 
-        fun load(greeting: String) =
+        fun load() =
             intent {
                 getHomeFortune()
                     .onSuccess { fortune ->
@@ -31,7 +31,6 @@ class HomeViewModel
                             HomeState.Success(
                                 totalScore = fortune.totalScore,
                                 scoreLabel = fortune.scoreLabel,
-                                greeting = greeting,
                                 categories =
                                     fortune.scores
                                         .sortedBy { it.category.ordinal }

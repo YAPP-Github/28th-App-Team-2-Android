@@ -21,10 +21,9 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
-    val greeting = stringResource(R.string.home_greeting)
     val defaultErrorMessage = stringResource(R.string.home_default_error)
 
-    LaunchedEffect(Unit) { viewModel.load(greeting) }
+    LaunchedEffect(Unit) { viewModel.load() }
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
