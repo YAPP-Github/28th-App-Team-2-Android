@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -72,7 +73,7 @@ internal fun YearFortuneResultScreen(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(TodakunColor.black),
+                .background(Color(0xFF00010B)),
     ) {
         Image(
             painter = painterResource(id = DesignSystemR.drawable.img_result_background),
