@@ -1,3 +1,6 @@
+import java.util.Properties
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,6 +8,12 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.todakun.android.signing)
 }
+
+val localProperty =
+    Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) f.inputStream().use { load(it) }
+    }
 
 android {
     namespace = "com.kikidan.todakun"
@@ -21,7 +30,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            // TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
+            val kakaoKey = localProperty.getProperty("KAKAO_NATIVE_APP_KEY_DEV") ?: ""
+            val appLinkHost = localProperty.getProperty("APP_LINK_HOST_DEV") ?: ""
+            manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
+            manifestPlaceholders["APP_LINK_HOST"] = appLinkHost
+        }
         release {
+            // TODO CI 통과를 위해 공백을 넣음. 추후 CD 설정 시 재설정
+            val kakaoKey = localProperty.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
+            val appLinkHost = localProperty.getProperty("APP_LINK_HOST") ?: ""
+            manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
+            manifestPlaceholders["APP_LINK_HOST"] = appLinkHost
+
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -69,6 +91,7 @@ dependencies {
     implementation(projects.feature.sajuContents)
     implementation(projects.feature.luckAction)
     implementation(projects.feature.chat)
+    implementation(projects.feature.sajuContents)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
