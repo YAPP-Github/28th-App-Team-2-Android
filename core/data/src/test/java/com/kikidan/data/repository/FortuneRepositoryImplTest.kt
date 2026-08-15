@@ -142,6 +142,7 @@ class FortuneRepositoryImplTest {
                     id = "f-1",
                     totalScore = 72,
                     content = "오늘은 좋은 하루예요.",
+                    title = "",
                     luckyItems = listOf("노란색"),
                     cautionaryItems = listOf("셔츠"),
                     scores = listOf(FortuneScore(FortuneCategory.MONEY, 90)),

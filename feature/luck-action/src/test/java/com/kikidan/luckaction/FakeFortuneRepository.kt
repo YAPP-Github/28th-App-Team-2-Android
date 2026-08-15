@@ -1,5 +1,6 @@
 package com.kikidan.luckaction
 
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.FortuneRecord
 import com.kikidan.domain.model.fortune.TodayFortune
 import com.kikidan.domain.repository.FortuneRepository
@@ -15,4 +16,8 @@ class FakeFortuneRepository : FortuneRepository {
     override suspend fun getFortuneRecordForDate(date: LocalDate): Result<FortuneRecord?> = recordResult
 
     override suspend fun getEarliestFortuneDate(): Result<LocalDate?> = earliestDateResult
+
+    override suspend fun getDailyFortuneDetail(dailyFortuneId: String): Result<DailyFortuneDetail> {
+        TODO("Not yet implemented")
+    }
 }
