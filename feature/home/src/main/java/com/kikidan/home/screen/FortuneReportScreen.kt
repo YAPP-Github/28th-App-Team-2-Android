@@ -85,8 +85,8 @@ import kotlinx.coroutines.flow.first
 internal fun FortuneReportScreen(
     state: FortuneReportState,
     onBackClick: () -> Unit,
-    onScoreProgressRowClick:(String) -> Unit,
-    onDetailDismiss:()->Unit,
+    onScoreProgressRowClick: (String) -> Unit,
+    onDetailDismiss: () -> Unit,
     onNavigateToLuckAction: () -> Unit,
     onNavigateToChat: () -> Unit,
     modifier: Modifier = Modifier,
@@ -154,7 +154,7 @@ internal fun FortuneReportScreen(
                         categories = state.categories,
                         onNavigateToLuckAction = onNavigateToLuckAction,
                         hazeState = hazeState,
-                        onScoreProgressRowClick = onScoreProgressRowClick
+                        onScoreProgressRowClick = onScoreProgressRowClick,
                     )
                     Spacer(Modifier.height(20.dp))
                     FortuneReportItemsCard(
@@ -327,7 +327,7 @@ private fun FortuneReportContentCard(
 @Composable
 private fun FortuneReportScoreCard(
     categories: PersistentList<CategoryScoreUiModel>,
-    onScoreProgressRowClick:(String)->Unit,
+    onScoreProgressRowClick: (String) -> Unit,
     hazeState: HazeState,
     onNavigateToLuckAction: () -> Unit,
     modifier: Modifier = Modifier,
@@ -339,8 +339,7 @@ private fun FortuneReportScoreCard(
                 .clip(RoundedCornerShape(16.dp))
                 .hazeEffect(hazeState) {
                     blurRadius = 20.dp
-                }
-                .padding(20.dp),
+                }.padding(20.dp),
     ) {
         Text(
             text = stringResource(R.string.home_report_detail_score_title),
@@ -355,9 +354,13 @@ private fun FortuneReportScoreCard(
         )
         Spacer(Modifier.height(16.dp))
         categories.forEach { category ->
-            CategoryScoreProgressRow(category = category, modifier = Modifier.noRippleClickable(
-                onClick = { onScoreProgressRowClick(category.luckActionId) }
-            ))
+            CategoryScoreProgressRow(
+                category = category,
+                modifier =
+                    Modifier.noRippleClickable(
+                        onClick = { onScoreProgressRowClick(category.luckActionId) },
+                    ),
+            )
             Spacer(Modifier.height(16.dp))
         }
         Spacer(Modifier.height(16.dp))
@@ -581,7 +584,7 @@ private fun FortuneReportScreenPreview() {
             onNavigateToLuckAction = {},
             onNavigateToChat = {},
             onScoreProgressRowClick = {},
-            onDetailDismiss = {}
+            onDetailDismiss = {},
         )
     }
 }
