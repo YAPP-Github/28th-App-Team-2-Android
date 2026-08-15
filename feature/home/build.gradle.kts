@@ -14,7 +14,7 @@ android {
 dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.haze)
+    implementation(libs.kyant.backdrop)
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.kotlinx.coroutines.test)

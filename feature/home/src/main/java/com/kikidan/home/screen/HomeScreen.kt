@@ -2,6 +2,7 @@ package com.kikidan.home.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,10 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -23,15 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
-import com.kikidan.designsystem.component.bottomnavigation.TodakunBottomNavigation
-import com.kikidan.designsystem.component.bottomnavigation.TodakunNavItem
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
@@ -43,15 +42,17 @@ import com.kikidan.home.component.HomeSajuSection
 import com.kikidan.home.component.HomeTodayScoreCard
 import com.kikidan.home.model.CategoryScoreUiModel
 import com.kikidan.home.model.HomeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
-import dev.chrisbanes.haze.rememberHazeState
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
+import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.effects.blur
+import com.kyant.backdrop.effects.lens
+import com.kyant.backdrop.effects.vibrancy
+import com.kyant.backdrop.highlight.Highlight
+import com.kyant.backdrop.highlight.HighlightStyle
+import com.kyant.backdrop.shadow.InnerShadow
+import com.kyant.backdrop.shadow.Shadow
 import kotlinx.collections.immutable.persistentListOf
-
-private val HomeDarkBackground =
-    Brush.verticalGradient(listOf(TodakunColor.coolGray900, TodakunColor.primary900))
 
 @Composable
 internal fun HomeScreen(
@@ -62,91 +63,47 @@ internal fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            HomeHeader()
-            Column(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState()),
-            ) {
-                when (state) {
-                    HomeState.Loading -> {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .background(HomeDarkBackground)
-                                    .padding(vertical = 80.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator(color = TodakunColor.white)
-                        }
-                    }
+        Image(
+            painter = painterResource(R.drawable.img_result_background),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.TopCenter,
+            modifier = Modifier.matchParentSize()
+        )
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+        ) {
+            when (state) {
+                // 로딩/실패 화면은 추후 공용 처리로 별도 구현 예정 (TODO(#38))
+                HomeState.Loading, HomeState.Failure -> {
+                    Unit
+                }
 
-                    HomeState.Failure -> {
-                        HomeFailureContent()
-                    }
-
-                    is HomeState.Success -> {
-                        HomeDarkSection(
-                            greeting = state.greeting,
-                            totalScore = state.totalScore,
-                            scoreLabel = state.scoreLabel,
-                            onFortuneReportClick = {
-                                // TODO(#38): feature:fortune-report 머지 후 연결
-                            },
-                        )
-                        HomeWhiteSection(
-                            state = state,
-                            onCategoryClick = onCategoryClick,
-                            onNavigateToLuckAction = onNavigateToLuckAction,
-                        )
-                    }
+                is HomeState.Success -> {
+                    HomeDarkSection(
+                        greeting = state.greeting,
+                        totalScore = state.totalScore,
+                        scoreLabel = state.scoreLabel,
+                        onFortuneReportClick = {
+                            // TODO(#38): feature:fortune-report 머지 후 연결
+                        },
+                    )
+                    HomeWhiteSection(
+                        state = state,
+                        onCategoryClick = onCategoryClick,
+                        onNavigateToLuckAction = onNavigateToLuckAction,
+                    )
                 }
             }
-            TodakunBottomNavigation(
-                selectedItem = TodakunNavItem.FORTUNE_TELLING,
-                onItemSelect = {
-                    // TODO(#38): NavHost 배선 후 연결
-                },
-            )
         }
 
         if (state is HomeState.Success && state.detail != null) {
             FortuneDetailBottomSheet(
                 detail = state.detail,
                 onDismissRequest = onDetailDismiss,
-            )
-        }
-    }
-}
-
-@Composable
-private fun HomeHeader(modifier: Modifier = Modifier) {
-    Row(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .background(HomeDarkBackground)
-                .statusBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Image(
-            painter = painterResource(R.drawable.img_logo_light_color),
-            contentDescription = null,
-            modifier = Modifier.height(24.dp),
-        )
-        Spacer(Modifier.weight(1f))
-        IconButton(onClick = {
-            // TODO(#38): 알림 화면 미구현, 머지 후 연결
-        }) {
-            Icon(
-                painter = painterResource(R.drawable.ic_bell),
-                contentDescription = stringResource(R.string.header_notice_content_description),
-                tint = TodakunColor.white,
-                modifier = Modifier.size(24.dp),
             )
         }
     }
@@ -160,57 +117,92 @@ private fun HomeDarkSection(
     onFortuneReportClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hazeState = rememberHazeState()
     Box(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .background(HomeDarkBackground)
-                .hazeSource(hazeState),
+            modifier.fillMaxSize()
     ) {
-        // 캐릭터 이미지: TODO(#38) Figma export 후 img_home_character로 교체
-        Image(
-            painter = painterResource(R.drawable.img_todak_default_pose),
-            contentDescription = stringResource(R.string.home_character_description),
-            contentScale = ContentScale.Fit,
-            modifier =
-                Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 20.dp)
-                    .height(200.dp),
-        )
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 24.dp, bottom = 24.dp),
+        Column(modifier = Modifier
+            .statusBarsPadding()
+            .padding(horizontal = 20.dp)
         ) {
-            if (greeting.isNotEmpty()) {
-                Text(
-                    text = greeting,
-                    style = TodakunTypography.heading3Bold,
-                    color = TodakunColor.white,
-                    modifier = Modifier.padding(bottom = 24.dp, end = 120.dp),
+            HomeHeader()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (greeting.isNotEmpty()) {
+                    Text(
+                        text = greeting,
+                        style = TodakunTypography.heading3Bold,
+                        color = TodakunColor.white,
+                        modifier = Modifier.weight(1f).padding(bottom = 24.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.width(20.dp))
+                Image(
+                    painter = painterResource(R.drawable.img_home_character),
+                    contentDescription = stringResource(R.string.home_character_description),
+                    contentScale = ContentScale.Fit,
+                    modifier =
+                        Modifier.height(102.dp),
                 )
             }
+            Spacer(modifier = Modifier.height(24.dp))
+
             if (scoreLabel.isNotEmpty()) {
                 HomeTodayScoreCard(
                     totalScore = totalScore,
                     scoreLabel = scoreLabel,
                     onFortuneReportClick = onFortuneReportClick,
                     modifier =
-                        Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .hazeEffect(
-                                hazeState,
-                                HazeStyle(
-                                    tints = listOf(HazeTint(TodakunColor.whiteOpacity10)),
-                                    blurRadius = 8.dp,
-                                ),
-                            ),
+                        Modifier.drawBackdrop(
+                            backdrop = rememberLayerBackdrop(),
+                            shape = { RoundedCornerShape(16.dp) },
+                            effects = {
+                                vibrancy()
+                                blur(Glass.Frost.toPx())
+                                lens(
+                                    refractionHeight = Glass.Depth.toPx(),
+                                    refractionAmount = Glass.Refraction.toPx(),
+                                    depthEffect = true,
+                                    chromaticAberration = true,
+                                )
+                            },
+                            onDrawSurface = { drawRect(TodakunColor.whiteOpacity10) },
+                        ),
                 )
             }
+
+            Spacer(modifier = Modifier.height(44.dp))
+        }
+    }
+}
+
+@Composable
+private fun HomeHeader(modifier: Modifier = Modifier) {
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.img_logo_light_color_gradient),
+            contentDescription = null,
+            modifier = Modifier.height(24.dp),
+        )
+        IconButton(onClick = {
+            // TODO(#38): 알림 화면 미구현, 머지 후 연결
+        }) {
+            Icon(
+                painter = painterResource(R.drawable.ic_bell),
+                contentDescription = stringResource(R.string.header_notice_content_description),
+                tint = TodakunColor.white,
+                modifier = Modifier.size(24.dp),
+            )
         }
     }
 }
@@ -228,42 +220,30 @@ private fun HomeWhiteSection(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                 .background(TodakunColor.white)
-                .padding(vertical = 24.dp),
     ) {
+        Spacer(modifier = Modifier.height(36.dp))
         HomeCategoryScoreRow(
             categories = state.categories,
             onCategoryClick = onCategoryClick,
         )
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(44.dp))
         HomeSajuSection()
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(30.dp))
         HomeLuckActionBanner(
             onNavigateToLuckAction = onNavigateToLuckAction,
             modifier = Modifier.padding(horizontal = 20.dp),
         )
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(72.dp))
     }
 }
 
-@Composable
-private fun HomeFailureContent(modifier: Modifier = Modifier) {
-    Box(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .height(400.dp)
-                .background(HomeDarkBackground),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = stringResource(R.string.home_failure_message),
-            style = TodakunTypography.body2Regular,
-            color = TodakunColor.whiteOpacity60,
-        )
-    }
+private object Glass {
+    val Frost = 15.dp
+    val Depth = 20.dp
+    val Refraction = 80.dp     // refraction 80  (0~100 → 0~50dp)
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF0A0E27, widthDp = 393, heightDp = 852)
 @Composable
 private fun HomeScreenSuccessPreview() {
     TodakunTheme {

@@ -30,7 +30,7 @@ androidx-credentials = "1.6.0"
 googleid = "1.2.0"
 kotlinx-collections-immutable = "0.5.1"
 material3 = "1.4.0"
-haze = "1.7.2"
+kyantBackdrop = "1.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -88,7 +88,7 @@ ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref =
 ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-haze = { group = "dev.chrisbanes.haze", name = "haze-android", version.ref = "haze" }
+kyant-backdrop = { group = "io.github.kyant0", name = "backdrop", version.ref = "kyantBackdrop" }
 
 
 [plugins]

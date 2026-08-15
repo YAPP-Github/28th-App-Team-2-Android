@@ -1,26 +1,31 @@
 package com.kikidan.home.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
@@ -48,7 +53,7 @@ internal fun HomeCategoryScoreRow(
         Spacer(Modifier.height(12.dp))
         LazyRow(
             contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(categories, key = { it.luckActionId }) { item ->
                 CategoryScoreCard(item = item, onClick = { onCategoryClick(item.luckActionId) })
@@ -63,40 +68,55 @@ private fun CategoryScoreCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val band = FortuneScoreBand.of(item.score)
     Column(
         modifier =
             modifier
-                .width(93.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(TodakunColor.gray50)
+                .size(120.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(TodakunColor.coolGray50)
                 .clickable(onClick = onClick)
-                .padding(vertical = 16.dp, horizontal = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+                .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = categoryLabel(item.category),
+                style = TodakunTypography.caption1Medium,
+                color = TodakunColor.gray600,
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(TodakunColor.white),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_chevron_small_right),
+                    contentDescription = null,
+                    tint = TodakunColor.gray400,
+                    modifier = Modifier.size(14.dp),
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = categoryLabel(item.category),
-            style = TodakunTypography.caption1Medium,
-            color = TodakunColor.gray700,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = "${item.score}",
+            text = "${item.score}점",
             style = TodakunTypography.body1Bold,
-            color = band.end,
-            textAlign = TextAlign.Center,
+            color = TodakunColor.gray975,
         )
-        Spacer(
-            modifier =
-                Modifier
-                    .height(3.dp)
-                    .width(24.dp)
-                    .background(
-                        Brush.horizontalGradient(listOf(band.start, band.end)),
-                        RoundedCornerShape(99.dp),
-                    ),
-        )
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
+            Image(
+                painter = painterResource(categoryIllustration(item.category)),
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+            )
+        }
     }
 }
 
@@ -111,6 +131,15 @@ private fun categoryLabel(category: FortuneCategory): String =
             FortuneCategory.MONEY -> R.string.home_category_score_money
         },
     )
+
+private fun categoryIllustration(category: FortuneCategory): Int =
+    when (category) {
+        FortuneCategory.RELATIONSHIP -> R.drawable.img_home_category_relationship
+        FortuneCategory.LOVE -> R.drawable.img_home_category_love
+        FortuneCategory.ACHIEVEMENT -> R.drawable.img_home_category_achievement
+        FortuneCategory.HEALTH -> R.drawable.img_home_category_health
+        FortuneCategory.MONEY -> R.drawable.img_home_category_money
+    }
 
 @Preview(showBackground = true)
 @Composable

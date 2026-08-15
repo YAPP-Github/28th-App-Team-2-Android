@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -32,13 +33,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.button.PrimaryButton
+import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.home.model.DetailSheetUiState
 
-private const val MAX_SHEET_HEIGHT_RATIO = 0.8f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,14 +59,12 @@ internal fun FortuneDetailBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = TodakunColor.white,
-        dragHandle = null,
+        dragHandle = {  },
         modifier = modifier,
     ) {
         Column(
             modifier =
-                Modifier
-                    .heightIn(max = screenHeight * MAX_SHEET_HEIGHT_RATIO)
-                    .navigationBarsPadding(),
+                Modifier.heightIn(max = screenHeight * 0.8f)
         ) {
             SheetHeader(
                 detail = detail,
@@ -72,16 +72,7 @@ internal fun FortuneDetailBottomSheet(
             )
             when (detail) {
                 is DetailSheetUiState.Loading -> {
-                    Box(
-                        modifier =
-                            Modifier
-                                .weight(1f, fill = false)
-                                .fillMaxWidth()
-                                .padding(48.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator(color = TodakunColor.primary600)
-                    }
+                    Unit
                 }
 
                 is DetailSheetUiState.Success -> {
@@ -92,22 +83,37 @@ internal fun FortuneDetailBottomSheet(
                                 .verticalScroll(rememberScrollState())
                                 .padding(horizontal = 20.dp),
                     ) {
-                        Spacer(Modifier.height(20.dp))
+                        Spacer(Modifier.height(30.dp))
                         FortuneScoreGauge(
                             score = detail.score,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
-                        Spacer(Modifier.height(20.dp))
+                        Spacer(Modifier.height(32.dp))
                         LuckActionBox(actionTitle = detail.actionTitle)
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(24.dp))
                         Text(
                             text = detail.content,
                             style = TodakunTypography.body3Regular,
                             color = TodakunColor.gray975,
                         )
-                        Spacer(Modifier.height(20.dp))
+                        Spacer(Modifier.height(32.dp))
                     }
-                    CtaButton(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp))
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        PrimaryButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(R.string.home_detail_sheet_cta),
+                            onClick = {
+                                // TODO(#38): 챗봇 연결 미구현, 머지 후 연결
+                            },
+                            size = TodakunButtonSize.Large,
+                        )
+                    }
                 }
             }
         }
@@ -125,21 +131,20 @@ private fun SheetHeader(
             is DetailSheetUiState.Loading -> detail.category
             is DetailSheetUiState.Success -> detail.category
         }
-    Box(
+    Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 8.dp, top = 20.dp, bottom = 8.dp),
+            modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(R.string.home_detail_sheet_title_format, categoryLabel(category)),
-            style = TodakunTypography.body1Bold,
-            color = TodakunColor.gray975,
-            modifier = Modifier.align(Alignment.CenterStart),
-        )
         IconButton(
             onClick = onDismissRequest,
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(
+                    top = 24.dp,
+                )
+                .padding(
+                    horizontal = 24.dp
+                )
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_close),
@@ -148,6 +153,16 @@ private fun SheetHeader(
                 modifier = Modifier.size(20.dp),
             )
         }
+        Text(
+            text = stringResource(R.string.home_detail_sheet_title_format, categoryLabel(category)),
+            style = TodakunTypography.heading4Bold,
+            color = TodakunColor.gray975,
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(
+                    vertical = 12.dp, horizontal = 20.dp
+                ),
+        )
     }
 }
 
@@ -177,25 +192,6 @@ private fun LuckActionBox(
             style = TodakunTypography.body2SemiBold,
             color = TodakunColor.gray975,
             textAlign = TextAlign.Center,
-        )
-    }
-}
-
-@Composable
-private fun CtaButton(modifier: Modifier = Modifier) {
-    Box(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(TodakunColor.primary600)
-                .padding(vertical = 14.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = stringResource(R.string.home_detail_sheet_cta),
-            style = TodakunTypography.body2SemiBold,
-            color = TodakunColor.white,
         )
     }
 }

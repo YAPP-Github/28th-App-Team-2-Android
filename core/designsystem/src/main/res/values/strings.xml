@@ -191,11 +191,9 @@
     <string name="home_saju_date_selection_subtitle">좋은 날을 골라드려요!</string>
     <string name="home_saju_yearly_fortune_title">연도별 운세</string>
     <string name="home_saju_yearly_fortune_subtitle">올해의 큰 흐름 보기</string>
-    <string name="home_saju_cta">풀이 보기</string>
     <string name="home_luck_action_banner_title">운세 기반 행운 액션</string>
     <string name="home_luck_action_banner_subtitle">5개 행운 액션으로 하루 시작하기!</string>
     <string name="home_default_error">알 수 없는 에러가 발생했어요. 잠시 후 다시 시도해주세요</string>
-    <string name="home_failure_message">"홈 화면을 불러오지 못했어요.\n잠시 후 다시 시도해주세요"</string>
     <string name="home_detail_today_action">오늘의 행운 액션</string>
     <string name="home_detail_sheet_cta">토닥이에게 더 물어보기</string>
     <string name="home_category_score_relationship">관계운</string>
