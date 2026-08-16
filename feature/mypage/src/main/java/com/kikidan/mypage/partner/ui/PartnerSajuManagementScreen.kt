@@ -21,9 +21,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +38,7 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunBadge
 import com.kikidan.designsystem.component.TodakunBadgeType
 import com.kikidan.designsystem.component.TodakunPopover
+import com.kikidan.designsystem.component.TodakunSnackbar
 import com.kikidan.designsystem.component.header.TodakunSubHeader
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
@@ -48,8 +51,10 @@ import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
 import com.kikidan.mypage.partner.model.PartnerSajuManagementUiModel
 import com.kikidan.mypage.partner.model.PartnerSajuManagementUiState
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun PartnerSajuManagementScreen(
@@ -59,38 +64,64 @@ fun PartnerSajuManagementScreen(
     onAddPartnerClick: () -> Unit = {},
     onEditPartnerClick: (String) -> Unit = {},
     onDeletePartnerClick: (String) -> Unit = {},
+    showMaxPartnerSnackbar: Boolean = false,
+    onMaxPartnerSnackbarDismiss: () -> Unit = {},
 ) {
-    Column(
+    if (showMaxPartnerSnackbar) {
+        val currentOnMaxPartnerSnackbarDismiss by rememberUpdatedState(onMaxPartnerSnackbarDismiss)
+        LaunchedEffect(showMaxPartnerSnackbar) {
+            delay(PartnerSajuManagementDefaults.MAX_PARTNER_SNACKBAR_DURATION_MILLIS.milliseconds)
+            currentOnMaxPartnerSnackbarDismiss()
+        }
+    }
+
+    Box(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(TodakunColor.white),
     ) {
-        TodakunSubHeader(
-            title = stringResource(R.string.saju_info_management_title),
-            onBackClick = onBackClick,
-        )
+        Column(modifier = Modifier.fillMaxSize()) {
+            TodakunSubHeader(
+                title = stringResource(R.string.saju_info_management_title),
+                onBackClick = onBackClick,
+            )
 
-        when (uiState) {
-            is PartnerSajuManagementUiState.Loading -> {
-                Box(modifier = Modifier.weight(1f).fillMaxSize())
-            }
+            when (uiState) {
+                is PartnerSajuManagementUiState.Loading -> {
+                    Box(modifier = Modifier.weight(1f).fillMaxSize())
+                }
 
-            is PartnerSajuManagementUiState.Fail -> {
-                Box(modifier = Modifier.weight(1f).fillMaxSize())
-            }
+                is PartnerSajuManagementUiState.Fail -> {
+                    Box(modifier = Modifier.weight(1f).fillMaxSize())
+                }
 
-            is PartnerSajuManagementUiState.Success -> {
-                PartnerSajuManagementContent(
-                    model = uiState.model,
-                    onAddPartnerClick = onAddPartnerClick,
-                    onEditPartnerClick = onEditPartnerClick,
-                    onDeletePartnerClick = onDeletePartnerClick,
-                    modifier = Modifier.weight(1f),
-                )
+                is PartnerSajuManagementUiState.Success -> {
+                    PartnerSajuManagementContent(
+                        model = uiState.model,
+                        onAddPartnerClick = onAddPartnerClick,
+                        onEditPartnerClick = onEditPartnerClick,
+                        onDeletePartnerClick = onDeletePartnerClick,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
+
+        if (showMaxPartnerSnackbar) {
+            TodakunSnackbar(
+                text = stringResource(R.string.saju_info_management_max_partner_message),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp),
+            )
+        }
     }
+}
+
+private object PartnerSajuManagementDefaults {
+    const val MAX_PARTNER_SNACKBAR_DURATION_MILLIS = 2000L
 }
 
 @Composable

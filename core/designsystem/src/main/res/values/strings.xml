@@ -171,6 +171,7 @@
     <string name="saju_info_management_delete_menu">삭제하기</string>
     <string name="saju_info_management_more_content_description">더보기</string>
     <string name="saju_info_management_birth_time_format">%1$s(%2$s)</string>
+    <string name="saju_info_management_max_partner_message">상대방 사주 정보는 최대 10개까지 저장할 수 있어요.</string>
 
     <!-- MyPage Notification Setting -->
     <string name="notification_setting_title">알림 설정</string>

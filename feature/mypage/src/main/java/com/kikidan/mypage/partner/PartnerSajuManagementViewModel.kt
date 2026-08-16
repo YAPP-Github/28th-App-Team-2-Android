@@ -43,4 +43,18 @@ class PartnerSajuManagementViewModel
                     reduce { currentState.copy(model = currentState.model.copy(partners = updated)) }
                 }
             }
+
+        fun addPartner() =
+            intent {
+                val currentState = state as? PartnerSajuManagementUiState.Success ?: return@intent
+                if (currentState.model.partners.size >= MAX_PARTNER_COUNT) {
+                    postSideEffect(PartnerSajuManagementSideEffect.ShowMaxPartnerLimitSnackbar)
+                } else {
+                    postSideEffect(PartnerSajuManagementSideEffect.NavigateToAddPartner)
+                }
+            }
+
+        companion object {
+            private const val MAX_PARTNER_COUNT = 10
+        }
     }
