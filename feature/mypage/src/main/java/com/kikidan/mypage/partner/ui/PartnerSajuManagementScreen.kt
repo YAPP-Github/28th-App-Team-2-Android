@@ -120,12 +120,25 @@ private fun PartnerSajuManagementContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        var expandedMenuLinkId by remember { mutableStateOf<String?>(null) }
+
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             model.partners.forEach { partner ->
                 PartnerSajuCard(
                     partner = partner,
-                    onEditClick = { onEditPartnerClick(partner.linkId) },
-                    onDeleteClick = { onDeletePartnerClick(partner.linkId) },
+                    menuExpanded = expandedMenuLinkId == partner.linkId,
+                    onMoreClick = {
+                        expandedMenuLinkId = if (expandedMenuLinkId == partner.linkId) null else partner.linkId
+                    },
+                    onMenuDismissRequest = { expandedMenuLinkId = null },
+                    onEditClick = {
+                        expandedMenuLinkId = null
+                        onEditPartnerClick(partner.linkId)
+                    },
+                    onDeleteClick = {
+                        expandedMenuLinkId = null
+                        onDeletePartnerClick(partner.linkId)
+                    },
                 )
             }
             AddPartnerButton(onClick = onAddPartnerClick)
@@ -157,12 +170,13 @@ private fun CountPill(
 @Composable
 private fun PartnerSajuCard(
     partner: PartnerSaju,
+    menuExpanded: Boolean,
+    onMoreClick: () -> Unit,
+    onMenuDismissRequest: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-
     Row(
         modifier =
             modifier
@@ -220,20 +234,20 @@ private fun PartnerSajuCard(
                 modifier =
                     Modifier
                         .size(24.dp)
-                        .clickable { showMenu = true },
+                        .clickable { onMoreClick() },
             )
             val editMenuLabel = stringResource(R.string.saju_info_management_edit_menu)
             val deleteMenuLabel = stringResource(R.string.saju_info_management_delete_menu)
             TodakunPopover(
                 contents = listOf(editMenuLabel, deleteMenuLabel),
-                expanded = showMenu,
+                expanded = menuExpanded,
                 onContentClick = { content ->
-                    showMenu = false
                     when (content) {
                         editMenuLabel -> onEditClick()
                         deleteMenuLabel -> onDeleteClick()
                     }
                 },
+                onDismissRequest = onMenuDismissRequest,
             )
         }
     }
