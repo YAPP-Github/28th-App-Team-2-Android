@@ -38,8 +38,9 @@ class PartnerSajuManagementViewModel
         fun deletePartner(linkId: String) =
             intent {
                 val currentState = state as? PartnerSajuManagementUiState.Success ?: return@intent
-                val updated = currentState.model.partners.filterNot { it.linkId == linkId }
-                reduce { currentState.copy(model = currentState.model.copy(partners = updated)) }
-                deletePartnerSajuUseCase(linkId)
+                deletePartnerSajuUseCase(linkId).onSuccess {
+                    val updated = currentState.model.partners.filterNot { it.linkId == linkId }
+                    reduce { currentState.copy(model = currentState.model.copy(partners = updated)) }
+                }
             }
     }
