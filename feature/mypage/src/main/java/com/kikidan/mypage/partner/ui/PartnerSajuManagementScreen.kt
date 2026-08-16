@@ -18,8 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunBadge
 import com.kikidan.designsystem.component.TodakunBadgeType
+import com.kikidan.designsystem.component.TodakunPopover
 import com.kikidan.designsystem.component.header.TodakunSubHeader
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
@@ -223,34 +222,19 @@ private fun PartnerSajuCard(
                         .size(24.dp)
                         .clickable { showMenu = true },
             )
-            DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.saju_info_management_edit_menu),
-                            style = TodakunTypography.body2Medium,
-                            color = TodakunColor.gray975,
-                        )
-                    },
-                    onClick = {
-                        showMenu = false
-                        onEditClick()
-                    },
-                )
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.saju_info_management_delete_menu),
-                            style = TodakunTypography.body2Medium,
-                            color = TodakunColor.gray975,
-                        )
-                    },
-                    onClick = {
-                        showMenu = false
-                        onDeleteClick()
-                    },
-                )
-            }
+            val editMenuLabel = stringResource(R.string.saju_info_management_edit_menu)
+            val deleteMenuLabel = stringResource(R.string.saju_info_management_delete_menu)
+            TodakunPopover(
+                contents = listOf(editMenuLabel, deleteMenuLabel),
+                expanded = showMenu,
+                onContentClick = { content ->
+                    showMenu = false
+                    when (content) {
+                        editMenuLabel -> onEditClick()
+                        deleteMenuLabel -> onDeleteClick()
+                    }
+                },
+            )
         }
     }
 }
