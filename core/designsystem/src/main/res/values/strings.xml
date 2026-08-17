@@ -210,7 +210,13 @@
     <string name="home_character_description">토닥운 캐릭터</string>
     <string name="home_detail_sheet_title_format">오늘의 %s</string>
     <string name="home_report_header_title">오늘의 운세</string>
-    <string name="home_report_floating_button_tooltip">오늘 이 사람과 어디를 갈까?</string>
+    <string-array name="home_report_floating_button_tooltips">
+        <item>오늘 이 사람과 어디를 갈까?</item>
+        <item>요즘 해결 안 되는 고민 있어?</item>
+        <item>올해 연애운 궁금한 거 있어?</item>
+        <item>건강에 대해 고민되는 부분 말해줘</item>
+        <item>간절히 이루고 싶은 거 있어?</item>
+    </string-array>
     <string name="home_report_tooltip_contents">오늘의 운세 점수는\n사주 데이터 분석을 바탕으로 나온\n상세운 5가지의 평균 점수예요</string>
     <string name="home_report_greeting">흘렸던 땀방울이 달콤한 결실로\n돌아오는 하루예요.</string>
     <string name="home_report_detail_score_title">상세운</string>

@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -493,6 +494,8 @@ private fun AskToChatFloatingButton(
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
+    val tooltips = stringArrayResource(R.array.home_report_floating_button_tooltips)
+    val tooltipText = remember(tooltips) { tooltips.random() }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -517,7 +520,7 @@ private fun AskToChatFloatingButton(
             ) {
                 Text(
                     modifier = Modifier.padding(vertical = 5.dp, horizontal = 16.dp),
-                    text = stringResource(R.string.home_report_floating_button_tooltip),
+                    text = tooltipText,
                     style = TodakunTypography.body3Medium,
                     color = TodakunColor.gray975,
                 )
