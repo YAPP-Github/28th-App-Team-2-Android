@@ -59,7 +59,7 @@ fun PartnerSajuFormScreen(
     onNameChange: (String) -> Unit = {},
     onGenderSelect: (Gender) -> Unit = {},
     onDateTypeSelect: (DateType) -> Unit = {},
-    onBirthDateChange: (LocalDate) -> Unit = {},
+    onBirthDateChange: (LocalDate?) -> Unit = {},
     onBirthTimeChange: (BirthTime) -> Unit = {},
     onRelationshipTypeSelect: (String) -> Unit = {},
     onSaveClick: () -> Unit = {},
@@ -107,7 +107,7 @@ private fun PartnerSajuFormContent(
     onNameChange: (String) -> Unit,
     onGenderSelect: (Gender) -> Unit,
     onDateTypeSelect: (DateType) -> Unit,
-    onBirthDateChange: (LocalDate) -> Unit,
+    onBirthDateChange: (LocalDate?) -> Unit,
     onBirthTimeChange: (BirthTime) -> Unit,
     onRelationshipTypeSelect: (String) -> Unit,
     onSaveClick: () -> Unit,
@@ -177,8 +177,10 @@ private fun PartnerSajuFormContent(
 
             FormField(label = stringResource(R.string.partner_saju_form_birth_date_label)) {
                 TodakunSelectField(
-                    value = model.birthDate.format(BirthDateFormatter),
+                    value = model.birthDate?.format(BirthDateFormatter).orEmpty(),
+                    placeholder = stringResource(R.string.partner_saju_form_birth_date_placeholder),
                     onClick = { showBirthDatePicker = true },
+                    onClear = { onBirthDateChange(null) },
                 )
             }
 
@@ -263,7 +265,8 @@ private fun PartnerSajuFormContent(
     if (showBirthDatePicker) {
         var birthDateState by
             remember(model.birthDate) {
-                mutableStateOf(BirthDateState.of(model.birthDate, 1900..LocalDate.now().year))
+                val today = LocalDate.now()
+                mutableStateOf(BirthDateState.of(model.birthDate ?: today, 1900..today.year))
             }
         BirthDateWheelPicker(
             birthDateState = birthDateState,

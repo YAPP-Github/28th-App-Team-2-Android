@@ -71,7 +71,7 @@ class PartnerSajuFormViewModel
 
         fun selectDateType(dateType: DateType) = updateModel { it.copy(dateType = dateType) }
 
-        fun updateBirthDate(birthDate: LocalDate) = updateModel { it.copy(birthDate = birthDate) }
+        fun updateBirthDate(birthDate: LocalDate?) = updateModel { it.copy(birthDate = birthDate) }
 
         fun updateBirthTime(birthTime: BirthTime) = updateModel { it.copy(birthTime = birthTime) }
 
@@ -81,12 +81,13 @@ class PartnerSajuFormViewModel
             intent {
                 val currentState = state as? PartnerSajuFormUiState.Success ?: return@intent
                 val model = currentState.model
+                val birthDate = model.birthDate ?: return@intent
                 val input =
                     PartnerSajuInput(
                         name = model.name,
                         gender = model.gender,
                         relationshipTypeCode = model.relationshipTypeCode,
-                        birth = Birth(dateType = model.dateType, date = model.birthDate, time = model.birthTime),
+                        birth = Birth(dateType = model.dateType, date = birthDate, time = model.birthTime),
                     )
                 val result =
                     if (model.linkId != null) {
@@ -114,7 +115,7 @@ class PartnerSajuFormViewModel
                     name = "",
                     gender = Gender.MALE,
                     dateType = DateType.SOLAR,
-                    birthDate = LocalDate.now(),
+                    birthDate = null,
                     birthTime = BirthTime.UNKNOWN,
                     relationshipTypeCode = PartnerRelationshipType.LOVER.code,
                 )

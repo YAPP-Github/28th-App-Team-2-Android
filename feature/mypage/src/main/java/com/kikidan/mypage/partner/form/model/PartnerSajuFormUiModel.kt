@@ -10,7 +10,7 @@ data class PartnerSajuFormUiModel(
     val name: String,
     val gender: Gender,
     val dateType: DateType,
-    val birthDate: LocalDate,
+    val birthDate: LocalDate?,
     val birthTime: BirthTime,
     val relationshipTypeCode: String,
 )
