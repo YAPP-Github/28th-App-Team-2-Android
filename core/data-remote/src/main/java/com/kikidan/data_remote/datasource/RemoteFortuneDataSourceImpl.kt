@@ -4,11 +4,14 @@ import com.kikidan.data.datasource.RemoteFortuneDataSource
 import com.kikidan.data_remote.dto.fortune.DailyFortuneHistoryResponse
 import com.kikidan.data_remote.dto.fortune.DailyFortuneResponse
 import com.kikidan.data_remote.dto.fortune.TodayFortuneResponse
+import com.kikidan.data_remote.dto.fortune.toDetail
 import com.kikidan.data_remote.dto.fortune.toDomain
 import com.kikidan.data_remote.dto.fortune.toFortuneScores
 import com.kikidan.data_remote.util.bodyNotNull
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneScore
+import com.kikidan.domain.model.fortune.TodayFortune
 import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -21,12 +24,12 @@ class RemoteFortuneDataSourceImpl
     constructor(
         private val client: Lazy<HttpClient>,
     ) : RemoteFortuneDataSource {
-        override suspend fun getTodayFortuneScores(): List<FortuneScore> =
+        override suspend fun getTodayFortune(): TodayFortune =
             client
                 .get()
                 .get(TODAY_FORTUNE_URL)
                 .bodyNotNull<TodayFortuneResponse>()
-                .toFortuneScores()
+                .toDomain()
 
         override suspend fun getFortuneHistory(to: LocalDate): List<DailyFortuneHistoryEntry> =
             client
@@ -41,6 +44,13 @@ class RemoteFortuneDataSourceImpl
                 .get(detailUrl(dailyFortuneId))
                 .bodyNotNull<DailyFortuneResponse>()
                 .toFortuneScores()
+
+        override suspend fun getDailyFortuneDetail(dailyFortuneId: String): DailyFortuneDetail =
+            client
+                .get()
+                .get(detailUrl(dailyFortuneId))
+                .bodyNotNull<DailyFortuneResponse>()
+                .toDetail()
 
         companion object {
             private const val DAILY_FORTUNES_URL = "api/v1/daily-fortunes"

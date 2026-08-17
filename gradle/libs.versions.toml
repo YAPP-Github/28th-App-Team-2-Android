@@ -30,6 +30,8 @@ androidx-credentials = "1.6.0"
 googleid = "1.2.0"
 kotlinx-collections-immutable = "0.5.1"
 material3 = "1.4.0"
+kyantBackdrop = "1.0.2"
+haze = "1.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -70,6 +72,7 @@ orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbi
 orbit-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbit" }
 orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
 orbit-test = { group = "org.orbit-mvi", name = "orbit-test", version.ref = "orbit" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 
 # Navigation 3 libraries
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -87,6 +90,7 @@ ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref =
 ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+kyant-backdrop = { group = "io.github.kyant0", name = "backdrop", version.ref = "kyantBackdrop" }
 
 
 [plugins]

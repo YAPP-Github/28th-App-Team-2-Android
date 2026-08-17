@@ -1,10 +1,12 @@
 package com.kikidan.data.repository
 
 import com.kikidan.data.fake.FakeRemoteFortuneDataSource
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.model.fortune.LuckAction
+import com.kikidan.domain.model.fortune.TodayFortune
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,31 +27,39 @@ class FortuneRepositoryImplTest {
     }
 
     @Test
-    fun `getTodayFortuneScores가 성공하면 Result success로 반환된다`() =
+    fun `getTodayFortune가 성공하면 Result success로 반환된다`() =
         runTest {
-            fake.scores = listOf(FortuneScore(FortuneCategory.LOVE, 21))
+            val today =
+                TodayFortune(
+                    id = "f-today",
+                    date = LocalDate.now(),
+                    totalScore = 60,
+                    scoreLabel = "좋은 날",
+                    scores = listOf(FortuneScore(FortuneCategory.LOVE, 21)),
+                )
+            fake.todayFortune = today
 
-            val result = sut.getTodayFortuneScores()
+            val result = sut.getTodayFortune()
 
-            assertEquals(Result.success(fake.scores), result)
+            assertEquals(Result.success(today), result)
         }
 
     @Test
-    fun `getTodayFortuneScores가 IOException을 throw하면 Result failure로 반환된다`() =
+    fun `getTodayFortune가 IOException을 throw하면 Result failure로 반환된다`() =
         runTest {
-            fake.throwOnGetTodayFortuneScores = IOException("network")
+            fake.throwOnGetTodayFortune = IOException("network")
 
-            val result = sut.getTodayFortuneScores()
+            val result = sut.getTodayFortune()
 
             assertTrue(result.isFailure)
             assertTrue(result.exceptionOrNull() is IOException)
         }
 
     @Test(expected = CancellationException::class)
-    fun `getTodayFortuneScores가 CancellationException을 throw하면 그대로 전파된다`() =
+    fun `getTodayFortune가 CancellationException을 throw하면 그대로 전파된다`() =
         runTest {
-            fake.throwOnGetTodayFortuneScores = CancellationException("cancelled")
-            sut.getTodayFortuneScores()
+            fake.throwOnGetTodayFortune = CancellationException("cancelled")
+            sut.getTodayFortune()
         }
 
     @Test
@@ -122,5 +132,37 @@ class FortuneRepositoryImplTest {
             val result = sut.getEarliestFortuneDate()
 
             assertEquals(Result.success(null), result)
+        }
+
+    @Test
+    fun `getDailyFortuneDetail가 성공하면 Result success로 반환된다`() =
+        runTest {
+            val detail =
+                DailyFortuneDetail(
+                    id = "f-1",
+                    totalScore = 72,
+                    content = "오늘은 좋은 하루예요.",
+                    title = "",
+                    luckyItems = listOf("노란색"),
+                    cautionaryItems = listOf("셔츠"),
+                    scores = listOf(FortuneScore(FortuneCategory.MONEY, 90)),
+                )
+            fake.dailyFortuneDetail = detail
+
+            val result = sut.getDailyFortuneDetail("f-1")
+
+            assertEquals("f-1", fake.lastRequestedDailyFortuneDetailId)
+            assertEquals(Result.success(detail), result)
+        }
+
+    @Test
+    fun `getDailyFortuneDetail가 IOException을 throw하면 Result failure로 반환된다`() =
+        runTest {
+            fake.throwOnGetDailyFortuneDetail = IOException("network")
+
+            val result = sut.getDailyFortuneDetail("f-1")
+
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is IOException)
         }
 }

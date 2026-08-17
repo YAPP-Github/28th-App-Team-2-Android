@@ -67,6 +67,7 @@ dependencies {
     implementation(projects.feature.onboarding)
     implementation(projects.feature.auth)
     implementation(projects.feature.luckAction)
+    implementation(projects.feature.home)
     implementation(projects.feature.chat)
 
     implementation(libs.androidx.navigation3.runtime)

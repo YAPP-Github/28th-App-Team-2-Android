@@ -1,6 +1,8 @@
 package com.kikidan.data.repository
 
 import com.kikidan.data.fake.FakeRemoteLuckActionDataSource
+import com.kikidan.domain.model.fortune.FortuneCategory
+import com.kikidan.domain.model.fortune.LuckActionDetail
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -51,5 +53,43 @@ class LuckActionRepositoryImplTest {
         runTest {
             fake.throwOnPatchAchievement = CancellationException("cancelled")
             sut.toggleAchievement("42")
+        }
+
+    @Test
+    fun `getLuckActionDetail이 id를 그대로 전달하고 LuckActionDetail을 반환한다`() =
+        runTest {
+            val detail =
+                LuckActionDetail(
+                    id = "la-1",
+                    category = FortuneCategory.LOVE,
+                    score = 80,
+                    title = "사랑 액션",
+                    content = "오늘 소중한 사람에게 연락해보세요",
+                    achieved = false,
+                )
+            fake.luckActionDetail = detail
+
+            val result = sut.getLuckActionDetail("la-1")
+
+            assertEquals("la-1", fake.lastRequestedDetailId)
+            assertEquals(Result.success(detail), result)
+        }
+
+    @Test
+    fun `getLuckActionDetail이 IOException을 throw하면 Result failure로 반환된다`() =
+        runTest {
+            fake.throwOnGetLuckAction = IOException("network")
+
+            val result = sut.getLuckActionDetail("la-1")
+
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is IOException)
+        }
+
+    @Test(expected = CancellationException::class)
+    fun `getLuckActionDetail이 CancellationException을 throw하면 그대로 전파된다`() =
+        runTest {
+            fake.throwOnGetLuckAction = CancellationException("cancelled")
+            sut.getLuckActionDetail("la-1")
         }
 }

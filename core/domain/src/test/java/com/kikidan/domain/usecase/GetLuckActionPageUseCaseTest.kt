@@ -6,6 +6,7 @@ import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneRecord
 import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.model.fortune.LuckAction
+import com.kikidan.domain.model.fortune.TodayFortune
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -29,7 +30,16 @@ class GetLuckActionPageUseCaseTest {
     @Test
     fun `오늘 날짜를 요청하면 today 전용 API로 점수와 액션을 합친다`() =
         runTest {
-            fakeFortuneRepository.scoresResult = Result.success(listOf(FortuneScore(FortuneCategory.LOVE, 21)))
+            fakeFortuneRepository.todayFortuneResult =
+                Result.success(
+                    TodayFortune(
+                        id = "f-1",
+                        date = LocalDate.now(),
+                        totalScore = 60,
+                        scoreLabel = "흐름 좋은 날",
+                        scores = listOf(FortuneScore(FortuneCategory.LOVE, 21)),
+                    ),
+                )
             fakeLuckActionRepository.actionsResult =
                 Result.success(listOf(LuckAction("1", FortuneCategory.LOVE, "제목", false)))
 
@@ -87,7 +97,7 @@ class GetLuckActionPageUseCaseTest {
     fun `오늘 날짜에서 점수 조회가 실패하면 액션을 조회하지 않고 failure를 반환한다`() =
         runTest {
             val error = IllegalStateException("점수 조회 실패")
-            fakeFortuneRepository.scoresResult = Result.failure(error)
+            fakeFortuneRepository.todayFortuneResult = Result.failure(error)
 
             val result = useCase(LocalDate.now())
 

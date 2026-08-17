@@ -4,6 +4,7 @@ import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.FortuneRecord
 import com.kikidan.domain.model.fortune.FortuneScore
 import com.kikidan.domain.model.fortune.LuckAction
+import com.kikidan.domain.model.fortune.TodayFortune
 import com.kikidan.domain.usecase.GetEarliestFortuneDateUseCase
 import com.kikidan.domain.usecase.GetLuckActionPageUseCase
 import com.kikidan.domain.usecase.ToggleLuckActionUseCase
@@ -26,7 +27,16 @@ class LuckActionViewModelTest {
         runTest {
             val fakeFortuneRepository =
                 FakeFortuneRepository().apply {
-                    scoresResult = Result.success(listOf(FortuneScore(FortuneCategory.LOVE, 21)))
+                    todayFortuneResult =
+                        Result.success(
+                            TodayFortune(
+                                id = "f-today",
+                                date = LocalDate.now(),
+                                totalScore = 60,
+                                scoreLabel = "좋은 날",
+                                scores = listOf(FortuneScore(FortuneCategory.LOVE, 21)),
+                            ),
+                        )
                     earliestDateResult = Result.success(LocalDate.now().minusDays(3))
                 }
             val fakeLuckActionRepository =
@@ -53,12 +63,19 @@ class LuckActionViewModelTest {
         runTest {
             val fakeFortuneRepository =
                 FakeFortuneRepository().apply {
-                    scoresResult =
+                    todayFortuneResult =
                         Result.success(
-                            listOf(
-                                FortuneScore(FortuneCategory.HEALTH, 60),
-                                FortuneScore(FortuneCategory.RELATIONSHIP, 84),
-                                FortuneScore(FortuneCategory.MONEY, 93),
+                            TodayFortune(
+                                id = "f-today",
+                                date = LocalDate.now(),
+                                totalScore = 79,
+                                scoreLabel = "보통",
+                                scores =
+                                    listOf(
+                                        FortuneScore(FortuneCategory.HEALTH, 60),
+                                        FortuneScore(FortuneCategory.RELATIONSHIP, 84),
+                                        FortuneScore(FortuneCategory.MONEY, 93),
+                                    ),
                             ),
                         )
                     earliestDateResult = Result.success(LocalDate.now().minusDays(3))
@@ -83,7 +100,16 @@ class LuckActionViewModelTest {
             val today = LocalDate.now()
             val fakeFortuneRepository =
                 FakeFortuneRepository().apply {
-                    scoresResult = Result.success(emptyList())
+                    todayFortuneResult =
+                        Result.success(
+                            TodayFortune(
+                                id = "f-today",
+                                date = today,
+                                totalScore = 0,
+                                scoreLabel = "",
+                                scores = emptyList(),
+                            ),
+                        )
                     earliestDateResult = Result.success(today)
                 }
             val fakeLuckActionRepository =
@@ -101,7 +127,7 @@ class LuckActionViewModelTest {
     fun `load 실패 시 Failure 상태가 되고 Error 사이드이펙트가 발생한다`() =
         runTest {
             val fakeFortuneRepository =
-                FakeFortuneRepository().apply { scoresResult = Result.failure(IllegalStateException()) }
+                FakeFortuneRepository().apply { todayFortuneResult = Result.failure(IllegalStateException()) }
             val vm = viewModel(fakeFortuneRepository, FakeLuckActionRepository())
 
             vm.test(this) {
