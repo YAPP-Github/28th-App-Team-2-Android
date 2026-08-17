@@ -84,6 +84,13 @@
     <string name="chat_default_error">알 수 없는 에러가 발생했어요. 잠시 후 다시 시도해주세요</string>
     <string name="chat_calendar_error">앱에 캘린더가 설치되어 있지 않아 일정을 추가할 수 없어요</string>
     <string name="chat_charactor_content_description">토닥이 사진</string>
+    <string name="chat_suggestion_answer_relationship">인간관계에서 궁금한 걸 물어봐! 가족, 친구, 동료와의 관계 등 뭐든 괜찮아.</string>
+    <string name="chat_suggestion_answer_love">그 사람과의 연애, 궁금한 걸 물어봐! 짝사랑, 재회, 갈등 등 뭐든 괜찮아.</string>
+    <string name="chat_suggestion_answer_achievement">커리어에서 궁금한 걸 물어봐! 이직, 승진, 목표 달성 등 뭐든 괜찮아.</string>
+    <string name="chat_suggestion_answer_money">돈 관리에서 궁금한 걸 물어봐! 저축, 지출, 투자 등 뭐든 괜찮아.</string>
+    <string name="chat_suggestion_answer_health">요즘 컨디션에서 궁금한 걸 물어봐! 스트레스, 생활 습관 등 뭐든 괜찮아.</string>
+    <string name="chat_suggestion_answer_other">그 외에 궁금한 게 있으면 물어봐! 사소한 것부터 마음속 얘기까지 다 괜찮아.</string>
+
 
     <!-- 카테고리 팝업 문구 -->
     <string name="chat_greeting_relationship_title">관계운을 알려줄게!</string>
