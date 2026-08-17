@@ -251,15 +251,15 @@ private fun ResultHeader(
                         .size(20.dp)
                         .clickable(onClick = onExportClick),
             )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_share),
-                contentDescription = stringResource(id = R.string.date_fortune_share),
-                tint = TodakunColor.white,
-                modifier =
-                    Modifier
-                        .size(20.dp)
-                        .clickable(onClick = onShareClick),
-            )
+//            Icon(
+//                painter = painterResource(id = R.drawable.ic_share),
+//                contentDescription = stringResource(id = R.string.date_fortune_share),
+//                tint = TodakunColor.white,
+//                modifier =
+//                    Modifier
+//                        .size(20.dp)
+//                        .clickable(onClick = onShareClick),
+//            )
         }
     }
 }

@@ -206,16 +206,16 @@ private fun ResultHeader(
             color = TodakunColor.white,
             modifier = Modifier.align(Alignment.Center),
         )
-        Icon(
-            painter = painterResource(id = DesignSystemR.drawable.ic_share),
-            contentDescription = stringResource(id = R.string.year_fortune_share),
-            tint = if (shareEnabled) TodakunColor.white else TodakunColor.whiteOpacity60,
-            modifier =
-                Modifier
-                    .align(Alignment.CenterEnd)
-                    .size(20.dp)
-                    .clickable(enabled = shareEnabled, onClick = onShareClick),
-        )
+//        Icon(
+//            painter = painterResource(id = DesignSystemR.drawable.ic_share),
+//            contentDescription = stringResource(id = R.string.year_fortune_share),
+//            tint = if (shareEnabled) TodakunColor.white else TodakunColor.whiteOpacity60,
+//            modifier =
+//                Modifier
+//                    .align(Alignment.CenterEnd)
+//                    .size(20.dp)
+//                    .clickable(enabled = shareEnabled, onClick = onShareClick),
+//        )
     }
 }
 
