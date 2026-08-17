@@ -11,3 +11,13 @@ internal fun ChatCategory.toCharacterResourceId() =
         ChatCategory.HEALTH -> R.drawable.img_todak_health_luck
         ChatCategory.RELATIONSHIP -> R.drawable.img_todak_relationship_luck
     }
+
+internal fun ChatCategory?.toSuggestionAnswerResId() =
+    when (this) {
+        ChatCategory.RELATIONSHIP -> R.string.chat_suggestion_answer_relationship
+        ChatCategory.LOVE -> R.string.chat_suggestion_answer_love
+        ChatCategory.ACHIEVEMENT -> R.string.chat_suggestion_answer_achievement
+        ChatCategory.MONEY -> R.string.chat_suggestion_answer_money
+        ChatCategory.HEALTH -> R.string.chat_suggestion_answer_health
+        null -> R.string.chat_suggestion_answer_other
+    }

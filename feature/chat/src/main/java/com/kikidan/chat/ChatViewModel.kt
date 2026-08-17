@@ -8,6 +8,7 @@ import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.domain.model.chat.ChatAction
 import com.kikidan.domain.model.chat.ChatMessage
 import com.kikidan.domain.model.chat.ChatStreamEvent
+import com.kikidan.domain.model.chat.ChatSuggestion
 import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
 import com.kikidan.domain.usecase.GetChatEntryUseCase
@@ -77,7 +78,20 @@ class ChatViewModel
 
         fun onSendClick() = intent { send(state.input) }
 
-        fun onSuggestionClick(seedPrompt: String) = intent { send(seedPrompt) }
+        // 카테고리 선택용 chip이므로 실제 AI 호출 없이 질문/카테고리별 고정 답변을 즉시 보여준다.
+        fun onSuggestionClick(
+            suggestion: ChatSuggestion,
+            answer: String,
+        ) = intent {
+            reduce {
+                state.copy(
+                    messages =
+                        state.messages
+                            .adding(localUserMessage(suggestion.seedPrompt).copy(status = MessageStatus.COMPLETED))
+                            .adding(assistantMessage(id = null, content = answer, action = null)),
+                )
+            }
+        }
 
         fun startNewConversation() =
             intent {
