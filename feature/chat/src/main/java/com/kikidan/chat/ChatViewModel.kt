@@ -17,6 +17,7 @@ import com.kikidan.domain.usecase.SendChatMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.transform
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.Syntax
@@ -48,6 +49,7 @@ class ChatViewModel
             intent {
                 savedStateHandle[KEY_CONVERSATION_ID] = conversationId
                 reduce { state.copy(conversationId = conversationId, isLoading = true) }
+                val startedAt = System.currentTimeMillis()
 
                 getChatEntry()
                     .onSuccess { entry ->
@@ -66,6 +68,11 @@ class ChatViewModel
                         .onFailure { postSideEffect(ChatSideEffect.Error(it)) }
                 }
 
+                // 로딩 화면이 너무 빨리 깜빡이지 않도록 최소 노출 시간을 보장한다.
+                val elapsed = System.currentTimeMillis() - startedAt
+                if (elapsed < MIN_LOADING_DURATION_MILLIS) {
+                    delay(MIN_LOADING_DURATION_MILLIS - elapsed)
+                }
                 reduce { state.copy(isLoading = false) }
             }
 
@@ -242,6 +249,7 @@ class ChatViewModel
         companion object {
             private const val KEY_CONVERSATION_ID = "conversationId"
             private const val KEY_INPUT = "input"
+            private const val MIN_LOADING_DURATION_MILLIS = 1_500L
         }
     }
 
