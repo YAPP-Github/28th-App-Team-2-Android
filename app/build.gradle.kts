@@ -4,11 +4,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.todakun.android.signing)
-}
-
-// TODO CI, CD 설정 시 해당 파일이 없을 떄 빌드 실패하도록 변경
-if (file("google-services.json").exists()) {
-    apply(plugin = "com.google.gms.google-services")
+    alias(libs.plugins.google.services)
 }
 
 android {

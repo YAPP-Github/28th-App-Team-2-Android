@@ -51,7 +51,8 @@ class SplashViewModel
         private fun registerMessagingToken() {
             viewModelScope.launch {
                 val token = FirebaseMessaging.getInstance().token.await()
-                registerDeviceToken(token)
+                // TODO 올바른 상태 보장을 위해 예외 발생, 추후 ErrorScreen으로 이동
+                registerDeviceToken(token).getOrThrow()
             }
         }
 

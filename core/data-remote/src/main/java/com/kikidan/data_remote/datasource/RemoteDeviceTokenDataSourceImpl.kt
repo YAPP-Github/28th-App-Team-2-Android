@@ -19,7 +19,7 @@ class RemoteDeviceTokenDataSourceImpl
             client
                 .get()
                 .post(DEVICE_TOKENS_URL) {
-                    setBody(DeviceTokenRequest(token = token))
+                    setBody(DeviceTokenRequest(token = token, platform = "ANDROID"))
                 }.body<CommonResponse<Unit>>()
         }
 

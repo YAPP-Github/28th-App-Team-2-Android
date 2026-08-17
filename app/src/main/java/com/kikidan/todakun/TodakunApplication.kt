@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kikidan.auth.OAuthTokenProviderRegistry
 import com.kikidan.designsystem.R
 import com.kikidan.domain.usecase.RegisterDeviceTokenUseCase
@@ -17,7 +18,6 @@ class TodakunApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        FirebaseApp.initializeApp(this)
         oAuthTokenProviderRegistry.init(this)
         createDefaultNotificationChannel()
     }

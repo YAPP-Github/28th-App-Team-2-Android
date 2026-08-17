@@ -28,18 +28,17 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TodakunFirebaseMessagingService : FirebaseMessagingService() {
     @Inject
-    lateinit var registerDeviceTokenUseCase: RegisterDeviceTokenUseCase
+    lateinit var registerDeviceToken: RegisterDeviceTokenUseCase
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        serviceScope.launch { registerDeviceTokenUseCase(token) }
+        serviceScope.launch { registerDeviceToken(token) }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-
         val data = message.data
         val type = data[KEY_TYPE]?.let { runCatching { NotificationType.valueOf(it) }.getOrNull() } ?: return
         val notificationId = data[KEY_NOTIFICATION_ID] ?: return
