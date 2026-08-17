@@ -173,6 +173,20 @@
     <string name="saju_info_management_birth_time_format">%1$s(%2$s)</string>
     <string name="saju_info_management_max_partner_message">상대방 사주 정보는 최대 10개까지 저장할 수 있어요.</string>
 
+    <!-- MyPage Partner Saju Form -->
+    <string name="partner_saju_form_title">상대방 정보 입력</string>
+    <string name="partner_saju_form_name_label">이름</string>
+    <string name="partner_saju_form_name_placeholder">이름을 입력해주세요</string>
+    <string name="partner_saju_form_gender_label">성별</string>
+    <string name="partner_saju_form_date_type_label">음/양력</string>
+    <string name="partner_saju_form_birth_date_label">생년월일</string>
+    <string name="partner_saju_form_birth_time_label">태어난 시간</string>
+    <string name="partner_saju_form_relationship_label">관계</string>
+    <string name="partner_saju_form_save_button">저장하기</string>
+    <string name="partner_relationship_lover">연인</string>
+    <string name="partner_relationship_friend">친구</string>
+    <string name="partner_relationship_colleague">동료</string>
+
     <!-- MyPage Notification Setting -->
     <string name="notification_setting_title">알림 설정</string>
     <string name="notification_setting_morning_report_title">아침 운 리포트</string>

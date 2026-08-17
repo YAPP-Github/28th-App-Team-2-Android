@@ -1,6 +1,7 @@
 package com.kikidan.data.repository
 
 import com.kikidan.domain.model.saju.PartnerSaju
+import com.kikidan.domain.model.saju.PartnerSajuInput
 import com.kikidan.domain.model.saju.RelationshipType
 import com.kikidan.domain.model.user.Birth
 import com.kikidan.domain.model.user.BirthTime
@@ -20,11 +21,49 @@ class FakePartnerSajuRepository
 
         override suspend fun getPartnerSajuList(): Result<List<PartnerSaju>> = Result.success(partners)
 
+        override suspend fun getPartnerSaju(linkId: String): Result<PartnerSaju> {
+            val partner = partners.find { it.linkId == linkId }
+            return if (partner != null) {
+                Result.success(partner)
+            } else {
+                Result.failure(NoSuchElementException("PartnerSaju not found: $linkId"))
+            }
+        }
+
         override suspend fun deletePartnerSaju(linkId: String): Result<Unit> {
             partners = partners.filterNot { it.linkId == linkId }
             return Result.success(Unit)
         }
+
+        override suspend fun registerPartnerSaju(input: PartnerSajuInput): Result<Unit> {
+            partners = partners + input.toPartnerSaju(linkId = UUID.randomUUID().toString())
+            return Result.success(Unit)
+        }
+
+        override suspend fun updatePartnerSaju(
+            linkId: String,
+            input: PartnerSajuInput,
+        ): Result<Unit> {
+            partners = partners.map { if (it.linkId == linkId) input.toPartnerSaju(linkId) else it }
+            return Result.success(Unit)
+        }
     }
+
+private fun PartnerSajuInput.toPartnerSaju(linkId: String): PartnerSaju =
+    PartnerSaju(
+        linkId = linkId,
+        name = name,
+        gender = gender,
+        relationshipType = MockRelationshipTypes.getValue(relationshipTypeCode),
+        birth = birth,
+    )
+
+private val MockRelationshipTypes =
+    mapOf(
+        "LOVER" to RelationshipType(code = "LOVER", label = "연인"),
+        "FRIEND" to RelationshipType(code = "FRIEND", label = "친구"),
+        "COLLEAGUE" to RelationshipType(code = "COLLEAGUE", label = "동료"),
+    )
 
 private val MockPartnerSajuList =
     listOf(
