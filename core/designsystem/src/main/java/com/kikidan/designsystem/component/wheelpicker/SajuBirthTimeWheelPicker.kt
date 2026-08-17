@@ -14,6 +14,7 @@ fun SajuBirthTimeWheelPicker(
     onDismissRequest: () -> Unit,
     onSajuBirthTimeChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    initialSelectedIndex: Int = 2,
 ) {
     val items = stringArrayResource(R.array.wheel_picker_saju_birth_times)
 
@@ -28,7 +29,7 @@ fun SajuBirthTimeWheelPicker(
                 listOf(
                     WheelPickerColumnState(
                         items = items.toList(),
-                        selectedIndex = 2,
+                        selectedIndex = initialSelectedIndex,
                     ),
                 ),
             onWheelPickerColumnSelect = { _, selectedIndex -> onSajuBirthTimeChange(items[selectedIndex]) },

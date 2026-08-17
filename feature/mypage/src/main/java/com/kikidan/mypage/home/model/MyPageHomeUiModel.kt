@@ -6,4 +6,6 @@ import com.kikidan.domain.model.user.User
 data class MyPageHomeUiModel(
     val user: User,
     val sajuPalja: SajuPalja,
+    val appVersionName: String,
+    val isLatestVersion: Boolean = true,
 )

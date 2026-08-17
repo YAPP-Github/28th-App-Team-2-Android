@@ -8,17 +8,15 @@ import com.kikidan.mypage.home.model.MyPageHomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.syntax.Syntax
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
-
-private typealias MyPageHomeSyntax = Syntax<MyPageHomeUiState, MyPageHomeSideEffect>
 
 @HiltViewModel
 class MyPageHomeViewModel
     @Inject
     constructor(
         private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
+        private val appVersionChecker: AppVersionChecker,
     ) : ViewModel(),
         ContainerHost<MyPageHomeUiState, MyPageHomeSideEffect> {
         override val container: Container<MyPageHomeUiState, MyPageHomeSideEffect> =
@@ -32,17 +30,19 @@ class MyPageHomeViewModel
             intent {
                 getMyPageInfoUseCase()
                     .onSuccess { info ->
-                        reduce { MyPageHomeUiState.Success(MyPageHomeUiModel(info.user, info.sajuPalja)) }
+                        val isLatestVersion = appVersionChecker.isLatestVersion()
+                        reduce {
+                            MyPageHomeUiState.Success(
+                                MyPageHomeUiModel(
+                                    user = info.user,
+                                    sajuPalja = info.sajuPalja,
+                                    appVersionName = appVersionChecker.getCurrentVersionName(),
+                                    isLatestVersion = isLatestVersion,
+                                ),
+                            )
+                        }
                     }.onFailure { throwable ->
                         reduce { MyPageHomeUiState.Fail(throwable) }
                     }
             }
-
-        private suspend fun MyPageHomeSyntax.reduceIfSuccess(
-            reducer: MyPageHomeUiState.Success.() -> MyPageHomeUiState,
-        ) {
-            reduce {
-                (state as? MyPageHomeUiState.Success)?.reducer() ?: state
-            }
-        }
     }

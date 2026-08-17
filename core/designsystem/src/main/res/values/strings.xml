@@ -47,4 +47,163 @@
     <string name="bottom_nav_todak">토닥이</string>
     <string name="bottom_nav_lucky_action">행운 액션</string>
     <string name="bottom_nav_my">마이</string>
+
+    <!-- MyPage -->
+    <string name="mypage_home_title">My page</string>
+    <string name="mypage_menu_saju_info">사주 정보 관리</string>
+    <string name="mypage_menu_notification_setting">알림 설정</string>
+    <string name="mypage_menu_app_setting">앱 설정</string>
+    <string name="mypage_menu_inquiry">1:1 문의</string>
+    <string name="mypage_menu_logout">로그아웃</string>
+    <string name="mypage_app_version_label">앱 버전</string>
+    <string name="mypage_app_version_format">v %1$s</string>
+    <string name="mypage_view_mansaeryeok_button">만세력 보기</string>
+    <string name="mypage_edit_button">수정</string>
+    <string name="mypage_latest_version">(최신 버전)</string>
+
+    <!-- MyPage Edit -->
+    <string name="mypage_edit_title">내 정보 수정</string>
+    <string name="mypage_edit_gender_label">성별</string>
+    <string name="mypage_edit_date_type_label">음/양력</string>
+    <string name="mypage_edit_birth_date_label">생년월일</string>
+    <string name="mypage_edit_birth_time_label">태어난 시간</string>
+    <string name="mypage_edit_birth_time_unknown">시간 모름</string>
+    <string name="mypage_edit_current_situation_label">현재 상황</string>
+    <string name="mypage_edit_save_button">저장하기</string>
+    <string name="mypage_current_situation_title">당신의 현재 상황에 대해 알려주세요.</string>
+    <string name="mypage_current_situation_life_label">Q1  주로 어떤 일상을 보내고 계신가요?</string>
+    <string name="mypage_current_situation_relationship_label">Q2  현재 연애 상태를 알려주세요.</string>
+    <string name="mypage_current_situation_life_student">학생</string>
+    <string name="mypage_current_situation_life_job_seeking">취업 준비중</string>
+    <string name="mypage_current_situation_life_office_worker">직장인</string>
+    <string name="mypage_current_situation_life_self_employed">자영업 · 프리랜서</string>
+    <string name="mypage_current_situation_life_homemaker">주부</string>
+    <string name="mypage_current_situation_life_on_leave_or_retired">휴직 · 은퇴</string>
+    <string name="mypage_current_situation_relationship_single">솔로</string>
+    <string name="mypage_current_situation_relationship_dating">연애중</string>
+    <string name="mypage_current_situation_relationship_married">기혼</string>
+    <string name="mypage_current_situation_relationship_divorced">돌싱</string>
+    <string name="mypage_current_situation_format">%1$s ∙ %2$s</string>
+
+    <!-- MyPage Mansaeryeok Detail -->
+    <string name="mansaeryeok_detail_title">만세력</string>
+    <string name="mansaeryeok_info_content_description">정보</string>
+    <string name="mansaeryeok_profile_format">%1$s・%2$s</string>
+    <string name="mansaeryeok_profile_birth_format">%1$s %2$s・%3$s(%4$s)</string>
+    <string name="mansaeryeok_profile_birth_date_only_format">%1$s %2$s</string>
+    <string name="mansaeryeok_time_range_format">%1$s~%2$s</string>
+    <string name="mansaeryeok_time_colon_format">%1$02d:%2$02d</string>
+    <string name="mansaeryeok_saju_won_guk_title">사주원국</string>
+    <string name="mansaeryeok_ohaeng_title">오행</string>
+    <string name="mansaeryeok_ohaeng_label_format">%1$s %2$s</string>
+    <string name="mansaeryeok_row_label_ten_god">십성</string>
+    <string name="mansaeryeok_row_label_cheongan">천간</string>
+    <string name="mansaeryeok_row_label_jiji">지지</string>
+    <string name="mansaeryeok_row_label_hidden_stem">지장간</string>
+    <string name="mansaeryeok_row_label_twelve_unseong">12운성</string>
+    <string name="mansaeryeok_row_label_twelve_sinsal">12신살</string>
+    <string name="mansaeryeok_pillar_year">년주</string>
+    <string name="mansaeryeok_pillar_month">월주</string>
+    <string name="mansaeryeok_pillar_day">일주</string>
+    <string name="mansaeryeok_pillar_hour">시주</string>
+    <string name="mansaeryeok_period_early">초년운</string>
+    <string name="mansaeryeok_period_youth">청년운</string>
+    <string name="mansaeryeok_period_prime">장년운</string>
+    <string name="mansaeryeok_period_late">말년운</string>
+    <string name="mansaeryeok_ten_god_ilwon">일원</string>
+    <string name="mansaeryeok_ten_god_bigyeon">비견</string>
+    <string name="mansaeryeok_ten_god_gyeopjae">겁재</string>
+    <string name="mansaeryeok_ten_god_siksin">식신</string>
+    <string name="mansaeryeok_ten_god_sanggwan">상관</string>
+    <string name="mansaeryeok_ten_god_pyeonjae">편재</string>
+    <string name="mansaeryeok_ten_god_jeongjae">정재</string>
+    <string name="mansaeryeok_ten_god_pyeongwan">편관</string>
+    <string name="mansaeryeok_ten_god_jeonggwan">정관</string>
+    <string name="mansaeryeok_ten_god_pyeonin">편인</string>
+    <string name="mansaeryeok_ten_god_jeongin">정인</string>
+    <string name="mansaeryeok_twelve_unseong_jangsaeng">장생</string>
+    <string name="mansaeryeok_twelve_unseong_mogyok">목욕</string>
+    <string name="mansaeryeok_twelve_unseong_gwandae">관대</string>
+    <string name="mansaeryeok_twelve_unseong_geonrok">건록</string>
+    <string name="mansaeryeok_twelve_unseong_jewang">제왕</string>
+    <string name="mansaeryeok_twelve_unseong_soe">쇠</string>
+    <string name="mansaeryeok_twelve_unseong_byeong">병</string>
+    <string name="mansaeryeok_twelve_unseong_sa">사</string>
+    <string name="mansaeryeok_twelve_unseong_myo">묘</string>
+    <string name="mansaeryeok_twelve_unseong_jeol">절</string>
+    <string name="mansaeryeok_twelve_unseong_tae">태</string>
+    <string name="mansaeryeok_twelve_unseong_yang">양</string>
+    <string name="mansaeryeok_twelve_sinsal_geopsal">겁살</string>
+    <string name="mansaeryeok_twelve_sinsal_jaesal">재살</string>
+    <string name="mansaeryeok_twelve_sinsal_cheonsal">천살</string>
+    <string name="mansaeryeok_twelve_sinsal_jisal">지살</string>
+    <string name="mansaeryeok_twelve_sinsal_nyeonsal">년살</string>
+    <string name="mansaeryeok_twelve_sinsal_wolsal">월살</string>
+    <string name="mansaeryeok_twelve_sinsal_mangsinsal">망신살</string>
+    <string name="mansaeryeok_twelve_sinsal_jangseongsal">장성살</string>
+    <string name="mansaeryeok_twelve_sinsal_banansal">반안살</string>
+    <string name="mansaeryeok_twelve_sinsal_yeokmasal">역마살</string>
+    <string name="mansaeryeok_twelve_sinsal_yukhaesal">육해살</string>
+    <string name="mansaeryeok_twelve_sinsal_hwagaesal">화개살</string>
+    <string name="mansaeryeok_five_element_status_lacking">부족</string>
+    <string name="mansaeryeok_five_element_status_moderate">적정</string>
+    <string name="mansaeryeok_five_element_status_abundant">발달</string>
+    <string name="mansaeryeok_info_confirm_button">확인</string>
+    <string name="mansaeryeok_saju_won_guk_info_title">사주원국이란?</string>
+    <string name="mansaeryeok_saju_won_guk_info_description">사주원국은 태어난 연/월/일/시를 각각 천간(하늘의 기운)과 지지(땅의 기운)로 나타낸, 타고난 사주의 기본 틀이에요. 이 네 기둥(사주)이 모여 한 사람이 타고난 기질과 운의 전체 지도를 보여줘요.</string>
+    <string name="mansaeryeok_saju_won_guk_info_year">년주: 태어난 해의 천간·지지 → 조상, 어린 시절, 사회적 배경을 의미</string>
+    <string name="mansaeryeok_saju_won_guk_info_month">월주: 태어난 달의 천간·지지 → 부모, 형제, 성장 환경을 의미</string>
+    <string name="mansaeryeok_saju_won_guk_info_day">일주: 태어난 날의 천간·지지 → 나 자신, 배우자를 의미 (사주의 중심)</string>
+    <string name="mansaeryeok_saju_won_guk_info_hour">시주: 태어난 시각의 천간·지지 → 자녀, 말년운을 의미</string>
+    <string name="mansaeryeok_ohaeng_info_title">오행이란?</string>
+    <string name="mansaeryeok_ohaeng_info_description">오행은 우주 만물을 이루는 다섯 가지 기운, 목(木)·화(火)·토(土)·금(金)·수(水)를 뜻해요. 오행의 균형이 성격과 운의 흐름에 영향을 줘요.</string>
+    <string name="mansaeryeok_ohaeng_info_mok">목(木): 성장과 시작의 기운 (봄, 나무)</string>
+    <string name="mansaeryeok_ohaeng_info_hwa">화(火): 열정과 확산의 기운 (여름, 불)</string>
+    <string name="mansaeryeok_ohaeng_info_to">토(土): 중심과 안정의 기운 (환절기, 흙)</string>
+    <string name="mansaeryeok_ohaeng_info_geum">금(金): 결실과 결단의 기운 (가을, 쇠)</string>
+    <string name="mansaeryeok_ohaeng_info_su">수(水): 지혜와 휴식의 기운 (겨울, 물)</string>
+
+    <!-- MyPage Saju Info Management -->
+    <string name="saju_info_management_title">사주 정보 관리</string>
+    <string name="saju_info_management_registered_count_label">등록된 사주 정보</string>
+    <string name="saju_info_management_add_button">사주 정보 추가(최대 10명)</string>
+    <string name="saju_info_management_edit_menu">수정하기</string>
+    <string name="saju_info_management_delete_menu">삭제하기</string>
+    <string name="saju_info_management_more_content_description">더보기</string>
+    <string name="saju_info_management_birth_time_format">%1$s(%2$s)</string>
+    <string name="saju_info_management_max_partner_message">상대방 사주 정보는 최대 10개까지 저장할 수 있어요.</string>
+
+    <!-- MyPage Partner Saju Form -->
+    <string name="partner_saju_form_title">상대방 정보 입력</string>
+    <string name="partner_saju_form_name_label">이름</string>
+    <string name="partner_saju_form_name_placeholder">이름을 입력해주세요</string>
+    <string name="partner_saju_form_gender_label">성별</string>
+    <string name="partner_saju_form_date_type_label">음/양력</string>
+    <string name="partner_saju_form_birth_date_label">생년월일</string>
+    <string name="partner_saju_form_birth_date_placeholder">생년월일을 선택해주세요</string>
+    <string name="partner_saju_form_birth_time_label">태어난 시간</string>
+    <string name="partner_saju_form_relationship_label">관계</string>
+    <string name="partner_saju_form_save_button">저장하기</string>
+    <string name="partner_relationship_lover">연인</string>
+    <string name="partner_relationship_friend">친구</string>
+    <string name="partner_relationship_colleague">동료</string>
+
+    <!-- MyPage Notification Setting -->
+    <string name="notification_setting_title">알림 설정</string>
+    <string name="notification_setting_morning_report_title">아침 운 리포트</string>
+    <string name="notification_setting_morning_report_subtitle">매일 아침 오늘의 운세</string>
+    <string name="notification_setting_morning_report_time_label">받을 시간</string>
+    <string name="notification_setting_todak_alarm_title">토닥이 알림</string>
+    <string name="notification_setting_todak_alarm_subtitle">토닥이 답변 완료 시 안내</string>
+    <string name="notification_setting_lucky_action_title">행운 액션 리마인드</string>
+    <string name="notification_setting_lucky_action_subtitle">매일 오후 8시 고정</string>
+
+    <!-- Common -->
+    <string name="separator_dot">·</string>
+    <string name="gender_male">남성</string>
+    <string name="gender_female">여성</string>
+    <string name="date_type_solar">양력</string>
+    <string name="date_type_lunar">음력</string>
+    <string name="birth_time_format">%1$d시 %2$02d분</string>
+    <string name="saju_card_label_format">-%1$s, %2$s</string>
 </resources>

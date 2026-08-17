@@ -8,21 +8,29 @@ import com.kikidan.domain.model.user.User
 import com.kikidan.domain.repository.UserRepository
 import java.time.LocalDate
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FakeUserRepository
     @Inject
     constructor() : UserRepository {
-        override suspend fun getUserInfo(): Result<User> =
-            Result.success(
-                User(
-                    id = "fake-user-id",
-                    gender = Gender.FEMALE,
-                    birth =
-                        Birth(
-                            dateType = DateType.SOLAR,
-                            date = LocalDate.of(1999, 2, 13),
-                            time = BirthTime.SA,
-                        ),
-                ),
+        private var user =
+            User(
+                id = "fake-user-id",
+                name = "토닥이",
+                gender = Gender.FEMALE,
+                birth =
+                    Birth(
+                        dateType = DateType.SOLAR,
+                        date = LocalDate.of(1999, 2, 13),
+                        time = BirthTime.SA,
+                    ),
             )
+
+        override suspend fun getUserInfo(): Result<User> = Result.success(user)
+
+        override suspend fun updateUserInfo(user: User): Result<Unit> {
+            this.user = user
+            return Result.success(Unit)
+        }
     }

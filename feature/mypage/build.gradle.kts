@@ -5,3 +5,8 @@ plugins {
 android {
     namespace = "com.kikidan.mypage"
 }
+
+dependencies {
+    implementation(libs.play.app.update.ktx)
+    implementation(libs.kotlinx.coroutines.play.services)
+}
