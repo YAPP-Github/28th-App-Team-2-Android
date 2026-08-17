@@ -2,12 +2,14 @@ package com.kikidan.data.di
 
 import com.kikidan.data.repository.AuthRepositoryImpl
 import com.kikidan.data.repository.ChatRepositoryImpl
+import com.kikidan.data.repository.DeviceTokenRepositoryImpl
 import com.kikidan.data.repository.FortuneRepositoryImpl
 import com.kikidan.data.repository.LuckActionRepositoryImpl
 import com.kikidan.data.repository.NotificationRepositoryImpl
 import com.kikidan.data.repository.TokenRepositoryImpl
 import com.kikidan.domain.repository.AuthRepository
 import com.kikidan.domain.repository.ChatRepository
+import com.kikidan.domain.repository.DeviceTokenRepository
 import com.kikidan.domain.repository.FortuneRepository
 import com.kikidan.domain.repository.LuckActionRepository
 import com.kikidan.domain.repository.NotificationRepository
@@ -44,4 +46,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindNotificationRepository(impl: NotificationRepositoryImpl): NotificationRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDeviceTokenRepository(impl: DeviceTokenRepositoryImpl): DeviceTokenRepository
 }

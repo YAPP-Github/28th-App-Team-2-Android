@@ -1,13 +1,18 @@
 package com.kikidan.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kikidan.auth.model.SplashSideEffect
 import com.kikidan.domain.model.auth.AuthState
 import com.kikidan.domain.usecase.CheckAuthStateUseCase
+import com.kikidan.domain.usecase.RegisterDeviceTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
@@ -17,6 +22,7 @@ import javax.inject.Inject
 class SplashViewModel
     @Inject
     constructor(
+        private val registerDeviceToken: RegisterDeviceTokenUseCase,
         private val checkAuthStateUseCase: CheckAuthStateUseCase,
     ) : ViewModel(),
         ContainerHost<Unit, SplashSideEffect> {
@@ -31,10 +37,23 @@ class SplashViewModel
                         deferred.await()
                     }
                 when (authState) {
-                    AuthState.Authenticated -> postSideEffect(SplashSideEffect.AlreadyAuthenticated)
-                    AuthState.Unauthenticated -> postSideEffect(SplashSideEffect.NavigateToLogin)
+                    AuthState.Authenticated -> {
+                        registerMessagingToken()
+                        postSideEffect(SplashSideEffect.AlreadyAuthenticated)
+                    }
+
+                    AuthState.Unauthenticated -> {
+                        postSideEffect(SplashSideEffect.NavigateToLogin)
+                    }
                 }
             }
+
+        private fun registerMessagingToken() {
+            viewModelScope.launch {
+                val token = FirebaseMessaging.getInstance().token.await()
+                registerDeviceToken(token)
+            }
+        }
 
         companion object {
             private const val SPLASH_MIN_DURATION_MILLIS = 1_500L

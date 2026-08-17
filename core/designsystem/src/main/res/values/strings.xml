@@ -233,6 +233,8 @@
     <string name="notification_category_fortune">운세</string>
     <string name="notification_category_lucky_action">행운액션</string>
     <string name="notification_category_ai_complete">토닥이</string>
+    <string name="default_notification_channel_id">todakun_push_channel</string>
+    <string name="default_notification_channel_name">토닥운 알림</string>
 
     <!-- 완료 -->
     <string name="onboarding_complete_title">계정이 생성되었어요!</string>

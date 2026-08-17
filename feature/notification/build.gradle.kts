@@ -20,5 +20,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+    implementation(libs.androidx.lifecycle.process)
+
     testImplementation(libs.kotlinx.coroutines.test)
 }
