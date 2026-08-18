@@ -1,6 +1,5 @@
 package com.kikidan.domain.usecase.saju
 
-import com.kikidan.domain.di.Fake
 import com.kikidan.domain.model.saju.PartnerSajuInput
 import com.kikidan.domain.repository.PartnerSajuRepository
 import javax.inject.Inject
@@ -8,7 +7,7 @@ import javax.inject.Inject
 class RegisterPartnerSajuUseCase
     @Inject
     constructor(
-        @Fake private val partnerSajuRepository: PartnerSajuRepository,
+        private val partnerSajuRepository: PartnerSajuRepository,
     ) {
         suspend operator fun invoke(input: PartnerSajuInput): Result<Unit> =
             partnerSajuRepository.registerPartnerSaju(input)

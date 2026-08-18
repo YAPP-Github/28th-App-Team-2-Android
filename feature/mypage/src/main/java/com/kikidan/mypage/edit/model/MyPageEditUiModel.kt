@@ -12,5 +12,6 @@ data class MyPageEditUiModel(
     val dateType: DateType,
     val birthDate: LocalDate,
     val birthTime: BirthTime,
-    val currentSituationText: String = "",
+    val lifeStatus: LifeStatus,
+    val relationshipStatus: RelationshipStatus,
 )

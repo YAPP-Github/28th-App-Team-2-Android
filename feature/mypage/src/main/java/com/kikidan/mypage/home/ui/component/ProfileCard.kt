@@ -34,6 +34,8 @@ import com.kikidan.domain.model.user.Birth
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
 import com.kikidan.domain.model.user.Gender
+import com.kikidan.domain.model.user.Job
+import com.kikidan.domain.model.user.RelationshipStatus
 import com.kikidan.domain.model.user.User
 import com.kikidan.mypage.ui.component.SajuPaljaGrid
 import java.time.LocalDate
@@ -193,6 +195,8 @@ private fun ProfileCardPreview() {
                     id = "preview",
                     name = "토닥이",
                     gender = Gender.FEMALE,
+                    job = Job.WORKER,
+                    relationshipStatus = RelationshipStatus.SOLO,
                     birth =
                         Birth(
                             dateType = DateType.SOLAR,

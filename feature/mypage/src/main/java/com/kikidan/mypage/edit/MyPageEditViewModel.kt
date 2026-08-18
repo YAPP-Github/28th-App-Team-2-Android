@@ -10,9 +10,15 @@ import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.model.user.User
 import com.kikidan.domain.usecase.user.GetUserUseCase
 import com.kikidan.domain.usecase.user.UpdateUserUseCase
+import com.kikidan.mypage.edit.model.LifeStatus
 import com.kikidan.mypage.edit.model.MyPageEditSideEffect
 import com.kikidan.mypage.edit.model.MyPageEditUiModel
 import com.kikidan.mypage.edit.model.MyPageEditUiState
+import com.kikidan.mypage.edit.model.RelationshipStatus
+import com.kikidan.mypage.edit.model.toDomain
+import com.kikidan.mypage.edit.model.toJob
+import com.kikidan.mypage.edit.model.toLifeStatus
+import com.kikidan.mypage.edit.model.toUiStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -55,6 +61,8 @@ class MyPageEditViewModel
                                     dateType = user.birth.dateType,
                                     birthDate = user.birth.date,
                                     birthTime = user.birth.time,
+                                    lifeStatus = user.job.toLifeStatus(),
+                                    relationshipStatus = user.relationshipStatus.toUiStatus(),
                                 ),
                             )
                         }
@@ -71,7 +79,10 @@ class MyPageEditViewModel
 
         fun updateBirthTime(birthTime: BirthTime) = updateModel { copy(birthTime = birthTime) }
 
-        fun updateCurrentSituation(text: String) = updateModel { copy(currentSituationText = text) }
+        fun updateCurrentSituation(
+            lifeStatus: LifeStatus,
+            relationshipStatus: RelationshipStatus,
+        ) = updateModel { copy(lifeStatus = lifeStatus, relationshipStatus = relationshipStatus) }
 
         fun save() =
             intent {
@@ -82,6 +93,8 @@ class MyPageEditViewModel
                         id = model.id,
                         name = model.name,
                         gender = model.gender,
+                        job = model.lifeStatus.toJob(),
+                        relationshipStatus = model.relationshipStatus.toDomain(),
                         birth =
                             Birth(
                                 dateType = model.dateType,

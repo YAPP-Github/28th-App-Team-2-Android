@@ -60,7 +60,7 @@ fun MyPageEditScreen(
     onDateTypeSelect: (DateType) -> Unit = {},
     onBirthDateChange: (LocalDate) -> Unit = {},
     onBirthTimeChange: (BirthTime) -> Unit = {},
-    onCurrentSituationChange: (String) -> Unit = {},
+    onCurrentSituationChange: (LifeStatus, RelationshipStatus) -> Unit = { _, _ -> },
     onSaveClick: () -> Unit = {},
 ) {
     Column(
@@ -106,7 +106,7 @@ private fun MyPageEditContent(
     onDateTypeSelect: (DateType) -> Unit,
     onBirthDateChange: (LocalDate) -> Unit,
     onBirthTimeChange: (BirthTime) -> Unit,
-    onCurrentSituationChange: (String) -> Unit,
+    onCurrentSituationChange: (LifeStatus, RelationshipStatus) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -211,7 +211,12 @@ private fun MyPageEditContent(
 
             EditField(label = stringResource(R.string.mypage_edit_current_situation_label)) {
                 TodakunSelectField(
-                    value = model.currentSituationText,
+                    value =
+                        stringResource(
+                            R.string.mypage_current_situation_format,
+                            stringResource(model.lifeStatus.labelRes),
+                            stringResource(model.relationshipStatus.labelRes),
+                        ),
                     onClick = { showCurrentSituationSheet = true },
                 )
             }
@@ -261,20 +266,14 @@ private fun MyPageEditContent(
     }
 
     if (showCurrentSituationSheet) {
-        val currentSituationFormat = stringResource(R.string.mypage_current_situation_format)
-        val lifeStatusLabels = LifeStatus.entries.associateWith { stringResource(it.labelRes) }
-        val relationshipStatusLabels = RelationshipStatus.entries.associateWith { stringResource(it.labelRes) }
         CurrentSituationBottomSheet(
             onSaveClick = { life, relationship ->
-                onCurrentSituationChange(
-                    currentSituationFormat.format(
-                        lifeStatusLabels.getValue(life),
-                        relationshipStatusLabels.getValue(relationship),
-                    ),
-                )
+                onCurrentSituationChange(life, relationship)
                 showCurrentSituationSheet = false
             },
             onDismissRequest = { showCurrentSituationSheet = false },
+            initialLifeStatus = model.lifeStatus,
+            initialRelationshipStatus = model.relationshipStatus,
         )
     }
 }
@@ -317,7 +316,8 @@ private fun MyPageEditScreenPreview() {
                         dateType = DateType.SOLAR,
                         birthDate = LocalDate.of(1999, 2, 13),
                         birthTime = BirthTime.SA,
-                        currentSituationText = "직장인 ∙ 솔로",
+                        lifeStatus = LifeStatus.OFFICE_WORKER,
+                        relationshipStatus = RelationshipStatus.SINGLE,
                     ),
                 ),
         )
