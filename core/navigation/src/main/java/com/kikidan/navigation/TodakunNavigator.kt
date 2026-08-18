@@ -4,19 +4,9 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.kikidan.designsystem.component.bottomnavigation.TodakunNavItem
 
-/**
- * [TodakunRoute] 백스택과 인증/딥링크 진입 정책을 캡슐화한다.
- * `isAuthenticated`는 별도 플래그 대신 백스택의 루트 라우트로부터 유도한다 —
- * 백스택 자체가 이미 프로세스 재생성에도 살아남는 상태이므로 이중 관리를 피한다.
- */
 class TodakunNavigator(
     val backStack: NavBackStack<NavKey>,
 ) {
-    private var pendingDeepLink: String? = null
-
-    val isAuthenticated: Boolean
-        get() = backStack.firstOrNull().let { it != TodakunRoute.Login && it != TodakunRoute.Terms }
-
     val currentTab: TodakunNavItem?
         get() = (backStack.lastOrNull() as? TodakunRoute)?.toNavItemOrNull()
 
@@ -40,10 +30,6 @@ class TodakunNavigator(
     }
 
     fun navigateOrFallbackToDeepLink(deepLink: String) {
-        if (!isAuthenticated) {
-            pendingDeepLink = deepLink
-            return
-        }
         parseDeepLink(deepLink)?.let(::push) ?: push(TodakunRoute.Notification)
     }
 }

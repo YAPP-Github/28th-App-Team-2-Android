@@ -8,6 +8,6 @@ data class PushNotificationEvent(
     val deepLink: String?,
 ) {
     companion object {
-        const val DEEP_LINK_KEY = "deeplink"
+        const val DEEP_LINK_KEY = "deepLink"
     }
 }

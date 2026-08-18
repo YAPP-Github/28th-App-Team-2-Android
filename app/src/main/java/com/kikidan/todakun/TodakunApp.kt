@@ -20,7 +20,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -42,11 +41,10 @@ import com.kikidan.notification.NotificationRoute
 import com.kikidan.notification.component.PushNotificationBanner
 import com.kikidan.onboarding.OnboardingRoute
 import com.kikidan.onboarding.TermsRoute
-import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun TodakunApp(
-    deepLinkEvents: Flow<String>,
+    deepLinkRoute: TodakunRoute?,
     modifier: Modifier = Modifier,
 ) {
     val backStack = rememberNavBackStack(TodakunRoute.Login)
@@ -58,12 +56,6 @@ fun TodakunApp(
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             PushNotificationEventFlow.events.collect { event -> inAppEvent = event }
-        }
-    }
-
-    LaunchedEffect(navigator) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            deepLinkEvents.collect(navigator::navigateOrFallbackToDeepLink)
         }
     }
 
@@ -109,9 +101,17 @@ fun TodakunApp(
                                     )
                                 } else {
                                     navigator.resetTo(TodakunRoute.Home)
+                                    if (deepLinkRoute != null) {
+                                        navigator.push(deepLinkRoute)
+                                    }
                                 }
                             },
-                            onAuthPass = { navigator.resetTo(TodakunRoute.Home) },
+                            onAuthPass = {
+                                navigator.resetTo(TodakunRoute.Home)
+                                if (deepLinkRoute != null) {
+                                    navigator.push(deepLinkRoute)
+                                }
+                            },
                         )
                     }
 
@@ -192,12 +192,14 @@ fun TodakunApp(
         )
     }
 
-    PushNotificationBanner(
-        event = inAppEvent,
-        onDismiss = { inAppEvent = null },
-        onClick = { event ->
-            inAppEvent = null
-            event.deepLink?.let(navigator::navigateOrFallbackToDeepLink)
-        },
-    )
+    if (inAppEvent != null) {
+        PushNotificationBanner(
+            event = inAppEvent,
+            onDismiss = { inAppEvent = null },
+            onClick = { event ->
+                inAppEvent = null
+                event.deepLink?.let(navigator::navigateOrFallbackToDeepLink)
+            },
+        )
+    }
 }

@@ -13,14 +13,6 @@ class NavigatorTest {
     private fun navigator(start: TodakunRoute = TodakunRoute.Login) = TodakunNavigator(NavBackStack<NavKey>(start))
 
     @Test
-    fun `초기 상태는 Login이며 인증되지 않은 상태다`() {
-        val navigator = navigator()
-
-        assertEquals(listOf(TodakunRoute.Login), navigator.backStack.toList())
-        assertFalse(navigator.isAuthenticated)
-    }
-
-    @Test
     fun `파싱 실패한 딥링크는 알림함으로 폴백한다`() {
         val navigator = navigator(start = TodakunRoute.Home)
 

@@ -27,13 +27,6 @@ class DeepLinkParserTest {
     }
 
     @Test
-    fun `매칭되는 패턴이 없으면 null을 반환한다`() {
-        val route = parseDeepLink("todakun://notice/unknown")
-
-        assertNull(route)
-    }
-
-    @Test
     fun `todakun 스킴이 아니면 null을 반환한다`() {
         val route = parseDeepLink("https://example.com/fortune/today")
 

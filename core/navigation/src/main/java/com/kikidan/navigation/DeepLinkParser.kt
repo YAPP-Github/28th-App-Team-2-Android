@@ -27,6 +27,10 @@ fun parseDeepLink(uri: String): TodakunRoute? {
                 ?.let { conversationId -> TodakunRoute.Chat(conversationId = conversationId) }
         }
 
+        path.startsWith(PATH_NOTICE_PREFIX) -> {
+            TodakunRoute.Notification
+        }
+
         else -> {
             null
         }
@@ -37,3 +41,5 @@ private const val SCHEME_PREFIX = "todakun://"
 private const val PATH_LUCKY_ACTION = "lucky-action"
 private const val PATH_FORTUNE_PREFIX = "fortune/"
 private const val PATH_CHAT_CONVERSATION_PREFIX = "chat/conversations/"
+
+private const val PATH_NOTICE_PREFIX = "notice/"
