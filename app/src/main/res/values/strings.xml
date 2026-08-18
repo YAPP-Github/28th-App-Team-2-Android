@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">todakun</string>
+    <string name="my_page_placeholder">마이페이지는 준비 중이에요</string>
 </resources>

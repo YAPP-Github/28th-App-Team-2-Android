@@ -1,6 +1,7 @@
 package com.kikidan.notification
 
 import androidx.lifecycle.ViewModel
+import com.kikidan.domain.model.notification.Notification
 import com.kikidan.domain.usecase.GetNotificationsUseCase
 import com.kikidan.domain.usecase.MarkNotificationAsReadUseCase
 import com.kikidan.notification.model.NotificationSideEffect
@@ -22,11 +23,15 @@ class NotificationViewModel
         ContainerHost<NotificationState, NotificationSideEffect> {
         override val container = container<NotificationState, NotificationSideEffect>(NotificationState())
 
+        // 화면 표시용 NotificationUiModel에는 deepLink가 없어 클릭 시 원본 목록에서 조회한다.
+        private var notifications: List<Notification> = emptyList()
+
         fun load() =
             intent {
                 reduce { state.copy(isLoading = true) }
                 getNotifications()
                     .onSuccess { summary ->
+                        notifications = summary.notifications
                         reduce {
                             state.copy(
                                 isLoading = false,
@@ -51,6 +56,10 @@ class NotificationViewModel
                                         .toPersistentList(),
                             )
                         }
+                        notifications
+                            .firstOrNull { it.id == notificationId }
+                            ?.deepLink
+                            ?.let { deepLink -> postSideEffect(NotificationSideEffect.NavigateToDeepLink(deepLink)) }
                     }.onFailure { postSideEffect(NotificationSideEffect.Error(it)) }
             }
     }

@@ -16,6 +16,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun NotificationRoute(
     onBackClick: () -> Unit,
+    onNavigateToDeepLink: (String) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: NotificationViewModel = hiltViewModel(),
@@ -28,6 +29,7 @@ fun NotificationRoute(
     viewModel.collectSideEffect { effect ->
         when (effect) {
             is NotificationSideEffect.Error -> snackbarHostState.showSnackbar(defaultErrorMessage)
+            is NotificationSideEffect.NavigateToDeepLink -> onNavigateToDeepLink(effect.deepLink)
         }
     }
 
