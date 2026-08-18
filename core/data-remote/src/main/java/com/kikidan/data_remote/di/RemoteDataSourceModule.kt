@@ -67,9 +67,5 @@ abstract class RemoteDataSourceModule {
 
     @Binds
     @Singleton
-    abstract fun bindCNotificationDataSource(impl: RemoteNotificationDataSourceImpl): RemoteNotificationDataSource
-
-    @Binds
-    @Singleton
     abstract fun bindDeviceTokenDataSource(impl: RemoteDeviceTokenDataSourceImpl): RemoteDeviceTokenDataSource
 }

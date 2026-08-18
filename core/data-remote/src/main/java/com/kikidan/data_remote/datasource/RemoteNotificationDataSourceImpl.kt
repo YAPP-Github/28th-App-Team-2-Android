@@ -34,6 +34,8 @@ class RemoteNotificationDataSourceImpl
         override suspend fun updateNotificationSetting(setting: NotificationSetting) {
             client.get().patch(SETTINGS_URL) { setBody(setting.toUpdateRequest()) }
                 .bodyNotNull<NotificationSettingResponse>()
+        }
+
         override suspend fun markAsRead(notificationId: String) {
             client
                 .get()
