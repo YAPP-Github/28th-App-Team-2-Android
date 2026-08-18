@@ -14,11 +14,13 @@ class NotificationRepositoryImpl
     ) : NotificationRepository {
         override suspend fun getNotificationSetting(): Result<NotificationSetting> =
             runCatchingCancellable { remoteNotificationDataSource.getNotificationSetting() }
+
         override suspend fun getNotifications(): Result<NotificationSummary> =
             runCatchingCancellable { remoteNotificationDataSource.getNotifications() }
 
         override suspend fun updateNotificationSetting(setting: NotificationSetting): Result<Unit> =
             runCatchingCancellable { remoteNotificationDataSource.updateNotificationSetting(setting) }
+
         override suspend fun markAsRead(notificationId: String): Result<Unit> =
             runCatchingCancellable { remoteNotificationDataSource.markAsRead(notificationId) }
     }

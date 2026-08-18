@@ -11,8 +11,7 @@ class UserRepositoryImpl
     constructor(
         private val remoteUserDataSource: RemoteUserDataSource,
     ) : UserRepository {
-        override suspend fun getUserInfo(): Result<User> =
-            runCatchingCancellable { remoteUserDataSource.getUser() }
+        override suspend fun getUserInfo(): Result<User> = runCatchingCancellable { remoteUserDataSource.getUser() }
 
         override suspend fun updateUserInfo(user: User): Result<Unit> =
             runCatchingCancellable { remoteUserDataSource.updateUser(user) }

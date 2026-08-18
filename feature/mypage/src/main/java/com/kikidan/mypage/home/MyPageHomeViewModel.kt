@@ -13,34 +13,34 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageHomeViewModel
-@Inject
-constructor(
-    private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
-    private val appVersionChecker: AppVersionChecker,
-) : ViewModel(),
-    ContainerHost<MyPageHomeUiState, MyPageHomeSideEffect> {
-    override val container: Container<MyPageHomeUiState, MyPageHomeSideEffect> =
-        container(MyPageHomeUiState.Loading) {
-            loadMyPageInfo()
-        }
+    @Inject
+    constructor(
+        private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
+        private val appVersionChecker: AppVersionChecker,
+    ) : ViewModel(),
+        ContainerHost<MyPageHomeUiState, MyPageHomeSideEffect> {
+        override val container: Container<MyPageHomeUiState, MyPageHomeSideEffect> =
+            container(MyPageHomeUiState.Loading) {
+                loadMyPageInfo()
+            }
 
-    fun loadMyPageInfo() =
-        intent {
-            getMyPageInfoUseCase()
-                .onSuccess { info ->
-                    val isLatestVersion = appVersionChecker.isLatestVersion()
-                    reduce {
-                        MyPageHomeUiState.Success(
-                            MyPageHomeUiModel(
-                                user = info.user,
-                                sajuPalja = info.sajuPalja,
-                                appVersionName = appVersionChecker.getCurrentVersionName(),
-                                isLatestVersion = isLatestVersion,
-                            ),
-                        )
+        fun loadMyPageInfo() =
+            intent {
+                getMyPageInfoUseCase()
+                    .onSuccess { info ->
+                        val isLatestVersion = appVersionChecker.isLatestVersion()
+                        reduce {
+                            MyPageHomeUiState.Success(
+                                MyPageHomeUiModel(
+                                    user = info.user,
+                                    sajuPalja = info.sajuPalja,
+                                    appVersionName = appVersionChecker.getCurrentVersionName(),
+                                    isLatestVersion = isLatestVersion,
+                                ),
+                            )
+                        }
+                    }.onFailure { throwable ->
+                        reduce { MyPageHomeUiState.Fail(throwable) }
                     }
-                }.onFailure { throwable ->
-                    reduce { MyPageHomeUiState.Fail(throwable) }
-                }
-        }
-}
+            }
+    }

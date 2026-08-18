@@ -18,10 +18,18 @@ class RemoteSajuDataSourceImpl
         private val client: Lazy<HttpClient>,
     ) : RemoteSajuDataSource {
         override suspend fun getMySajuPalja(): SajuPalja =
-            client.get().get(SAJU_ME_URL).bodyNotNull<SajuChartDetailResponse>().toDomain()
+            client
+                .get()
+                .get(SAJU_ME_URL)
+                .bodyNotNull<SajuChartDetailResponse>()
+                .toDomain()
 
         override suspend fun getMySajuChartDetail(): SajuChartDetail =
-            client.get().get(SAJU_ME_URL).bodyNotNull<SajuChartDetailResponse>().toChartDetail()
+            client
+                .get()
+                .get(SAJU_ME_URL)
+                .bodyNotNull<SajuChartDetailResponse>()
+                .toChartDetail()
 
         companion object {
             private const val SAJU_ME_URL = "api/v1/saju/me"

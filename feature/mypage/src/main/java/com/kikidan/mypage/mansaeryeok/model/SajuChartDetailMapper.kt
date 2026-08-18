@@ -44,7 +44,9 @@ private fun FiveElementCount.toStatus(): FiveElementStatus =
 
 private fun SajuPillarDetail.toUi(): com.kikidan.mypage.mansaeryeok.model.SajuPillarDetail =
     com.kikidan.mypage.mansaeryeok.model.SajuPillarDetail(
-        pillar = com.kikidan.domain.model.saju.SajuPillar(cheonGan = cheonGan, jiJi = jiJi),
+        pillar =
+            com.kikidan.domain.model.saju
+                .SajuPillar(cheonGan = cheonGan, jiJi = jiJi),
         pillarLabelRes = pillarType.labelRes(),
         periodLabelRes = pillarType.periodLabelRes(),
         topTenGod = stemTenGod.toUi(),

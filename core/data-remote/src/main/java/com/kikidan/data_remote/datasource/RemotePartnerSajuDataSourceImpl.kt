@@ -27,19 +27,27 @@ class RemotePartnerSajuDataSourceImpl
         private val client: Lazy<HttpClient>,
     ) : RemotePartnerSajuDataSource {
         override suspend fun getPartnerSajuList(): List<PartnerSaju> =
-            client.get().get(PARTNERS_URL)
+            client
+                .get()
+                .get(PARTNERS_URL)
                 .bodyNotNull<List<PartnerSajuSummaryResponse>>()
                 .map { it.toDomain() }
 
         override suspend fun getPartnerSaju(linkId: String): PartnerSaju =
-            client.get().get(partnerUrl(linkId)).bodyNotNull<PartnerSajuDetailResponse>().toDomain()
+            client
+                .get()
+                .get(partnerUrl(linkId))
+                .bodyNotNull<PartnerSajuDetailResponse>()
+                .toDomain()
 
         override suspend fun deletePartnerSaju(linkId: String) {
             client.get().delete(partnerUrl(linkId)).body<CommonResponse<Unit>>()
         }
 
         override suspend fun registerPartnerSaju(input: PartnerSajuInput) {
-            client.get().post(PARTNERS_URL) { setBody(input.toRegisterRequest()) }
+            client
+                .get()
+                .post(PARTNERS_URL) { setBody(input.toRegisterRequest()) }
                 .bodyNotNull<RegisterPartnerSajuResponse>()
         }
 
@@ -47,7 +55,9 @@ class RemotePartnerSajuDataSourceImpl
             linkId: String,
             input: PartnerSajuInput,
         ) {
-            client.get().patch(partnerUrl(linkId)) { setBody(input.toUpdateRequest()) }
+            client
+                .get()
+                .patch(partnerUrl(linkId)) { setBody(input.toUpdateRequest()) }
                 .body<CommonResponse<Unit>>()
         }
 

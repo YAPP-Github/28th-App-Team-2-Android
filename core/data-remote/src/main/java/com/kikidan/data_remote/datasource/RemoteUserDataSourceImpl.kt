@@ -22,7 +22,11 @@ class RemoteUserDataSourceImpl
         private val client: Lazy<HttpClient>,
     ) : RemoteUserDataSource {
         override suspend fun getUser(): User =
-            client.get().get(MEMBERS_ME_URL).bodyNotNull<MyProfileResponse>().toDomain()
+            client
+                .get()
+                .get(MEMBERS_ME_URL)
+                .bodyNotNull<MyProfileResponse>()
+                .toDomain()
 
         override suspend fun updateUser(user: User) {
             val request =

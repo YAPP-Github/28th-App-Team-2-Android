@@ -1,9 +1,9 @@
 package com.kikidan.data_remote.datasource
 
 import com.kikidan.data.datasource.RemoteNotificationDataSource
-import com.kikidan.data_remote.dto.notification.NotificationSettingResponse
 import com.kikidan.data_remote.dto.CommonResponse
 import com.kikidan.data_remote.dto.notification.NotificationListResponse
+import com.kikidan.data_remote.dto.notification.NotificationSettingResponse
 import com.kikidan.data_remote.dto.notification.toDomain
 import com.kikidan.data_remote.dto.notification.toUpdateRequest
 import com.kikidan.data_remote.util.bodyNotNull
@@ -23,7 +23,12 @@ class RemoteNotificationDataSourceImpl
         private val client: Lazy<HttpClient>,
     ) : RemoteNotificationDataSource {
         override suspend fun getNotificationSetting(): NotificationSetting =
-            client.get().get(SETTINGS_URL).bodyNotNull<NotificationSettingResponse>().toDomain()
+            client
+                .get()
+                .get(SETTINGS_URL)
+                .bodyNotNull<NotificationSettingResponse>()
+                .toDomain()
+
         override suspend fun getNotifications(): NotificationSummary =
             client
                 .get()
@@ -32,7 +37,9 @@ class RemoteNotificationDataSourceImpl
                 .toDomain()
 
         override suspend fun updateNotificationSetting(setting: NotificationSetting) {
-            client.get().patch(SETTINGS_URL) { setBody(setting.toUpdateRequest()) }
+            client
+                .get()
+                .patch(SETTINGS_URL) { setBody(setting.toUpdateRequest()) }
                 .bodyNotNull<NotificationSettingResponse>()
         }
 
