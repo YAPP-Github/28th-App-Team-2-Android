@@ -8,7 +8,7 @@ enum class TenGod(
 ) {
     ILWON(R.string.mansaeryeok_ten_god_ilwon),
     BIGYEON(R.string.mansaeryeok_ten_god_bigyeon),
-    GYEOPJAE(R.string.mansaeryeok_ten_god_gyeopjae),
+    GEOPJAE(R.string.mansaeryeok_ten_god_gyeopjae),
     SIKSIN(R.string.mansaeryeok_ten_god_siksin),
     SANGGWAN(R.string.mansaeryeok_ten_god_sanggwan),
     PYEONJAE(R.string.mansaeryeok_ten_god_pyeonjae),
