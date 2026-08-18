@@ -7,6 +7,9 @@ import com.kikidan.data.datasource.RemoteDeviceTokenDataSource
 import com.kikidan.data.datasource.RemoteFortuneDataSource
 import com.kikidan.data.datasource.RemoteLuckActionDataSource
 import com.kikidan.data.datasource.RemoteNotificationDataSource
+import com.kikidan.data.datasource.RemotePartnerSajuDataSource
+import com.kikidan.data.datasource.RemoteSajuDataSource
+import com.kikidan.data.datasource.RemoteUserDataSource
 import com.kikidan.data_remote.auth.BearerTokenCacheInvalidator
 import com.kikidan.data_remote.datasource.RemoteAuthDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteChatDataSourceImpl
@@ -14,6 +17,9 @@ import com.kikidan.data_remote.datasource.RemoteDeviceTokenDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteFortuneDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteLuckActionDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteNotificationDataSourceImpl
+import com.kikidan.data_remote.datasource.RemotePartnerSajuDataSourceImpl
+import com.kikidan.data_remote.datasource.RemoteSajuDataSourceImpl
+import com.kikidan.data_remote.datasource.RemoteUserDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -45,7 +51,19 @@ abstract class RemoteDataSourceModule {
 
     @Binds
     @Singleton
-    abstract fun bindCNotificationDataSource(impl: RemoteNotificationDataSourceImpl): RemoteNotificationDataSource
+    abstract fun bindUserRemoteDataSource(impl: RemoteUserDataSourceImpl): RemoteUserDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindSajuRemoteDataSource(impl: RemoteSajuDataSourceImpl): RemoteSajuDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRemoteDataSource(impl: RemoteNotificationDataSourceImpl): RemoteNotificationDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindPartnerSajuRemoteDataSource(impl: RemotePartnerSajuDataSourceImpl): RemotePartnerSajuDataSource
 
     @Binds
     @Singleton

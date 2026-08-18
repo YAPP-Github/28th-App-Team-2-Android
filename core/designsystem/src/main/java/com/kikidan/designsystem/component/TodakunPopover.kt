@@ -27,9 +27,10 @@ fun TodakunPopover(
     expanded: Boolean,
     onContentClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit = {},
 ) {
     if (expanded) {
-        Popup {
+        Popup(onDismissRequest = onDismissRequest) {
             Column(
                 modifier =
                     modifier

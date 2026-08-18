@@ -21,6 +21,7 @@ fun TimeWheelPicker(
     modifier: Modifier = Modifier,
     hour: Int = LocalTime.now().hour,
     minute: Int = LocalTime.now().minute,
+    minuteStep: Int = 1,
 ) {
     var clampedHour by remember { mutableIntStateOf(hour) }
     var clampedMinute by remember { mutableIntStateOf(minute) }
@@ -32,7 +33,9 @@ fun TimeWheelPicker(
         val hourItems =
             remember { TimeWheelPickerDefault.HourRange.map { it.toString().padStart(2, '0') } }
         val minuteItems =
-            remember { TimeWheelPickerDefault.MinuteRange.map { it.toString().padStart(2, '0') } }
+            remember(minuteStep) {
+                (TimeWheelPickerDefault.MinuteRange step minuteStep).map { it.toString().padStart(2, '0') }
+            }
 
         TodakunWheelPicker(
             title = stringResource(R.string.wheel_picker_time_title),
@@ -46,7 +49,7 @@ fun TimeWheelPicker(
                     ),
                     WheelPickerColumnState(
                         items = minuteItems,
-                        selectedIndex = clampedMinute - TimeWheelPickerDefault.MinuteRange.first,
+                        selectedIndex = (clampedMinute - TimeWheelPickerDefault.MinuteRange.first) / minuteStep,
                         maxInputDigits = 2,
                     ),
                 ),
@@ -59,7 +62,7 @@ fun TimeWheelPicker(
                     }
 
                     1 -> {
-                        val newMinute = TimeWheelPickerDefault.MinuteRange.first + selectedIndex
+                        val newMinute = TimeWheelPickerDefault.MinuteRange.first + selectedIndex * minuteStep
                         clampedMinute = newMinute
                         onMinuteChange(clampedMinute)
                     }
@@ -77,7 +80,8 @@ fun TimeWheelPicker(
                         }
 
                         1 -> {
-                            val newMinute = typed.coerceAtMost(TimeWheelPickerDefault.MinuteRange.last)
+                            val clamped = typed.coerceAtMost(TimeWheelPickerDefault.MinuteRange.last)
+                            val newMinute = clamped.roundToStep(minuteStep)
                             clampedMinute = newMinute
                             onMinuteChange(newMinute)
                         }
@@ -86,6 +90,11 @@ fun TimeWheelPicker(
             },
         )
     }
+}
+
+private fun Int.roundToStep(step: Int): Int {
+    if (step <= 1) return this
+    return ((this + step / 2) / step * step).coerceAtMost(TimeWheelPickerDefault.MinuteRange.last)
 }
 
 private object TimeWheelPickerDefault {
