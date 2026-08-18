@@ -21,7 +21,7 @@ class MansaeryeokDetailViewModel
         override val container: Container<MansaeryeokDetailUiState, MansaeryeokDetailSideEffect> =
             container(MansaeryeokDetailUiState.Loading) {
                 loadMansaeryeokDetail()
-            }링
+            }
 
         fun loadMansaeryeokDetail() =
             intent {
