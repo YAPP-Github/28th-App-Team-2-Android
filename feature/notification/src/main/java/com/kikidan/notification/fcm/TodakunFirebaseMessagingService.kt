@@ -51,6 +51,8 @@ class TodakunFirebaseMessagingService : FirebaseMessagingService() {
                 .get()
                 .lifecycle.currentState
                 .isAtLeast(Lifecycle.State.STARTED)
+
+        // 백그라운드의 경우 OnMessageReceived가 아닌 Firebase가 직접 푸시알림 발송 (Notification 필드의 존재)
         if (isForeground) {
             serviceScope.launch {
                 PushNotificationEventFlow.emit(
@@ -63,44 +65,7 @@ class TodakunFirebaseMessagingService : FirebaseMessagingService() {
                     ),
                 )
             }
-        } else {
-            showSystemNotification(notificationId, title, body, deepLink)
         }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun showSystemNotification(
-        notificationId: String,
-        title: String,
-        body: String,
-        deepLink: String?,
-    ) {
-        val manager = NotificationManagerCompat.from(this)
-        if (!manager.areNotificationsEnabled()) return
-
-        val launchIntent =
-            packageManager.getLaunchIntentForPackage(packageName)?.apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                putExtra(PushNotificationEvent.DEEP_LINK_KEY, deepLink)
-            }
-        val pendingIntent =
-            launchIntent?.let {
-                PendingIntent.getActivity(this, notificationId.hashCode(), it, PendingIntent.FLAG_IMMUTABLE)
-            }
-
-        val notification =
-            NotificationCompat
-                .Builder(this, getString(R.string.default_notification_channel_id))
-                .setSmallIcon(R.drawable.ic_bell)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build()
-
-        val hasPermission = NotificationManagerCompat.from(this).areNotificationsEnabled()
-        if (!hasPermission) return
-        manager.notify(notificationId.hashCode(), notification)
     }
 
     override fun onDestroy() {
