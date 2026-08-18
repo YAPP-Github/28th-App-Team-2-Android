@@ -59,6 +59,7 @@ internal fun HomeScreen(
     onDetailDismiss: () -> Unit,
     onNavigateToReport: (String) -> Unit,
     onNavigateToLuckAction: () -> Unit,
+    onNavigateToNotice: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backdrop = rememberLayerBackdrop()
@@ -94,6 +95,7 @@ internal fun HomeScreen(
                         scoreLabel = state.scoreLabel,
                         backdrop = backdrop,
                         onFortuneReportClick = { onNavigateToReport(state.fortuneId) },
+                        onNoticeClick = onNavigateToNotice,
                     )
                     HomeContents(
                         state = state,
@@ -119,6 +121,7 @@ private fun SajuSummary(
     scoreLabel: String,
     backdrop: LayerBackdrop,
     onFortuneReportClick: () -> Unit,
+    onNoticeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -131,7 +134,7 @@ private fun SajuSummary(
                     .statusBarsPadding()
                     .padding(horizontal = 20.dp),
         ) {
-            HomeHeader()
+            HomeHeader(onNoticeClick = onNoticeClick)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -181,7 +184,10 @@ private fun SajuSummary(
 }
 
 @Composable
-private fun HomeHeader(modifier: Modifier = Modifier) {
+private fun HomeHeader(
+    onNoticeClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier =
             modifier
@@ -195,9 +201,7 @@ private fun HomeHeader(modifier: Modifier = Modifier) {
             contentDescription = null,
             modifier = Modifier.height(24.dp),
         )
-        IconButton(onClick = {
-            // TODO(#38): 알림 화면 미구현, 머지 후 연결
-        }) {
+        IconButton(onClick = onNoticeClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_bell),
                 contentDescription = stringResource(R.string.header_notice_content_description),
@@ -266,6 +270,7 @@ private fun HomeScreenSuccessPreview() {
             onDetailDismiss = {},
             onNavigateToReport = {},
             onNavigateToLuckAction = {},
+            onNavigateToNotice = {},
         )
     }
 }

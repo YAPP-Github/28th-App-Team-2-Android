@@ -18,6 +18,7 @@ fun HomeRoute(
     snackbarHostState: SnackbarHostState,
     onNavigateToLuckAction: () -> Unit,
     onNavigateToReport: (String) -> Unit,
+    onNavigateToNotice: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -38,6 +39,7 @@ fun HomeRoute(
         onDetailDismiss = viewModel::closeDetail,
         onNavigateToReport = onNavigateToReport,
         onNavigateToLuckAction = onNavigateToLuckAction,
+        onNavigateToNotice = onNavigateToNotice,
         modifier = modifier,
     )
 }

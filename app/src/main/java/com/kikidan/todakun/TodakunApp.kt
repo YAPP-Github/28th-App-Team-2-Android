@@ -139,6 +139,7 @@ fun TodakunApp(
                             onNavigateToReport = { fortuneId ->
                                 navigator.push(TodakunRoute.FortuneReport(fortuneId))
                             },
+                            onNavigateToNotice = { navigator.push(TodakunRoute.Notification) },
                         )
                     }
 
