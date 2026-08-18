@@ -6,6 +6,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -190,16 +191,16 @@ fun TodakunApp(
                     }
                 },
         )
-    }
-
-    if (inAppEvent != null) {
-        PushNotificationBanner(
-            event = inAppEvent,
-            onDismiss = { inAppEvent = null },
-            onClick = { event ->
-                inAppEvent = null
-                event.deepLink?.let(navigator::navigateOrFallbackToDeepLink)
-            },
-        )
+        if (inAppEvent != null) {
+            PushNotificationBanner(
+                modifier = Modifier.systemBarsPadding(),
+                event = inAppEvent,
+                onDismiss = { inAppEvent = null },
+                onClick = { event ->
+                    inAppEvent = null
+                    event.deepLink?.let(navigator::navigateOrFallbackToDeepLink)
+                },
+            )
+        }
     }
 }
