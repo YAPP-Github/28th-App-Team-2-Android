@@ -3,6 +3,7 @@ package com.kikidan.data_remote.di
 import com.kikidan.data.auth.AuthTokenCacheInvalidator
 import com.kikidan.data.datasource.RemoteAuthDataSource
 import com.kikidan.data.datasource.RemoteChatDataSource
+import com.kikidan.data.datasource.RemoteDeviceTokenDataSource
 import com.kikidan.data.datasource.RemoteFortuneDataSource
 import com.kikidan.data.datasource.RemoteLuckActionDataSource
 import com.kikidan.data.datasource.RemoteNotificationDataSource
@@ -12,6 +13,7 @@ import com.kikidan.data.datasource.RemoteUserDataSource
 import com.kikidan.data_remote.auth.BearerTokenCacheInvalidator
 import com.kikidan.data_remote.datasource.RemoteAuthDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteChatDataSourceImpl
+import com.kikidan.data_remote.datasource.RemoteDeviceTokenDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteFortuneDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteLuckActionDataSourceImpl
 import com.kikidan.data_remote.datasource.RemoteNotificationDataSourceImpl
@@ -62,4 +64,12 @@ abstract class RemoteDataSourceModule {
     @Binds
     @Singleton
     abstract fun bindPartnerSajuRemoteDataSource(impl: RemotePartnerSajuDataSourceImpl): RemotePartnerSajuDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindCNotificationDataSource(impl: RemoteNotificationDataSourceImpl): RemoteNotificationDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindDeviceTokenDataSource(impl: RemoteDeviceTokenDataSourceImpl): RemoteDeviceTokenDataSource
 }

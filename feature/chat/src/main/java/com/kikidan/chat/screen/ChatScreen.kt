@@ -33,7 +33,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +51,7 @@ import com.kikidan.chat.component.ThinkingIndicator
 import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
 import com.kikidan.chat.util.toCharacterResourceId
+import com.kikidan.chat.util.toSuggestionAnswerResId
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.chat.TodakunChatCalenderActionCard
 import com.kikidan.designsystem.component.chat.TodakunChatExampleChip
@@ -83,7 +83,7 @@ internal fun ChatScreen(
     state: ChatState,
     onInputChange: (String) -> Unit,
     onSendClick: () -> Unit,
-    onSuggestionClick: (String) -> Unit,
+    onSuggestionClick: (ChatSuggestion, String) -> Unit,
     onNewConversationClick: () -> Unit,
     onCloseClick: () -> Unit,
     onHistoryClick: () -> Unit,
@@ -124,9 +124,9 @@ internal fun ChatScreen(
                 state = state,
                 modifier = Modifier.fillMaxSize(),
                 suggestions = state.suggestions,
-                onSuggestionClick = { suggestion ->
+                onSuggestionClick = { suggestion, answer ->
                     selectedCategory = suggestion.category
-                    onSuggestionClick(suggestion.seedPrompt)
+                    onSuggestionClick(suggestion, answer)
                 },
                 inputFieldHeight = inputFieldHeight,
                 selectedCategory = selectedCategory,
@@ -195,7 +195,7 @@ private fun ChatMessageList(
     selectedCategory: ChatCategory?,
     state: ChatState,
     suggestions: List<ChatSuggestion>,
-    onSuggestionClick: (ChatSuggestion) -> Unit,
+    onSuggestionClick: (ChatSuggestion, String) -> Unit,
     onActionClick: (ChatAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -240,14 +240,15 @@ private fun ChatMessageList(
             )
         }
 
-        if (state.conversationId == null) {
+        if (state.messages.isEmpty()) {
             item {
                 suggestions.forEach { suggestion ->
+                    val answer = stringResource(suggestion.category.toSuggestionAnswerResId())
                     TodakunChatExampleChip(
                         modifier = Modifier.padding(vertical = 8.dp),
                         text = "${suggestion.emoji} ${suggestion.label}",
                         onClick = {
-                            onSuggestionClick(suggestion)
+                            onSuggestionClick(suggestion, answer)
                         },
                     )
                 }
@@ -425,7 +426,7 @@ private fun ChatScreenEntryPreview() {
             state = ChatState(suggestions = previewSuggestions),
             onInputChange = {},
             onSendClick = {},
-            onSuggestionClick = {},
+            onSuggestionClick = { _, _ -> },
             onNewConversationClick = {},
             onCloseClick = {},
             onHistoryClick = {},
@@ -445,7 +446,7 @@ private fun ChatScreenGreetingWithTitlePreview() {
                 ),
             onInputChange = {},
             onSendClick = {},
-            onSuggestionClick = {},
+            onSuggestionClick = { _, _ -> },
             onNewConversationClick = {},
             onCloseClick = {},
             onHistoryClick = {},
@@ -465,7 +466,7 @@ private fun ChatScreenGreetingNoTitlePreview() {
                 ),
             onInputChange = {},
             onSendClick = {},
-            onSuggestionClick = {},
+            onSuggestionClick = { _, _ -> },
             onNewConversationClick = {},
             onCloseClick = {},
             onHistoryClick = {},
@@ -484,7 +485,7 @@ private fun ChatScreenThinkingPreview() {
                 ),
             onInputChange = {},
             onSendClick = {},
-            onSuggestionClick = {},
+            onSuggestionClick = { _, _ -> },
             onNewConversationClick = {},
             onCloseClick = {},
             onHistoryClick = {},
@@ -504,7 +505,7 @@ private fun ChatScreenTypingPreview() {
                 ),
             onInputChange = {},
             onSendClick = {},
-            onSuggestionClick = {},
+            onSuggestionClick = { _, _ -> },
             onNewConversationClick = {},
             onCloseClick = {},
             onHistoryClick = {},
@@ -524,7 +525,7 @@ private fun ChatScreenConversationPreview() {
                 ),
             onInputChange = {},
             onSendClick = {},
-            onSuggestionClick = {},
+            onSuggestionClick = { _, _ -> },
             onNewConversationClick = {},
             onCloseClick = {},
             onHistoryClick = {},

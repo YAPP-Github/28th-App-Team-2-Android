@@ -31,6 +31,10 @@ androidx-credentials = "1.6.0"
 googleid = "1.2.0"
 kotlinx-collections-immutable = "0.5.1"
 material3 = "1.4.0"
+kyantBackdrop = "1.0.2"
+haze = "1.7.2"
+googleServices = "4.4.4"
+firebaseBom = "34.17.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +42,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -71,6 +76,7 @@ orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbi
 orbit-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbit" }
 orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
 orbit-test = { group = "org.orbit-mvi", name = "orbit-test", version.ref = "orbit" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 
 # Navigation 3 libraries
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -90,7 +96,10 @@ ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref =
 ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+kyant-backdrop = { group = "io.github.kyant0", name = "backdrop", version.ref = "kyantBackdrop" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -103,4 +112,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradlePlugin" }
 todakun-android-signing = { id = "todakun.android.signing" }
 todakun-feature = { id = "todakun.feature" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 

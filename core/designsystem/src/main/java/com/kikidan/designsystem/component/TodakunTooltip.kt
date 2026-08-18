@@ -143,7 +143,7 @@ private object TodakunTooltipDefaults {
     val ExtraHorizontalPadding = 8.dp
     val ExtraVerticalPadding = 2.dp
 
-    val MaxWidth = 200.dp
+    val MaxWidth = 220.dp
 }
 
 private class TodakunTooltipPositionProvider(

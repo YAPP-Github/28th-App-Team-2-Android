@@ -1,13 +1,15 @@
 package com.kikidan.data.fake
 
 import com.kikidan.data.datasource.RemoteFortuneDataSource
+import com.kikidan.domain.model.fortune.DailyFortuneDetail
 import com.kikidan.domain.model.fortune.DailyFortuneHistoryEntry
 import com.kikidan.domain.model.fortune.FortuneScore
+import com.kikidan.domain.model.fortune.TodayFortune
 import java.time.LocalDate
 
 class FakeRemoteFortuneDataSource : RemoteFortuneDataSource {
-    var scores: List<FortuneScore> = emptyList()
-    var throwOnGetTodayFortuneScores: Throwable? = null
+    var todayFortune: TodayFortune? = null
+    var throwOnGetTodayFortune: Throwable? = null
 
     var history: List<DailyFortuneHistoryEntry> = emptyList()
     var throwOnGetFortuneHistory: Throwable? = null
@@ -18,9 +20,13 @@ class FakeRemoteFortuneDataSource : RemoteFortuneDataSource {
     var throwOnGetFortuneDetailScores: Throwable? = null
     var lastRequestedDailyFortuneId: String? = null
 
-    override suspend fun getTodayFortuneScores(): List<FortuneScore> {
-        throwOnGetTodayFortuneScores?.let { throw it }
-        return scores
+    var dailyFortuneDetail: DailyFortuneDetail? = null
+    var throwOnGetDailyFortuneDetail: Throwable? = null
+    var lastRequestedDailyFortuneDetailId: String? = null
+
+    override suspend fun getTodayFortune(): TodayFortune {
+        throwOnGetTodayFortune?.let { throw it }
+        return todayFortune!!
     }
 
     override suspend fun getFortuneHistory(to: LocalDate): List<DailyFortuneHistoryEntry> {
@@ -33,5 +39,11 @@ class FakeRemoteFortuneDataSource : RemoteFortuneDataSource {
         lastRequestedDailyFortuneId = dailyFortuneId
         throwOnGetFortuneDetailScores?.let { throw it }
         return detailScores
+    }
+
+    override suspend fun getDailyFortuneDetail(dailyFortuneId: String): DailyFortuneDetail {
+        lastRequestedDailyFortuneDetailId = dailyFortuneId
+        throwOnGetDailyFortuneDetail?.let { throw it }
+        return dailyFortuneDetail!!
     }
 }

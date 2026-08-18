@@ -21,8 +21,8 @@ class GetLuckActionPageUseCase
             }
 
         private suspend fun invokeToday(): Result<FortuneRecord?> {
-            val scores = fortuneRepository.getTodayFortuneScores().getOrElse { return Result.failure(it) }
+            val todayFortune = fortuneRepository.getTodayFortune().getOrElse { return Result.failure(it) }
             val actions = luckActionRepository.getTodayLuckActions().getOrElse { return Result.failure(it) }
-            return Result.success(FortuneRecord(scores, actions))
+            return Result.success(FortuneRecord(todayFortune.scores, actions))
         }
     }

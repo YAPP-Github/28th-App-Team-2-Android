@@ -2,6 +2,7 @@ package com.kikidan.data_remote.dto.fortune
 
 import com.kikidan.domain.model.fortune.FortuneCategory
 import com.kikidan.domain.model.fortune.LuckAction
+import com.kikidan.domain.model.fortune.LuckActionDetail
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,5 +20,15 @@ internal fun LuckActionResponse.toDomain(): LuckAction =
         id = id,
         category = FortuneCategory.valueOf(fortuneCategory),
         title = title,
+        achieved = achieved,
+    )
+
+internal fun LuckActionResponse.toDetail(): LuckActionDetail =
+    LuckActionDetail(
+        id = id,
+        category = FortuneCategory.valueOf(fortuneCategory),
+        score = score,
+        title = title,
+        content = content,
         achieved = achieved,
     )

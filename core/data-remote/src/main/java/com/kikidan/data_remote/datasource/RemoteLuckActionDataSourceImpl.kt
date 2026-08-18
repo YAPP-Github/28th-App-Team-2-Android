@@ -3,9 +3,11 @@ package com.kikidan.data_remote.datasource
 import com.kikidan.data.datasource.RemoteLuckActionDataSource
 import com.kikidan.data_remote.dto.fortune.LuckActionResponse
 import com.kikidan.data_remote.dto.fortune.TodayLuckActionResponse
+import com.kikidan.data_remote.dto.fortune.toDetail
 import com.kikidan.data_remote.dto.fortune.toDomain
 import com.kikidan.data_remote.util.bodyNotNull
 import com.kikidan.domain.model.fortune.LuckAction
+import com.kikidan.domain.model.fortune.LuckActionDetail
 import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -31,10 +33,19 @@ class RemoteLuckActionDataSourceImpl
                 .bodyNotNull<LuckActionResponse>()
                 .toDomain()
 
+        override suspend fun getLuckAction(luckActionId: String): LuckActionDetail =
+            client
+                .get()
+                .get(luckActionUrl(luckActionId))
+                .bodyNotNull<LuckActionResponse>()
+                .toDetail()
+
         companion object {
             private const val LUCK_ACTIONS_URL = "api/v1/luck-actions"
             private const val TODAY_LUCK_ACTIONS_URL = "$LUCK_ACTIONS_URL/today"
 
             private fun achievementUrl(luckActionId: String) = "$LUCK_ACTIONS_URL/$luckActionId/achievement"
+
+            private fun luckActionUrl(luckActionId: String) = "$LUCK_ACTIONS_URL/$luckActionId"
         }
     }
