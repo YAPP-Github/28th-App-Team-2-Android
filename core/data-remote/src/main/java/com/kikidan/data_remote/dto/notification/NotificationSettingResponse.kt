@@ -8,18 +8,10 @@ import java.time.format.DateTimeFormatter
 @Serializable
 data class NotificationSettingResponse(
     val morningReportEnabled: Boolean,
-    val morningReportTime: LocalTimeResponse,
+    val morningReportTime: String,
     val todakiEnabled: Boolean,
     val luckyActionReminderEnabled: Boolean,
     val osPushPermission: Boolean? = null,
-)
-
-@Serializable
-data class LocalTimeResponse(
-    val hour: Int,
-    val minute: Int,
-    val second: Int = 0,
-    val nano: Int = 0,
 )
 
 @Serializable
@@ -30,16 +22,12 @@ data class UpdateNotificationSettingRequest(
     val luckyActionReminderEnabled: Boolean,
 )
 
+private val MorningReportTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
 internal fun NotificationSettingResponse.toDomain(): NotificationSetting =
     NotificationSetting(
         morningReportEnabled = morningReportEnabled,
-        morningReportTime =
-            LocalTime.of(
-                morningReportTime.hour,
-                morningReportTime.minute,
-                morningReportTime.second,
-                morningReportTime.nano,
-            ),
+        morningReportTime = LocalTime.parse(morningReportTime, MorningReportTimeFormatter),
         todakiEnabled = todakiEnabled,
         luckyActionReminderEnabled = luckyActionReminderEnabled,
     )
@@ -47,7 +35,7 @@ internal fun NotificationSettingResponse.toDomain(): NotificationSetting =
 internal fun NotificationSetting.toUpdateRequest(): UpdateNotificationSettingRequest =
     UpdateNotificationSettingRequest(
         morningReportEnabled = morningReportEnabled,
-        morningReportTime = morningReportTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+        morningReportTime = morningReportTime.format(MorningReportTimeFormatter),
         todakiEnabled = todakiEnabled,
         luckyActionReminderEnabled = luckyActionReminderEnabled,
     )
