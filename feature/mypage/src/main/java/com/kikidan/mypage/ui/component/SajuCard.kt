@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +34,7 @@ internal fun SajuCard(
     Column(
         modifier =
             modifier
+                .heightIn(min = SajuCardMinHeight)
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(ohaeng.containerColor())
@@ -52,6 +54,8 @@ internal fun SajuCard(
         )
     }
 }
+
+private val SajuCardMinHeight = 64.dp
 
 private fun Ohaeng.containerColor(): Color =
     when (this) {
