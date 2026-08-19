@@ -47,6 +47,7 @@ fun OnboardingRoute(
         ) {
             // 권한을 허락하지 않더라도 앱 진입
             permissionHandled = true
+            onFinish()
         }
 
     viewModel.collectSideEffect { sideEffect ->
@@ -62,6 +63,8 @@ fun OnboardingRoute(
             OnboardingSideEffect.PermissionRequest -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    onFinish()
                 }
             }
 
