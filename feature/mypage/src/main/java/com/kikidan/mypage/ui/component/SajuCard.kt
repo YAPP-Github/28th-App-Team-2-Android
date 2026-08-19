@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ internal fun SajuCard(
     BoxWithConstraints(
         modifier =
             modifier
+                .widthIn(max = SajuCardMaxSize)
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(ohaeng.containerColor()),
@@ -89,6 +91,7 @@ private fun Ohaeng.containerColor(): Color =
 
 private val HorizontalPadding = 6.dp
 private val VerticalPadding = 6.dp
+private val SajuCardMaxSize = 96.dp
 
 // Figma 실측 기준(48dp 카드 → hanja 18sp/lineHeight 26, reading 10sp/lineHeight 13)에서의 비율.
 // 카드 폭이 달라져도 이 비율대로 두 글자 크기가 같이 커지고 작아진다.
@@ -134,5 +137,14 @@ private fun SajuCardScalingPreview() {
                 SajuCard(hanja = "丙", reading = "병", ohaeng = Ohaeng.HWA, modifier = Modifier.width(width))
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SajuCardMaxSizePreview() {
+    TodakunTheme {
+        // 태블릿 등 넓은 화면에서 weight(1f)로 받은 폭이 커도 SajuCardMaxSize(96dp) 이상 커지지 않는지 확인.
+        SajuCard(hanja = "丙", reading = "병", ohaeng = Ohaeng.HWA, modifier = Modifier.width(300.dp))
     }
 }
