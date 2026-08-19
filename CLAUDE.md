@@ -1,13 +1,21 @@
 # CLAUDE.md — 토닥운(todakun) Android
 
 ## 1. 외부 레퍼런스 (작업 전 반드시 확인)
+* API / Swagger: https://api-dev.todakun.com/swagger-ui/index.html
+    * Data 레이어(DTO, DataSource) 작업의 단일 스펙 소스. 엔드포인트·요청/응답 스키마를 여기서 확인한다.
+* 디자인 / Figma: https://www.figma.com/design/bLZr7Nh53PmRHuEjX7gNco/Yapp-2조--토닥운-
+    * Presentation/Compose UI 작업의 기준. 색·타이포·간격은 core:designsystem 토큰과 대응시킨다.
+* MCP 연동 (TalkToFigma)
 
-- **API / Swagger**: https://api-dev.todakun.com/swagger-ui/index.html
-  - Data 레이어(DTO, DataSource) 작업의 **단일 스펙 소스**. 엔드포인트·요청/응답 스키마를 여기서 확인한다.
-- **디자인 / Figma**: https://www.figma.com/design/bLZr7Nh53PmRHuEjX7gNco/Yapp-2%EC%A1%B0--%ED%86%A0%EB%8B%A5%EC%9A%B4-
-  - Presentation/Compose UI 작업의 기준. 색·타이포·간격은 `core:designsystem` 토큰과 대응시킨다.
-  - Figma MCP(`figma:*` 스킬) 연동 시 노드 링크로 디자인 컨텍스트를 직접 조회할 수 있다.
----
+전제조건 3개가 모두 충족되어야 툴이 동작한다:
+1. 로컬에서 bun socket 실행 중 (WebSocket :3055)
+2. Figma Desktop에서 해당 파일을 열고 플러그인 Connect
+3. join_channel로 채널 조인
+
+* 조회 순서: join_channel → get_document_info → get_selection / read_my_design
+* 대상 지정은 노드 URL이 아니라 Figma에서 선택된 노드 기준이다. 특정 화면을 작업할 땐 사용자에게 해당 프레임 선택을 먼저 요청한다.
+* 큰 프레임은 scan_text_nodes의 청킹 파라미터를 사용한다.
+* 툴이 "not connected"로 실패하면 재시도 루프를 돌지 말고 위 전제조건 3개를 사용자에게 확인받는다.
 
 ## 2. 아키텍처 & 컨벤션 규칙
 

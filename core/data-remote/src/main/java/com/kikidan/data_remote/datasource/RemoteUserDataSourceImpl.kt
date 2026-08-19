@@ -5,12 +5,15 @@ import com.kikidan.data_remote.dto.CommonResponse
 import com.kikidan.data_remote.dto.common.toApiValue
 import com.kikidan.data_remote.dto.user.MyProfileResponse
 import com.kikidan.data_remote.dto.user.UpdateMemberRequest
+import com.kikidan.data_remote.dto.user.WithdrawMemberRequest
 import com.kikidan.data_remote.dto.user.toDomain
 import com.kikidan.data_remote.util.bodyNotNull
 import com.kikidan.domain.model.user.User
+import com.kikidan.domain.model.user.WithdrawalReason
 import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
@@ -39,6 +42,14 @@ class RemoteUserDataSourceImpl
                     relationshipStatus = user.relationshipStatus.name,
                 )
             client.get().patch(MEMBERS_ME_URL) { setBody(request) }.body<CommonResponse<Unit>>()
+        }
+
+        override suspend fun withdraw(
+            reason: WithdrawalReason,
+            detail: String?,
+        ) {
+            val request = WithdrawMemberRequest(reason = reason.name, detail = detail)
+            client.get().delete(MEMBERS_ME_URL) { setBody(request) }.body<CommonResponse<Unit>>()
         }
 
         companion object {
