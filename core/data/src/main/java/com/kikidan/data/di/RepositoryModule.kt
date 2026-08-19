@@ -2,6 +2,7 @@ package com.kikidan.data.di
 
 import com.kikidan.data.repository.AuthRepositoryImpl
 import com.kikidan.data.repository.ChatRepositoryImpl
+import com.kikidan.data.repository.CompatibilityRepositoryImpl
 import com.kikidan.data.repository.DayFortuneRepositoryImpl
 import com.kikidan.data.repository.DeviceTokenRepositoryImpl
 import com.kikidan.data.repository.FortuneRepositoryImpl
@@ -10,10 +11,11 @@ import com.kikidan.data.repository.NotificationRepositoryImpl
 import com.kikidan.data.repository.PartnerSajuRepositoryImpl
 import com.kikidan.data.repository.SajuRepositoryImpl
 import com.kikidan.data.repository.TokenRepositoryImpl
-import com.kikidan.data.repository.YearFortuneRepositoryImpl
 import com.kikidan.data.repository.UserRepositoryImpl
+import com.kikidan.data.repository.YearFortuneRepositoryImpl
 import com.kikidan.domain.repository.AuthRepository
 import com.kikidan.domain.repository.ChatRepository
+import com.kikidan.domain.repository.CompatibilityRepository
 import com.kikidan.domain.repository.DayFortuneRepository
 import com.kikidan.domain.repository.DeviceTokenRepository
 import com.kikidan.domain.repository.FortuneRepository
@@ -22,8 +24,8 @@ import com.kikidan.domain.repository.NotificationRepository
 import com.kikidan.domain.repository.PartnerSajuRepository
 import com.kikidan.domain.repository.SajuRepository
 import com.kikidan.domain.repository.TokenRepository
-import com.kikidan.domain.repository.YearFortuneRepository
 import com.kikidan.domain.repository.UserRepository
+import com.kikidan.domain.repository.YearFortuneRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -80,4 +82,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindDeviceTokenRepository(impl: DeviceTokenRepositoryImpl): DeviceTokenRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCompatibilityRepository(impl: CompatibilityRepositoryImpl): CompatibilityRepository
 }

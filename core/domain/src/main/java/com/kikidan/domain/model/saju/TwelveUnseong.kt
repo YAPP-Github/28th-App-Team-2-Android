@@ -2,7 +2,7 @@ package com.kikidan.domain.model.saju
 
 enum class TwelveUnseong {
     JANGSAENG,
-    MOGYOK,
+    MOKYOK,
     GWANDAE,
     GEONROK,
     JEWANG,

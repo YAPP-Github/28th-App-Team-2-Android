@@ -10,7 +10,7 @@ enum class TwelveSinsal {
     MANGSINSAL,
     JANGSEONGSAL,
     BANANSAL,
-    YEOKMASAL,
+    YEONGMASAL,
     YUKHAESAL,
     HWAGAESAL,
 }
