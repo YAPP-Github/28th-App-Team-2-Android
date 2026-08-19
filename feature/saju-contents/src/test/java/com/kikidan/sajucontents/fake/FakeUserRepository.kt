@@ -7,6 +7,7 @@ import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.model.user.Job
 import com.kikidan.domain.model.user.RelationshipStatus
 import com.kikidan.domain.model.user.User
+import com.kikidan.domain.model.user.WithdrawalReason
 import com.kikidan.domain.repository.UserRepository
 import java.time.LocalDate
 
@@ -29,4 +30,10 @@ class FakeUserRepository : UserRepository {
     override suspend fun getUserInfo(): Result<User> = result
 
     override suspend fun updateUserInfo(user: User): Result<Unit> = Result.success(Unit)
+    override suspend fun withdraw(
+        reason: WithdrawalReason,
+        detail: String?
+    ): Result<Unit> {
+        TODO("Not yet implemented")
+    }
 }
