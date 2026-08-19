@@ -23,6 +23,7 @@ fun ChatRoute(
     onNavigateToHistory: () -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
+    skipSplash: Boolean = false,
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
@@ -30,7 +31,7 @@ fun ChatRoute(
     val defaultErrorMessage = stringResource(R.string.chat_default_error)
     val calendarErrorMessage = stringResource(R.string.chat_calendar_error)
 
-    LaunchedEffect(Unit) { viewModel.load(conversationId) }
+    LaunchedEffect(Unit) { viewModel.load(conversationId, skipSplash) }
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
@@ -39,7 +40,7 @@ fun ChatRoute(
         }
     }
 
-    if (state.isLoading && conversationId == null) {
+    if (state.isLoading && conversationId == null && !skipSplash) {
         ChatSplashScreen()
     } else {
         ChatScreen(

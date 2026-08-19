@@ -1,6 +1,7 @@
 package com.kikidan.mypage.partner.form.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,9 +14,12 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun PartnerSajuFormRoute(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    partnerLinkId: String? = null,
     viewModel: PartnerSajuFormViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.collectAsState()
+
+    LaunchedEffect(partnerLinkId) { viewModel.load(partnerLinkId) }
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {

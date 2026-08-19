@@ -25,16 +25,24 @@ import javax.inject.Inject
 class PartnerSajuFormViewModel
     @Inject
     constructor(
-        savedStateHandle: SavedStateHandle,
+        private val savedStateHandle: SavedStateHandle,
         private val getPartnerSajuUseCase: GetPartnerSajuUseCase,
         private val registerPartnerSajuUseCase: RegisterPartnerSajuUseCase,
         private val updatePartnerSajuUseCase: UpdatePartnerSajuUseCase,
     ) : ViewModel(),
         ContainerHost<PartnerSajuFormUiState, PartnerSajuFormSideEffect> {
-        private val linkId: String? = savedStateHandle[LINK_ID_KEY]
+        private var linkId: String? = savedStateHandle[LINK_ID_KEY]
 
         override val container: Container<PartnerSajuFormUiState, PartnerSajuFormSideEffect> =
             container(PartnerSajuFormUiState.Loading) {
+                loadForm()
+            }
+
+        /** 화면 진입 시 1회. Navigation3는 라우트 인자를 SavedStateHandle에 자동 주입하지 않아 명시적으로 전달받는다. */
+        fun load(linkId: String?) =
+            intent {
+                this@PartnerSajuFormViewModel.linkId = linkId
+                savedStateHandle[LINK_ID_KEY] = linkId
                 loadForm()
             }
 

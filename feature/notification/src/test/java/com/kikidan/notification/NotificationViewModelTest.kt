@@ -97,6 +97,47 @@ class NotificationViewModelTest {
             }
         }
 
+    @Test
+    fun `onNotificationClick 성공 시 해당 알림의 deepLink로 NavigateToDeepLink가 발행된다`() =
+        runTest {
+            val fakeNotificationRepository =
+                FakeNotificationRepository().apply {
+                    notificationsResult =
+                        Result.success(
+                            NotificationSummary(
+                                unreadCount = 1,
+                                notifications =
+                                    listOf(
+                                        Notification(
+                                            id = "n-1",
+                                            type = NotificationType.FORTUNE,
+                                            title = "오늘의 운세가 도착했어요.",
+                                            content = "내용",
+                                            deepLink = "todakun://fortune/today",
+                                            isRead = false,
+                                            createdAt = Instant.now(),
+                                        ),
+                                    ),
+                            ),
+                        )
+                }
+            val vm = viewModel(fakeNotificationRepository)
+
+            vm.test(this) {
+                containerHost.load()
+                awaitState()
+
+                containerHost.onNotificationClick("n-1")
+                awaitState()
+                val sideEffect = awaitSideEffect()
+                assertTrue(sideEffect is NotificationSideEffect.NavigateToDeepLink)
+                assertEquals(
+                    "todakun://fortune/today",
+                    (sideEffect as NotificationSideEffect.NavigateToDeepLink).deepLink,
+                )
+            }
+        }
+
     private fun viewModel(fakeNotificationRepository: FakeNotificationRepository): NotificationViewModel =
         NotificationViewModel(
             getNotifications = GetNotificationsUseCase(fakeNotificationRepository),

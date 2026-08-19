@@ -19,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,7 +43,15 @@ fun TodakunBottomNavigation(
             modifier
                 .fillMaxWidth()
                 .height(TodakunBottomNavigationDefaults.ContainerHeight)
-                .dropShadow(
+                // 하단만 그림자 클립
+                .drawWithContent {
+                    clipRect(
+                        left = -size.width,
+                        top = -size.height,
+                        right = size.width * 2,
+                        bottom = size.height,
+                    ) { this@drawWithContent.drawContent() }
+                }.dropShadow(
                     shape = TodakunBottomNavigationDefaults.ContainerShape,
                     shadow =
                         Shadow(

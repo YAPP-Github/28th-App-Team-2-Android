@@ -50,8 +50,8 @@ fun TermsRoute(
                 description = stringResource(id = R.string.onboarding_terms_exit_description),
                 confirmText = stringResource(id = R.string.onboarding_terms_exit_dismiss),
                 dismissText = stringResource(id = R.string.onboarding_terms_exit_confirm),
-                onConfirm = viewModel::confirmExit,
-                onDismiss = viewModel::dismissDialog,
+                onConfirm = viewModel::dismissDialog,
+                onDismiss = viewModel::confirmExit,
             )
         }
 

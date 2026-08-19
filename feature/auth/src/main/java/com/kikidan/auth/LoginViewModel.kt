@@ -46,7 +46,9 @@ class LoginViewModel
 
             loginUseCase(credential)
                 .onSuccess { result ->
-                    registerMessagingToken()
+                    if (!result.newMember) {
+                        registerMessagingToken()
+                    }
                     reduce { LoginState.Success }
                     postSideEffect(LoginSideEffect.LoginSucceeded(result))
                 }.onFailure { error ->
