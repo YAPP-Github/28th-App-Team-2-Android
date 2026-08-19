@@ -30,9 +30,10 @@ class FakeUserRepository : UserRepository {
     override suspend fun getUserInfo(): Result<User> = result
 
     override suspend fun updateUserInfo(user: User): Result<Unit> = Result.success(Unit)
+
     override suspend fun withdraw(
         reason: WithdrawalReason,
-        detail: String?
+        detail: String?,
     ): Result<Unit> {
         TODO("Not yet implemented")
     }
