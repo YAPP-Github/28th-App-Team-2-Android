@@ -36,12 +36,27 @@ import com.kikidan.domain.notification.PushNotificationEventFlow
 import com.kikidan.home.FortuneReportRoute
 import com.kikidan.home.HomeRoute
 import com.kikidan.luckaction.LuckActionRoute
+import com.kikidan.mypage.edit.ui.MyPageEditRoute
+import com.kikidan.mypage.home.ui.MyPageHomeRoute
+import com.kikidan.mypage.mansaeryeok.ui.MansaeryeokDetailRoute
+import com.kikidan.mypage.notification.ui.NotificationSettingRoute
+import com.kikidan.mypage.partner.form.ui.PartnerSajuFormRoute
+import com.kikidan.mypage.partner.ui.PartnerSajuManagementRoute
+import com.kikidan.mypage.setting.ui.AppSettingRoute
+import com.kikidan.mypage.setting.ui.AppSettingWithdrawalNoticeRoute
+import com.kikidan.mypage.setting.ui.AppSettingWithdrawalRoute
 import com.kikidan.navigation.TodakunNavigator
 import com.kikidan.navigation.TodakunRoute
 import com.kikidan.notification.NotificationRoute
 import com.kikidan.notification.component.PushNotificationBanner
 import com.kikidan.onboarding.OnboardingRoute
 import com.kikidan.onboarding.TermsRoute
+import com.kikidan.sajucontents.CompatibilityEntryRoute
+import com.kikidan.sajucontents.CompatibilityResultRoute
+import com.kikidan.sajucontents.DateFortuneInputRoute
+import com.kikidan.sajucontents.DateFortuneResultRoute
+import com.kikidan.sajucontents.YearFortuneResultRoute
+import com.kikidan.sajucontents.YearSelectionRoute
 
 @Composable
 fun TodakunApp(
@@ -141,6 +156,9 @@ fun TodakunApp(
                                 navigator.push(TodakunRoute.FortuneReport(fortuneId))
                             },
                             onNavigateToNotice = { navigator.push(TodakunRoute.Notification) },
+                            onNavigateToCompatibility = { navigator.push(TodakunRoute.CompatibilityInput) },
+                            onNavigateToDateFortune = { navigator.push(TodakunRoute.DateFortuneInput) },
+                            onNavigateToYearFortune = { navigator.push(TodakunRoute.YearFortuneInput) },
                         )
                     }
 
@@ -169,7 +187,130 @@ fun TodakunApp(
                     }
 
                     entry<TodakunRoute.MyPage> {
-                        // TODO(#후속이슈): feature:mypage 구현 후 실제 화면 연결
+                        MyPageHomeRoute(
+                            modifier = Modifier.systemBarsPadding(),
+                            onNavigateToEdit = { navigator.push(TodakunRoute.MyPageEdit) },
+                            onNavigateToMansaeryeok = { navigator.push(TodakunRoute.Mansaeryeok) },
+                            onNavigateToPartnerSajuManagement = {
+                                navigator.push(TodakunRoute.PartnerSajuManagement)
+                            },
+                            onNavigateToNotificationSetting = {
+                                navigator.push(TodakunRoute.NotificationSetting)
+                            },
+                            onNavigateToAppSetting = { navigator.push(TodakunRoute.AppSetting) },
+                        )
+                    }
+
+                    entry<TodakunRoute.MyPageEdit> {
+                        MyPageEditRoute(
+                            onNavigateBack = { navigator.goBack() }
+                        )
+                    }
+
+                    entry<TodakunRoute.Mansaeryeok> {
+                        MansaeryeokDetailRoute(onNavigateBack = { navigator.goBack() })
+                    }
+
+                    entry<TodakunRoute.NotificationSetting> {
+                        NotificationSettingRoute(onNavigateBack = { navigator.goBack() })
+                    }
+
+                    entry<TodakunRoute.PartnerSajuManagement> {
+                        PartnerSajuManagementRoute(
+                            onNavigateBack = { navigator.goBack() },
+                            onAddPartnerClick = { navigator.push(TodakunRoute.PartnerSajuForm()) },
+                            onEditPartnerClick = { linkId ->
+                                navigator.push(TodakunRoute.PartnerSajuForm(linkId))
+                            },
+                        )
+                    }
+
+                    entry<TodakunRoute.PartnerSajuForm> { route ->
+                        PartnerSajuFormRoute(
+                            onNavigateBack = { navigator.goBack() },
+                            partnerLinkId = route.partnerLinkId,
+                        )
+                    }
+
+                    entry<TodakunRoute.AppSetting> {
+                        AppSettingRoute(
+                            onNavigateBack = { navigator.goBack() },
+                            onWithdrawalClick = { navigator.push(TodakunRoute.AppSettingWithdrawal) },
+                        )
+                    }
+
+                    entry<TodakunRoute.AppSettingWithdrawal> {
+                        AppSettingWithdrawalRoute(
+                            onNavigateBack = { navigator.goBack() },
+                            onNextClick = { reason, detailReason ->
+                                navigator.push(TodakunRoute.AppSettingWithdrawalNotice(reason, detailReason))
+                            },
+                        )
+                    }
+
+                    entry<TodakunRoute.AppSettingWithdrawalNotice> { route ->
+                        AppSettingWithdrawalNoticeRoute(
+                            onNavigateBack = { navigator.goBack() },
+                            reason = route.reason,
+                            detailReason = route.detailReason,
+                            onWithdrawalSuccess = { navigator.resetTo(TodakunRoute.Login) },
+                        )
+                    }
+
+                    entry<TodakunRoute.CompatibilityInput> {
+                        CompatibilityEntryRoute(
+                            snackbarHostState = snackbarHostState,
+                            onNavigateBack = { navigator.goBack() },
+                            onNavigateMyPage = { navigator.push(TodakunRoute.MyPageEdit) },
+                            onNavigateToPartnerForm = { navigator.push(TodakunRoute.PartnerSajuForm()) },
+                            onNavigateToResult = { compatibilityId, partnerLinkId ->
+                                navigator.push(TodakunRoute.CompatibilityResult(compatibilityId, partnerLinkId))
+                            },
+                        )
+                    }
+
+                    entry<TodakunRoute.CompatibilityResult> { route ->
+                        CompatibilityResultRoute(
+                            compatibilityId = route.compatibilityId,
+                            partnerLinkId = route.partnerLinkId,
+                            snackbarHostState = snackbarHostState,
+                            onNavigateBack = { navigator.goBack() },
+                            onAskTodakClick = { navigator.push(TodakunRoute.Chat()) },
+                        )
+                    }
+
+                    entry<TodakunRoute.DateFortuneInput> {
+                        DateFortuneInputRoute(
+                            snackbarHostState = snackbarHostState,
+                            onNavigateBack = { navigator.goBack() },
+                            onNavigateToResult = { ids -> navigator.push(TodakunRoute.DateFortuneResult(ids)) },
+                        )
+                    }
+
+                    entry<TodakunRoute.DateFortuneResult> { route ->
+                        DateFortuneResultRoute(
+                            ids = route.ids,
+                            snackbarHostState = snackbarHostState,
+                            onNavigateBack = { navigator.goBack() },
+                            onAskTodakClick = { navigator.push(TodakunRoute.Chat()) },
+                        )
+                    }
+
+                    entry<TodakunRoute.YearFortuneInput> {
+                        YearSelectionRoute(
+                            snackbarHostState = snackbarHostState,
+                            onNavigateBack = { navigator.goBack() },
+                            onNavigateToResult = { id -> navigator.push(TodakunRoute.YearFortuneResult(id)) },
+                        )
+                    }
+
+                    entry<TodakunRoute.YearFortuneResult> { route ->
+                        YearFortuneResultRoute(
+                            id = route.id,
+                            snackbarHostState = snackbarHostState,
+                            onNavigateBack = { navigator.goBack() },
+                            onAskTodakClick = { navigator.push(TodakunRoute.Chat()) },
+                        )
                     }
 
                     entry<TodakunRoute.FortuneReport> { route ->

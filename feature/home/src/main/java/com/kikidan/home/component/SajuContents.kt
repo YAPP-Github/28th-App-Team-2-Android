@@ -33,29 +33,37 @@ private data class SajuItem(
     val iconRes: Int,
     val labelRes: Int,
     val subtitleRes: Int,
+    val onClick: () -> Unit,
 )
 
-private val SajuItems =
-    listOf(
-        SajuItem(
-            R.drawable.img_home_saju_compatibility,
-            R.string.home_saju_compatibility_title,
-            R.string.home_saju_compatibility_subtitle,
-        ),
-        SajuItem(
-            R.drawable.img_home_saju_date_fortune,
-            R.string.home_saju_date_selection_title,
-            R.string.home_saju_date_selection_subtitle,
-        ),
-        SajuItem(
-            R.drawable.img_home_saju_yearly_fortune,
-            R.string.home_saju_yearly_fortune_title,
-            R.string.home_saju_yearly_fortune_subtitle,
-        ),
-    )
-
 @Composable
-internal fun SajuContents(modifier: Modifier = Modifier) {
+internal fun SajuContents(
+    onNavigateToCompatibility: () -> Unit,
+    onNavigateToDateFortune: () -> Unit,
+    onNavigateToYearFortune: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val sajuItems =
+        listOf(
+            SajuItem(
+                R.drawable.img_home_saju_compatibility,
+                R.string.home_saju_compatibility_title,
+                R.string.home_saju_compatibility_subtitle,
+                onNavigateToCompatibility,
+            ),
+            SajuItem(
+                R.drawable.img_home_saju_date_fortune,
+                R.string.home_saju_date_selection_title,
+                R.string.home_saju_date_selection_subtitle,
+                onNavigateToDateFortune,
+            ),
+            SajuItem(
+                R.drawable.img_home_saju_yearly_fortune,
+                R.string.home_saju_yearly_fortune_title,
+                R.string.home_saju_yearly_fortune_subtitle,
+                onNavigateToYearFortune,
+            ),
+        )
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -70,7 +78,7 @@ internal fun SajuContents(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            SajuItems.forEach { item -> SajuCard(item = item) }
+            sajuItems.forEach { item -> SajuCard(item = item) }
         }
     }
 }
@@ -88,9 +96,8 @@ private fun SajuCard(
                 .clip(RoundedCornerShape(16.dp))
                 .background(TodakunColor.white)
                 .border(BorderStroke(1.dp, TodakunColor.coolGray100), RoundedCornerShape(16.dp))
-                .clickable {
-                    // TODO(#38): feature:saju-contents 머지 후 연결
-                }.padding(horizontal = 20.dp),
+                .clickable(onClick = item.onClick)
+                .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -126,5 +133,11 @@ private fun SajuCard(
 @Preview(showBackground = true)
 @Composable
 private fun SajuContentsPreview() {
-    TodakunTheme { SajuContents() }
+    TodakunTheme {
+        SajuContents(
+            onNavigateToCompatibility = {},
+            onNavigateToDateFortune = {},
+            onNavigateToYearFortune = {},
+        )
+    }
 }

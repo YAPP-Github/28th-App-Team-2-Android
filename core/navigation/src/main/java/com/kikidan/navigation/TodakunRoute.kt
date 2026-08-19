@@ -31,9 +31,62 @@ sealed interface TodakunRoute : NavKey {
     @Serializable
     data object LuckAction : TodakunRoute
 
-    // TODO(#후속이슈): feature:mypage 구현 후 실제 화면 연결
     @Serializable
     data object MyPage : TodakunRoute
+
+    @Serializable
+    data object MyPageEdit : TodakunRoute
+
+    @Serializable
+    data object Mansaeryeok : TodakunRoute
+
+    @Serializable
+    data object NotificationSetting : TodakunRoute
+
+    @Serializable
+    data object PartnerSajuManagement : TodakunRoute
+
+    @Serializable
+    data class PartnerSajuForm(
+        val partnerLinkId: String? = null,
+    ) : TodakunRoute
+
+    @Serializable
+    data object AppSetting : TodakunRoute
+
+    @Serializable
+    data object AppSettingWithdrawal : TodakunRoute
+
+    @Serializable
+    data class AppSettingWithdrawalNotice(
+        val reason: String,
+        val detailReason: String,
+    ) : TodakunRoute
+
+    @Serializable
+    data object CompatibilityInput : TodakunRoute
+
+    @Serializable
+    data class CompatibilityResult(
+        val compatibilityId: String,
+        val partnerLinkId: String? = null,
+    ) : TodakunRoute
+
+    @Serializable
+    data object DateFortuneInput : TodakunRoute
+
+    @Serializable
+    data class DateFortuneResult(
+        val ids: List<String>,
+    ) : TodakunRoute
+
+    @Serializable
+    data object YearFortuneInput : TodakunRoute
+
+    @Serializable
+    data class YearFortuneResult(
+        val id: String,
+    ) : TodakunRoute
 
     @Serializable
     data class FortuneReport(
@@ -42,6 +95,4 @@ sealed interface TodakunRoute : NavKey {
 
     @Serializable
     data object Notification : TodakunRoute
-
-    // TODO(#후속이슈): 상대방 사주 라우트 — feature:saju-contents 구현 후 추가
 }

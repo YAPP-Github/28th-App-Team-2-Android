@@ -60,6 +60,9 @@ internal fun HomeScreen(
     onNavigateToReport: (String) -> Unit,
     onNavigateToLuckAction: () -> Unit,
     onNavigateToNotice: () -> Unit,
+    onNavigateToCompatibility: () -> Unit,
+    onNavigateToDateFortune: () -> Unit,
+    onNavigateToYearFortune: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backdrop = rememberLayerBackdrop()
@@ -101,6 +104,9 @@ internal fun HomeScreen(
                         state = state,
                         onCategoryClick = onCategoryClick,
                         onNavigateToLuckAction = onNavigateToLuckAction,
+                        onNavigateToCompatibility = onNavigateToCompatibility,
+                        onNavigateToDateFortune = onNavigateToDateFortune,
+                        onNavigateToYearFortune = onNavigateToYearFortune,
                     )
                 }
             }
@@ -217,6 +223,9 @@ private fun HomeContents(
     state: HomeState.Success,
     onCategoryClick: (String) -> Unit,
     onNavigateToLuckAction: () -> Unit,
+    onNavigateToCompatibility: () -> Unit,
+    onNavigateToDateFortune: () -> Unit,
+    onNavigateToYearFortune: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -232,7 +241,11 @@ private fun HomeContents(
             onCategoryClick = onCategoryClick,
         )
         Spacer(Modifier.height(44.dp))
-        SajuContents()
+        SajuContents(
+            onNavigateToCompatibility = onNavigateToCompatibility,
+            onNavigateToDateFortune = onNavigateToDateFortune,
+            onNavigateToYearFortune = onNavigateToYearFortune,
+        )
         Spacer(Modifier.height(30.dp))
         HomeLuckActionBanner(
             onNavigateToLuckAction = onNavigateToLuckAction,
@@ -271,6 +284,9 @@ private fun HomeScreenSuccessPreview() {
             onNavigateToReport = {},
             onNavigateToLuckAction = {},
             onNavigateToNotice = {},
+            onNavigateToCompatibility = {},
+            onNavigateToDateFortune = {},
+            onNavigateToYearFortune = {},
         )
     }
 }

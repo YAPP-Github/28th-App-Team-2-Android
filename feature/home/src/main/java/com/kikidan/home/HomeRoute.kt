@@ -19,6 +19,9 @@ fun HomeRoute(
     onNavigateToLuckAction: () -> Unit,
     onNavigateToReport: (String) -> Unit,
     onNavigateToNotice: () -> Unit,
+    onNavigateToCompatibility: () -> Unit,
+    onNavigateToDateFortune: () -> Unit,
+    onNavigateToYearFortune: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -40,6 +43,9 @@ fun HomeRoute(
         onNavigateToReport = onNavigateToReport,
         onNavigateToLuckAction = onNavigateToLuckAction,
         onNavigateToNotice = onNavigateToNotice,
+        onNavigateToCompatibility = onNavigateToCompatibility,
+        onNavigateToDateFortune = onNavigateToDateFortune,
+        onNavigateToYearFortune = onNavigateToYearFortune,
         modifier = modifier,
     )
 }
