@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,19 +42,26 @@ internal fun SajuCard(
         contentAlignment = Alignment.Center,
     ) {
         val hanjaFontSize = (maxWidth.value * HANJA_FONT_SIZE_RATIO).sp
+        val hanjaLineHeight = hanjaFontSize * HANJA_LINE_HEIGHT_RATIO
         val readingFontSize = (maxWidth.value * READING_FONT_SIZE_RATIO).sp
+        val readingLineHeight = readingFontSize * READING_LINE_HEIGHT_RATIO
+
+        val density = LocalDensity.current
+        val availableHeight = maxWidth - VerticalPadding * 2
+        val contentHeight = with(density) { hanjaLineHeight.toDp() + readingLineHeight.toDp() }
+        val lineGap = minOf(0.dp, availableHeight - contentHeight)
 
         Column(
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = HorizontalPadding, vertical = VerticalPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(lineGap),
         ) {
             Text(
                 text = hanja,
                 style =
                     TodakunTypography.body1Bold.copy(
                         fontSize = hanjaFontSize,
-                        lineHeight = hanjaFontSize * HANJA_LINE_HEIGHT_RATIO,
+                        lineHeight = hanjaLineHeight,
                     ),
                 color = TodakunColor.gray975,
             )
@@ -62,7 +70,7 @@ internal fun SajuCard(
                 style =
                     TodakunTypography.caption3Regular.copy(
                         fontSize = readingFontSize,
-                        lineHeight = readingFontSize * READING_LINE_HEIGHT_RATIO,
+                        lineHeight = readingLineHeight,
                     ),
                 color = TodakunColor.gray975,
             )
@@ -79,9 +87,13 @@ private fun Ohaeng.containerColor(): Color =
         Ohaeng.SU -> TodakunColor.sky200
     }
 
-// body1Bold(18sp)/caption3Regular(10sp) 기준 카드 폭(72dp)에서의 비율 — 카드가 좁아지면 두 글자 크기가 이 비율을 유지한 채 같이 줄어든다.
-private const val HANJA_FONT_SIZE_RATIO = 18f / 72f
-private const val READING_FONT_SIZE_RATIO = 10f / 72f
+private val HorizontalPadding = 6.dp
+private val VerticalPadding = 6.dp
+
+// Figma 실측 기준(48dp 카드 → hanja 18sp/lineHeight 26, reading 10sp/lineHeight 13)에서의 비율.
+// 카드 폭이 달라져도 이 비율대로 두 글자 크기가 같이 커지고 작아진다.
+private const val HANJA_FONT_SIZE_RATIO = 18f / 48f
+private const val READING_FONT_SIZE_RATIO = 10f / 48f
 private const val HANJA_LINE_HEIGHT_RATIO = 26f / 18f
 private const val READING_LINE_HEIGHT_RATIO = 13f / 10f
 
@@ -106,6 +118,21 @@ private fun SajuCardNarrowPreview() {
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             SajuCard(hanja = "戊", reading = "무", ohaeng = Ohaeng.TO, modifier = Modifier.width(48.dp))
             SajuCard(hanja = "丙", reading = "병", ohaeng = Ohaeng.HWA, modifier = Modifier.width(48.dp))
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 400)
+@Composable
+private fun SajuCardScalingPreview() {
+    TodakunTheme {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            listOf(32.dp, 40.dp, 48.dp, 64.dp, 90.dp, 120.dp).forEach { width ->
+                SajuCard(hanja = "丙", reading = "병", ohaeng = Ohaeng.HWA, modifier = Modifier.width(width))
+            }
         }
     }
 }
