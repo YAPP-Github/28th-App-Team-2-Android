@@ -20,6 +20,14 @@
         <item>해시 (亥時): 21:30 ~ 23:29</item>
     </string-array>
 
+    <!-- WithdrawalReasonWheelPicker -->
+    <string name="wheel_picker_withdrawal_reason_title">탈퇴 사유 선택</string>
+    <string-array name="wheel_picker_withdrawal_reasons">
+        <item>사주·운세 결과가 아쉬워요</item>
+        <item>토닥이 답변이 아쉬워요</item>
+        <item>자주 쓰지 않아요</item>
+    </string-array>
+
     <!-- TimeWheelPicker -->
     <string name="wheel_picker_time_title">받을 시간 입력</string>
 
@@ -198,7 +206,26 @@
     <string name="notification_setting_lucky_action_title">행운 액션 리마인드</string>
     <string name="notification_setting_lucky_action_subtitle">매일 오후 8시 고정</string>
 
+    <!-- MyPage App Setting -->
+    <string name="app_setting_title">앱 설정</string>
+    <string name="app_setting_privacy_policy">개인정보 처리방침</string>
+    <string name="app_setting_terms_of_service">서비스 이용약관</string>
+    <string name="app_setting_withdrawal">회원 탈퇴</string>
+    <string name="app_setting_withdrawal_question">서비스를 이용하는데\n불편함이 있으셨나요?</string>
+    <string name="app_setting_withdrawal_description">회원 탈퇴 시, 토닥운 내 모든 서비스 이용 정보가 삭제되며, 삭제된 계정은 복구되지 않아요.</string>
+    <string name="app_setting_withdrawal_reason_placeholder">탈퇴 사유 선택</string>
+    <string name="app_setting_withdrawal_detail_placeholder">(선택) 상세 사유를 입력해 주세요.</string>
+    <string name="app_setting_withdrawal_next_button">다음</string>
+    <string name="app_setting_withdrawal_notice_title">아래 내용 확인 후 동의해 주세요.</string>
+    <string name="app_setting_withdrawal_notice_body">토닥운 탈퇴 시, 사주 결과·토닥이 대화 내역·오늘의 운세 히스토리·월간 리포트 등 서비스 이용 데이터는 즉시 삭제되며 복구가 불가합니다.\n\n탈퇴 후 90일간은 동일한 SNS 계정(구글/애플/카카오)으로 재가입이 제한되며, 90일 경과 후 재가입 시에도 이전 계정 정보는 복구되지 않습니다.\n\n탈퇴 사유는 비식별화되어 서비스 개선 목적으로만 활용됩니다.</string>
+    <string name="app_setting_withdrawal_agree_checkbox">유의 사항을 모두 확인하였으며, 동의합니다.</string>
+    <string name="app_setting_withdrawal_confirm_button">회원 탈퇴하기</string>
+    <string name="app_setting_withdrawal_confirm_dialog_title">토닥운 서비스를\n정말 탈퇴하시겠어요?</string>
+    <string name="app_setting_withdrawal_confirm_dialog_description">회원 탈퇴 시, 모든 서비스 이용이 불가해요.</string>
+
     <!-- Common -->
+    <string name="common_cancel">취소</string>
+    <string name="common_confirm">확인</string>
     <string name="separator_dot">·</string>
     <string name="gender_male">남성</string>
     <string name="gender_female">여성</string>

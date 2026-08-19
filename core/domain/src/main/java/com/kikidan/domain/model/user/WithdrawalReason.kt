@@ -1,0 +1,13 @@
+package com.kikidan.domain.model.user
+
+enum class WithdrawalReason {
+    CONTENT_INAPPROPRIATE,
+    CHATBOT_UNSATISFACTORY,
+    LOW_USAGE,
+    MISSING_FEATURE,
+    PAYMENT_INCONVENIENCE,
+    PRIVACY_CONCERN,
+    FREQUENT_ERRORS,
+    SWITCHING_SERVICE,
+    ETC,
+}
