@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- YearSelectionScreen -->
+    <string name="year_fortune_header_title">연도별 운세</string>
+    <string name="year_fortune_select_title">어느 해가 궁금하시나요?</string>
+    <string name="year_fortune_year_this_year">%1$d (올해)</string>
+    <string name="year_fortune_cta">무료로 연도별 운세 보기</string>
+    <string name="year_fortune_load_error">연도별 운세를 불러오지 못했어요. 다시 시도해주세요.</string>
+
+    <!-- YearFortuneResultScreen -->
+    <string name="year_fortune_result_header_title">연도별 운세 결과</string>
+    <string name="year_fortune_share">공유</string>
+    <string name="year_fortune_result_title">%1$d년 토닥이님의 운세</string>
+    <string name="year_fortune_score_label">연간 종합 점수</string>
+    <string name="year_fortune_summary_title">종합 총평</string>
+    <string name="year_fortune_ask_todak">토닥이에게 더 물어보기</string>
+
+    <!-- CompatibilityEntryScreen -->
+    <string name="compatibility_entry_title">상대방 궁합</string>
+    <string name="compatibility_my_info_title">내 정보</string>
+    <string name="compatibility_partner_info_title">상대방 정보</string>
+    <string name="compatibility_person_name_format">%1$s・%2$s</string>
+    <string name="compatibility_change_button">변경</string>
+    <string name="compatibility_add_partner_prompt">궁합 볼 상대방의 정보를 입력해 주세요.</string>
+    <string name="compatibility_check_cta">무료로 궁합 보기</string>
+    <string name="compatibility_birth_date_only_format">%1$s %2$s</string>
+    <string name="compatibility_birth_format">%1$s %2$s・%3$s~%4$s(%5$s)</string>
+    <string name="compatibility_load_error">정보를 불러오지 못했어요. 다시 시도해주세요.</string>
+    <string name="compatibility_create_error">궁합을 확인하지 못했어요. 다시 시도해주세요.</string>
+
+    <!-- Partner picker bottom sheet -->
+    <string name="compatibility_partner_picker_title">궁합 상대 선택</string>
+    <string name="compatibility_partner_picker_add">추가</string>
+    <string name="compatibility_partner_picker_empty">등록된 상대방 정보가 없어요.</string>
+
+    <!-- CompatibilityPartnerFormScreen -->
+    <string name="compatibility_partner_form_title">상대방 정보 입력</string>
+    <string name="compatibility_partner_form_name_placeholder">홍길동</string>
+    <string name="compatibility_partner_form_birth_date_placeholder">생년월일 선택</string>
+    <string name="compatibility_partner_form_birth_time_placeholder">태어난 시간 선택</string>
+    <string name="compatibility_partner_form_name_error">최대 10글자까지 입력 가능해요.</string>
+    <string name="compatibility_partner_form_save_error">저장하지 못했어요. 다시 시도해주세요.</string>
+
+    <!-- CompatibilityResultScreen -->
+    <string name="compatibility_result_header_title">상대방 궁합 결과</string>
+    <string name="compatibility_share">공유</string>
+    <string name="compatibility_score_label">궁합 점수</string>
+    <string name="compatibility_partner_and_me_format">%1$s님과 나의</string>
+    <string name="compatibility_saju_structure_title">사주 구조</string>
+    <string name="compatibility_saju_structure_me">나</string>
+    <string name="compatibility_ohaeng_title">오행 시각화</string>
+    <string name="compatibility_total_analysis_title">궁합 총운 분석</string>
+    <string name="compatibility_analysis_basis_format">분석 데이터 : %1$s</string>
+    <string name="compatibility_ask_todak">토닥이에게 더 물어보기</string>
+    <string name="compatibility_ask_todak_tooltip">오늘 이 사람과 어디를 갈까?</string>
+    <string name="compatibility_saju_time_label">시</string>
+    <string name="compatibility_saju_day_label">일</string>
+    <string name="compatibility_saju_month_label">월</string>
+    <string name="compatibility_saju_year_label">년</string>
+
+
+
+</resources>

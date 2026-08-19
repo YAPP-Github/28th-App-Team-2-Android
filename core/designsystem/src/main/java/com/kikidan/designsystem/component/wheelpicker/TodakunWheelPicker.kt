@@ -44,6 +44,7 @@ fun TodakunWheelPicker(
     modifier: Modifier = Modifier,
     visibleCount: Int = 5,
     directInputEnabled: Boolean = false,
+    saveButtonLabel: String = stringResource(R.string.wheel_picker_save),
     onColumnDirectInputCommit: (columnIndex: Int, rawDigits: String) -> Unit = { _, _ -> },
 ) {
     val focusManager = LocalFocusManager.current
@@ -62,6 +63,7 @@ fun TodakunWheelPicker(
     ) {
         WheelPickerHeader(
             title = title,
+            actionLabel = saveButtonLabel,
             onSaveClick = onSaveClick,
         )
 
@@ -124,6 +126,7 @@ private fun RowScope.WheelPickerColumnSpacer(
 @Composable
 private fun WheelPickerHeader(
     title: String,
+    actionLabel: String,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -134,7 +137,7 @@ private fun WheelPickerHeader(
     ) {
         Text(text = title, style = TodakunTypography.heading4Bold, color = TodakunColor.black)
         Text(
-            text = stringResource(R.string.wheel_picker_save),
+            text = actionLabel,
             style = TodakunTypography.body2SemiBold,
             color = TodakunColor.primary600,
             modifier =

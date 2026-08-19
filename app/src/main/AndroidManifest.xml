@@ -23,6 +23,26 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- 카카오 공유 딥링크 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kakao${KAKAO_APP_KEY}" android:host="kakaolink" />
+            </intent-filter>
+
+            <!-- App-Link -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"/>
+                <data android:host="${APP_LINK_HOST}"/>
+                <data android:path="/day-fortune" />
+                <data android:path="/year-fortune" />
+                <data android:path="/compatibility" />
+            </intent-filter>
         </activity>
     </application>
 

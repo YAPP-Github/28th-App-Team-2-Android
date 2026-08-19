@@ -5,12 +5,15 @@ import com.kikidan.data_remote.dto.CommonResponse
 import com.kikidan.data_remote.dto.saju.PartnerSajuDetailResponse
 import com.kikidan.data_remote.dto.saju.PartnerSajuSummaryResponse
 import com.kikidan.data_remote.dto.saju.RegisterPartnerSajuResponse
+import com.kikidan.data_remote.dto.saju.SajuChartDetailResponse
+import com.kikidan.data_remote.dto.saju.toChartDetail
 import com.kikidan.data_remote.dto.saju.toDomain
 import com.kikidan.data_remote.dto.saju.toRegisterRequest
 import com.kikidan.data_remote.dto.saju.toUpdateRequest
 import com.kikidan.data_remote.util.bodyNotNull
 import com.kikidan.domain.model.saju.PartnerSaju
 import com.kikidan.domain.model.saju.PartnerSajuInput
+import com.kikidan.domain.model.saju.SajuChartDetail
 import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -39,6 +42,13 @@ class RemotePartnerSajuDataSourceImpl
                 .get(partnerUrl(linkId))
                 .bodyNotNull<PartnerSajuDetailResponse>()
                 .toDomain()
+
+        override suspend fun getPartnerSajuChartDetail(linkId: String): SajuChartDetail =
+            client
+                .get()
+                .get(partnerUrl(linkId))
+                .bodyNotNull<SajuChartDetailResponse>()
+                .toChartDetail()
 
         override suspend fun deletePartnerSaju(linkId: String) {
             client.get().delete(partnerUrl(linkId)).body<CommonResponse<Unit>>()

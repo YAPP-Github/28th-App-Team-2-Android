@@ -28,7 +28,7 @@ import com.kikidan.designsystem.theme.TodakunColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun WheelPickerBottomSheet(
+fun WheelPickerBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     bottomSpacing: Dp = WheelPickerBottomSheetDefaults.BottomSpacing,
