@@ -7,6 +7,7 @@ import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.model.user.Job
 import com.kikidan.domain.model.user.RelationshipStatus
 import com.kikidan.domain.model.user.User
+import com.kikidan.domain.model.user.WithdrawalReason
 import com.kikidan.domain.repository.UserRepository
 import java.time.LocalDate
 import javax.inject.Inject
@@ -37,4 +38,9 @@ class FakeUserRepository
             this.user = user
             return Result.success(Unit)
         }
+
+        override suspend fun withdraw(
+            reason: WithdrawalReason,
+            detail: String?,
+        ): Result<Unit> = Result.success(Unit)
     }
