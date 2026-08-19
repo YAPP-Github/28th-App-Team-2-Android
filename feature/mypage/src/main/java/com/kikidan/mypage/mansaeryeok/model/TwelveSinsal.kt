@@ -15,7 +15,7 @@ enum class TwelveSinsal(
     MANGSINSAL(R.string.mansaeryeok_twelve_sinsal_mangsinsal),
     JANGSEONGSAL(R.string.mansaeryeok_twelve_sinsal_jangseongsal),
     BANANSAL(R.string.mansaeryeok_twelve_sinsal_banansal),
-    YEOKMASAL(R.string.mansaeryeok_twelve_sinsal_yeokmasal),
+    YEONGMASAL(R.string.mansaeryeok_twelve_sinsal_yeokmasal),
     YUKHAESAL(R.string.mansaeryeok_twelve_sinsal_yukhaesal),
     HWAGAESAL(R.string.mansaeryeok_twelve_sinsal_hwagaesal),
 }

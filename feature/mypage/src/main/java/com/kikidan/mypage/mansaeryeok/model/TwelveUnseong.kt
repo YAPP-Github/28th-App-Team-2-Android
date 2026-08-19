@@ -7,7 +7,7 @@ enum class TwelveUnseong(
     @param:StringRes val labelRes: Int,
 ) {
     JANGSAENG(R.string.mansaeryeok_twelve_unseong_jangsaeng),
-    MOGYOK(R.string.mansaeryeok_twelve_unseong_mogyok),
+    MOKYOK(R.string.mansaeryeok_twelve_unseong_mogyok),
     GWANDAE(R.string.mansaeryeok_twelve_unseong_gwandae),
     GEONROK(R.string.mansaeryeok_twelve_unseong_geonrok),
     JEWANG(R.string.mansaeryeok_twelve_unseong_jewang),

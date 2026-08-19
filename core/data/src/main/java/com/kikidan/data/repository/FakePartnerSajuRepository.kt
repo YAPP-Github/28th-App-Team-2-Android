@@ -1,8 +1,10 @@
 package com.kikidan.data.repository
 
+import com.kikidan.domain.model.saju.CheonGan
 import com.kikidan.domain.model.saju.PartnerSaju
 import com.kikidan.domain.model.saju.PartnerSajuInput
 import com.kikidan.domain.model.saju.RelationshipType
+import com.kikidan.domain.model.saju.SajuChartDetail
 import com.kikidan.domain.model.user.Birth
 import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.domain.model.user.DateType
@@ -29,6 +31,9 @@ class FakePartnerSajuRepository
                 Result.failure(NoSuchElementException("PartnerSaju not found: $linkId"))
             }
         }
+
+        override suspend fun getPartnerSajuChartDetail(linkId: String): Result<SajuChartDetail> =
+            Result.success(MockSajuChartDetail)
 
         override suspend fun deletePartnerSaju(linkId: String): Result<Unit> {
             partners = partners.filterNot { it.linkId == linkId }
@@ -63,6 +68,13 @@ private val MockRelationshipTypes =
         "LOVER" to RelationshipType(code = "LOVER", label = "연인"),
         "FRIEND" to RelationshipType(code = "FRIEND", label = "친구"),
         "COLLEAGUE" to RelationshipType(code = "COLLEAGUE", label = "동료"),
+    )
+
+private val MockSajuChartDetail =
+    SajuChartDetail(
+        dayMaster = CheonGan.GI,
+        pillars = emptyList(),
+        fiveElements = emptyList(),
     )
 
 private val MockPartnerSajuList =
