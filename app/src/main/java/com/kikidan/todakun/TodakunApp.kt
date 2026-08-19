@@ -165,6 +165,7 @@ fun TodakunApp(
                     entry<TodakunRoute.Chat> { route ->
                         ChatRoute(
                             conversationId = route.conversationId,
+                            skipSplash = route.skipSplash,
                             onCloseClick = { navigator.goBack() },
                             onNavigateToHistory = { navigator.push(TodakunRoute.ChatHistory) },
                             snackbarHostState = snackbarHostState,
@@ -177,7 +178,7 @@ fun TodakunApp(
                             onNavigateToChat = { conversationId ->
                                 navigator.push(TodakunRoute.Chat(conversationId))
                             },
-                            onNewChatClick = { navigator.push(TodakunRoute.Chat()) },
+                            onNewChatClick = { navigator.push(TodakunRoute.Chat(skipSplash = true)) },
                             snackbarHostState = snackbarHostState,
                         )
                     }
@@ -203,7 +204,7 @@ fun TodakunApp(
 
                     entry<TodakunRoute.MyPageEdit> {
                         MyPageEditRoute(
-                            onNavigateBack = { navigator.goBack() }
+                            onNavigateBack = { navigator.goBack() },
                         )
                     }
 

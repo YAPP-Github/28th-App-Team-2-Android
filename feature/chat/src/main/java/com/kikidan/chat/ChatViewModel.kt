@@ -45,36 +45,40 @@ class ChatViewModel
             )
 
         /** 화면 진입 시 1회. conversationId가 있으면 과거 대화를 먼저 채운다. */
-        fun load(conversationId: String?) =
-            intent {
-                savedStateHandle[KEY_CONVERSATION_ID] = conversationId
-                reduce { state.copy(conversationId = conversationId, isLoading = true) }
-                val startedAt = System.currentTimeMillis()
+        fun load(
+            conversationId: String?,
+            skipSplash: Boolean = false,
+        ) = intent {
+            savedStateHandle[KEY_CONVERSATION_ID] = conversationId
+            reduce { state.copy(conversationId = conversationId, isLoading = true) }
+            val startedAt = System.currentTimeMillis()
 
-                getChatEntry()
-                    .onSuccess { entry ->
-                        reduce {
-                            state.copy(
-                                greeting = entry.greeting,
-                                suggestions = entry.suggestions.toPersistentList(),
-                                quota = entry.quota,
-                            )
-                        }
-                    }.onFailure { postSideEffect(ChatSideEffect.Error(it)) }
+            getChatEntry()
+                .onSuccess { entry ->
+                    reduce {
+                        state.copy(
+                            greeting = entry.greeting,
+                            suggestions = entry.suggestions.toPersistentList(),
+                            quota = entry.quota,
+                        )
+                    }
+                }.onFailure { postSideEffect(ChatSideEffect.Error(it)) }
 
-                if (conversationId != null) {
-                    getConversationDetail(conversationId)
-                        .onSuccess { reduce { state.copy(messages = it.messages.toPersistentList()) } }
-                        .onFailure { postSideEffect(ChatSideEffect.Error(it)) }
-                }
+            if (conversationId != null) {
+                getConversationDetail(conversationId)
+                    .onSuccess { reduce { state.copy(messages = it.messages.toPersistentList()) } }
+                    .onFailure { postSideEffect(ChatSideEffect.Error(it)) }
+            }
 
-                // 로딩 화면이 너무 빨리 깜빡이지 않도록 최소 노출 시간을 보장한다.
+            // 스플래시를 보여주지 않는 진입(skipSplash)은 최소 노출 시간을 지킬 이유가 없다.
+            if (!skipSplash) {
                 val elapsed = System.currentTimeMillis() - startedAt
                 if (elapsed < MIN_LOADING_DURATION_MILLIS) {
                     delay(MIN_LOADING_DURATION_MILLIS - elapsed)
                 }
-                reduce { state.copy(isLoading = false) }
             }
+            reduce { state.copy(isLoading = false) }
+        }
 
         fun onInputChange(value: String) =
             intent {

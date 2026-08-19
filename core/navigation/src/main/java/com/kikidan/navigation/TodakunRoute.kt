@@ -23,6 +23,8 @@ sealed interface TodakunRoute : NavKey {
     @Serializable
     data class Chat(
         val conversationId: String? = null,
+        // 히스토리 화면의 "새 채팅"처럼 채팅 기능 안에서 이동할 때는 콜드 스타트 스플래시를 보여줄 필요가 없다.
+        val skipSplash: Boolean = false,
     ) : TodakunRoute
 
     @Serializable
