@@ -24,6 +24,7 @@ import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingStep
+import com.kikidan.onboarding.model.OnboardingSubmitState
 import com.kikidan.onboarding.screen.BirthInfoScreen
 import com.kikidan.onboarding.screen.CompleteScreen
 import com.kikidan.onboarding.screen.ExtraQuestionScreen
@@ -125,6 +126,7 @@ fun OnboardingRoute(
                 lifeStage = state.lifeStage,
                 relationshipStatus = state.relationshipStatus,
                 canProceed = state.canProceed,
+                isSubmitting = state.submitState is OnboardingSubmitState.Loading,
                 onLifeStageSelect = viewModel::selectLifeStage,
                 onRelationshipStatusSelect = viewModel::selectRelationshipStatus,
                 onNextClick = {

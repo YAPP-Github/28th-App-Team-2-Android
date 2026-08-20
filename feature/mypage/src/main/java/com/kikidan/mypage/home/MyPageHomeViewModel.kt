@@ -48,8 +48,14 @@ class MyPageHomeViewModel
 
         fun logout() =
             intent {
+                val currentState = state as? MyPageHomeUiState.Success ?: return@intent
+                if (currentState.isLoggingOut) return@intent
+                reduce { currentState.copy(isLoggingOut = true) }
                 logoutUseCase()
                     .onSuccess { postSideEffect(MyPageHomeSideEffect.NavigateToLogin) }
-                    .onFailure { postSideEffect(MyPageHomeSideEffect.ShowLogoutError) }
+                    .onFailure {
+                        reduce { currentState.copy(isLoggingOut = false) }
+                        postSideEffect(MyPageHomeSideEffect.ShowLogoutError)
+                    }
             }
     }

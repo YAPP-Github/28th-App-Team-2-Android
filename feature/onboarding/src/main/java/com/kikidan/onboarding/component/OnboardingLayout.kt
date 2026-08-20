@@ -45,6 +45,7 @@ internal fun OnboardingLayout(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     progressLabel: String? = null,
+    ctaLoading: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     Box(modifier = modifier.background(TodakunColor.white)) {
@@ -82,6 +83,7 @@ internal fun OnboardingLayout(
             ctaText = ctaText,
             onCtaClick = onCtaClick,
             ctaEnabled = ctaEnabled,
+            ctaLoading = ctaLoading,
         )
     }
 }
@@ -128,6 +130,7 @@ private fun NextButton(
     ctaEnabled: Boolean,
     onCtaClick: () -> Unit,
     modifier: Modifier = Modifier,
+    ctaLoading: Boolean = false,
 ) {
     Column(
         modifier =
@@ -141,7 +144,8 @@ private fun NextButton(
             text = ctaText,
             onClick = onCtaClick,
             size = TodakunButtonSize.Large,
-            enabled = ctaEnabled,
+            enabled = ctaEnabled && !ctaLoading,
+            isLoading = ctaLoading,
             modifier = Modifier.fillMaxWidth(),
         )
     }

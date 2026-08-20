@@ -36,6 +36,7 @@ import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.usecase.DateFortuneDefaults
 import com.kikidan.sajucontents.component.DateSelectBottomSheet
 import com.kikidan.sajucontents.model.DateFortuneState
+import com.kikidan.sajucontents.model.DateFortuneSubmitState
 import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -136,6 +137,7 @@ internal fun DateFortuneInputScreen(
                 onClick = onSubmit,
                 size = TodakunButtonSize.Large,
                 enabled = state.canSubmit,
+                isLoading = state.submitState is DateFortuneSubmitState.Loading,
             )
         }
 

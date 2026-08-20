@@ -1,9 +1,13 @@
 package com.kikidan.notification.model
 
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 
-data class NotificationState(
-    val isLoading: Boolean = true,
-    val notifications: PersistentList<NotificationUiModel> = persistentListOf(),
-)
+sealed interface NotificationState {
+    data object Loading : NotificationState
+
+    data class Success(
+        val notifications: PersistentList<NotificationUiModel>,
+    ) : NotificationState
+
+    data object Failure : NotificationState
+}

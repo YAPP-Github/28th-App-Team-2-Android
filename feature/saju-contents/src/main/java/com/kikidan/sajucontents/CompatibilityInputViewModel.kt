@@ -8,6 +8,9 @@ import com.kikidan.domain.usecase.saju.GetPartnerMansaeryeokDetailUseCase
 import com.kikidan.domain.usecase.saju.GetPartnerSajuListUseCase
 import com.kikidan.sajucontents.model.CompatibilityEntrySideEffect
 import com.kikidan.sajucontents.model.CompatibilityInputState
+import com.kikidan.sajucontents.model.CreateCompatibilityState
+import com.kikidan.sajucontents.model.MyInfoLoadState
+import com.kikidan.sajucontents.model.PartnerListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentSet
@@ -34,7 +37,7 @@ class CompatibilityInputViewModel
 
         fun loadMyInfo() =
             intent {
-                reduce { state.copy(isLoading = true) }
+                reduce { state.copy(myInfoState = MyInfoLoadState.Loading) }
                 coroutineScope {
                     val mansaeryeokDetailDeferred = async { getMansaeryeokDetail() }
                     val partnerListDeferred = async { getPartnerSajuList() }
@@ -49,7 +52,7 @@ class CompatibilityInputViewModel
                         onSuccess = { (detail, list) ->
                             reduce {
                                 state.copy(
-                                    isLoading = false,
+                                    myInfoState = MyInfoLoadState.Success,
                                     myUser = detail.user,
                                     myPillars =
                                         PillarDisplayOrder
@@ -61,8 +64,7 @@ class CompatibilityInputViewModel
                                             }.toPersistentList(),
                                     partnerPicker =
                                         state.partnerPicker.copy(
-                                            isLoading = false,
-                                            partners = list.toPersistentList(),
+                                            partnersState = PartnerListState.Success(list.toPersistentList()),
                                         ),
                                 )
                             }
@@ -73,7 +75,7 @@ class CompatibilityInputViewModel
                             }
                         },
                         onFailure = {
-                            reduce { state.copy(isLoading = false) }
+                            reduce { state.copy(myInfoState = MyInfoLoadState.Failure) }
                             postSideEffect(CompatibilityEntrySideEffect.ShowLoadError)
                         },
                     )
@@ -82,7 +84,9 @@ class CompatibilityInputViewModel
 
         fun openPartnerPicker() =
             intent {
-                if (state.partnerPicker.isLoading || state.isLoading) return@intent
+                val partnersLoading = state.partnerPicker.partnersState is PartnerListState.Loading
+                val myInfoLoading = state.myInfoState is MyInfoLoadState.Loading
+                if (partnersLoading || myInfoLoading) return@intent
                 if (state.partnerPicker.partners.isEmpty()) {
                     postSideEffect(CompatibilityEntrySideEffect.NavigateToPartnerForm)
                     return@intent
@@ -128,16 +132,16 @@ class CompatibilityInputViewModel
         fun checkCompatibility() =
             intent {
                 val partnerLinkId = state.selectedPartner?.linkId ?: return@intent
-                if (state.isCreating) return@intent
-                reduce { state.copy(isCreating = true) }
+                if (state.createState is CreateCompatibilityState.Loading) return@intent
+                reduce { state.copy(createState = CreateCompatibilityState.Loading) }
                 createCompatibility(partnerLinkId)
                     .onSuccess { compatibility ->
-                        reduce { state.copy(isCreating = false) }
+                        reduce { state.copy(createState = CreateCompatibilityState.Success) }
                         postSideEffect(
                             CompatibilityEntrySideEffect.NavigateToResult(compatibility.id, partnerLinkId),
                         )
                     }.onFailure {
-                        reduce { state.copy(isCreating = false) }
+                        reduce { state.copy(createState = CreateCompatibilityState.Failure) }
                         postSideEffect(CompatibilityEntrySideEffect.ShowCreateError)
                     }
             }

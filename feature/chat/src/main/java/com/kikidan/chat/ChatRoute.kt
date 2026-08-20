@@ -8,6 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.chat.model.ChatEntryState
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.screen.ChatScreen
 import com.kikidan.chat.screen.ChatSplashScreen
@@ -40,23 +41,28 @@ fun ChatRoute(
         }
     }
 
-    if (state.isLoading && conversationId == null && !skipSplash) {
-        ChatSplashScreen()
-    } else {
-        ChatScreen(
-            state = state,
-            onInputChange = viewModel::onInputChange,
-            onSendClick = viewModel::onSendClick,
-            onSuggestionClick = viewModel::onSuggestionClick,
-            onNewConversationClick = viewModel::startNewConversation,
-            onCloseClick = onCloseClick,
-            onHistoryClick = onNavigateToHistory,
-            onCalendarLaunchFail = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(calendarErrorMessage)
-                }
-            },
-            modifier = modifier,
-        )
+    val showSplash = state.entryState is ChatEntryState.Loading && conversationId == null && !skipSplash
+    when {
+        showSplash -> {
+            ChatSplashScreen()
+        }
+
+        else -> {
+            ChatScreen(
+                state = state,
+                onInputChange = viewModel::onInputChange,
+                onSendClick = viewModel::onSendClick,
+                onSuggestionClick = viewModel::onSuggestionClick,
+                onNewConversationClick = viewModel::startNewConversation,
+                onCloseClick = onCloseClick,
+                onHistoryClick = onNavigateToHistory,
+                onCalendarLaunchFail = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(calendarErrorMessage)
+                    }
+                },
+                modifier = modifier,
+            )
+        }
     }
 }

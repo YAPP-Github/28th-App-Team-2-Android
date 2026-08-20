@@ -34,6 +34,7 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunBadge
 import com.kikidan.designsystem.component.TodakunBadgeType
 import com.kikidan.designsystem.component.TodakunCheckbox
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.header.TodakunMainHeader
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
@@ -93,6 +94,12 @@ fun LuckActionScreen(
                     onCloseClick = onDismissCompleteOverlay,
                 )
             }
+        }
+
+        when {
+            state is LuckActionUiState.Loading -> TodakunProgressIndicator()
+            state is LuckActionUiState.Success && state.isRefreshing -> TodakunProgressIndicator()
+            else -> Unit
         }
     }
 }

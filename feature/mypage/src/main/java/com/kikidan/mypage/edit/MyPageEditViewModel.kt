@@ -87,6 +87,7 @@ class MyPageEditViewModel
         fun save() =
             intent {
                 val currentState = state as? MyPageEditUiState.Success ?: return@intent
+                if (currentState.isSaving) return@intent
                 val model = currentState.model
                 val user =
                     User(
@@ -102,9 +103,13 @@ class MyPageEditViewModel
                                 time = model.birthTime,
                             ),
                     )
-                updateUserUseCase(user).onSuccess {
-                    postSideEffect(MyPageEditSideEffect.NavigateBack)
-                }
+                reduce { currentState.copy(isSaving = true) }
+                updateUserUseCase(user)
+                    .onSuccess {
+                        postSideEffect(MyPageEditSideEffect.NavigateBack)
+                    }.onFailure {
+                        reduce { currentState.copy(isSaving = false) }
+                    }
             }
 
         private fun updateModel(transform: MyPageEditUiModel.() -> MyPageEditUiModel) =

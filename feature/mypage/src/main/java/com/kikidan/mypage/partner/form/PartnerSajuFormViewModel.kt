@@ -88,6 +88,7 @@ class PartnerSajuFormViewModel
         fun save() =
             intent {
                 val currentState = state as? PartnerSajuFormUiState.Success ?: return@intent
+                if (currentState.isSaving) return@intent
                 val model = currentState.model
                 val birthDate = model.birthDate ?: return@intent
                 val input =
@@ -97,15 +98,19 @@ class PartnerSajuFormViewModel
                         relationshipTypeCode = model.relationshipTypeCode,
                         birth = Birth(dateType = model.dateType, date = birthDate, time = model.birthTime),
                     )
+                reduce { currentState.copy(isSaving = true) }
                 val result =
                     if (model.linkId != null) {
                         updatePartnerSajuUseCase(model.linkId, input)
                     } else {
                         registerPartnerSajuUseCase(input)
                     }
-                result.onSuccess {
-                    postSideEffect(PartnerSajuFormSideEffect.NavigateBack)
-                }
+                result
+                    .onSuccess {
+                        postSideEffect(PartnerSajuFormSideEffect.NavigateBack)
+                    }.onFailure {
+                        reduce { currentState.copy(isSaving = false) }
+                    }
             }
 
         private fun updateModel(transform: (PartnerSajuFormUiModel) -> PartnerSajuFormUiModel) =
