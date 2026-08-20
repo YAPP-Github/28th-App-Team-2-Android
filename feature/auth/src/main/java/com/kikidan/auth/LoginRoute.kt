@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.LocalActivityManager
 import android.content.Context
 import android.content.ContextWrapper
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,10 +46,12 @@ fun LoginRoute(
 
     loginViewModel.collectSideEffect { effect ->
         when (effect) {
-            is LoginSideEffect.LoginSucceeded -> onAuthSuccess(effect.result)
+            is LoginSideEffect.LoginSucceeded -> {
+                onAuthSuccess(effect.result)
+            }
 
             // TODO(#32): 로그인 실패 UI(스낵바/다이얼로그) 노출
-            is LoginSideEffect.LoginFailed -> Unit
+            is LoginSideEffect.LoginFailed -> {}
         }
     }
 

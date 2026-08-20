@@ -199,6 +199,8 @@ fun TodakunApp(
                                 navigator.push(TodakunRoute.NotificationSetting)
                             },
                             onNavigateToAppSetting = { navigator.push(TodakunRoute.AppSetting) },
+                            onNavigateToLogin = { navigator.resetTo(TodakunRoute.Login) },
+                            snackbarHostState = snackbarHostState,
                         )
                     }
 

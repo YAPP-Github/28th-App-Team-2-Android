@@ -6,11 +6,11 @@ enum class OnboardingTerm(
 ) {
     SERVICE(
         required = true,
-        link = "https://ash-topaz-463.notion.site/3b081c6748468045a408eb20d27e2342?source=copy_link",
+        link = "https://ash-topaz-463.notion.site/3b081c67484680aca6e5ec1d463c670d?source=copy_link",
     ),
     PRIVACY(
         required = true,
-        link = "https://ash-topaz-463.notion.site/3b081c67484680aca6e5ec1d463c670d?source=copy_link",
+        link = "https://ash-topaz-463.notion.site/3b081c6748468045a408eb20d27e2342?source=copy_link",
     ),
     AI_DATA_TRANSFER(
         required = true,

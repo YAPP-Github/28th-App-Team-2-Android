@@ -18,6 +18,9 @@ class FakeRemoteAuthDataSource : RemoteAuthDataSource {
     var refreshResult: AuthToken = AuthToken("new-access", "new-refresh")
     var throwOnRefresh: Throwable? = null
 
+    var throwOnLogout: Throwable? = null
+    var logoutCalled = false
+
     override suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult {
         throwOnLogin?.let { throw it }
         return loginResult
@@ -31,7 +34,10 @@ class FakeRemoteAuthDataSource : RemoteAuthDataSource {
         return signupResult
     }
 
-    override suspend fun postLogout() = error("not used")
+    override suspend fun postLogout() {
+        logoutCalled = true
+        throwOnLogout?.let { throw it }
+    }
 
     override suspend fun postRefresh(refreshToken: String): AuthToken {
         throwOnRefresh?.let { throw it }

@@ -32,4 +32,9 @@ class AuthRepositoryImpl
             runCatchingCancellable {
                 remoteAuthDataSource.postSignup(signupSubmission, onboardingToken)
             }
+
+        override suspend fun logout(): Result<Unit> =
+            runCatchingCancellable {
+                remoteAuthDataSource.postLogout()
+            }
     }

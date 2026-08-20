@@ -147,4 +147,39 @@ class AuthRepositoryImplTest {
             // when
             sut.signup(user, onboardingToken)
         }
+
+    @Test
+    fun `logout이_성공하면_DataSource의_postLogout이_호출되고_Result_success가_반환된다`() =
+        runTest {
+            // when
+            val result = sut.logout()
+
+            // then
+            assertTrue(fakeRemoteAuthDataSource.logoutCalled)
+            assertTrue(result.isSuccess)
+        }
+
+    @Test
+    fun `DataSource의_logout이_예외를_throw하면_Result_failure로_반환되고_예외가_누수되지_않는다`() =
+        runTest {
+            // given
+            fakeRemoteAuthDataSource.throwOnLogout = IOException("network error")
+
+            // when
+            val result = sut.logout()
+
+            // then
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is IOException)
+        }
+
+    @Test(expected = CancellationException::class)
+    fun `DataSource의_logout이_CancellationException을_throw하면_Result로_감싸지지_않고_그대로_전파된다`() =
+        runTest {
+            // given
+            fakeRemoteAuthDataSource.throwOnLogout = CancellationException("cancelled")
+
+            // when
+            sut.logout()
+        }
 }

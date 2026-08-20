@@ -1,3 +1,7 @@
 package com.kikidan.mypage.home.model
 
-sealed interface MyPageHomeSideEffect
+sealed interface MyPageHomeSideEffect {
+    data object NavigateToLogin : MyPageHomeSideEffect
+
+    data object ShowLogoutError : MyPageHomeSideEffect
+}
