@@ -63,6 +63,8 @@
     <string name="mypage_menu_app_setting">앱 설정</string>
     <string name="mypage_menu_inquiry">1:1 문의</string>
     <string name="mypage_menu_logout">로그아웃</string>
+    <string name="mypage_inquiry_email_error">메일 앱을 찾을 수 없어요.</string>
+    <string name="mypage_logout_error">알 수 없는 에러가 발생했어요. 잠시 후 다시 시도해주세요</string>
     <string name="mypage_app_version_label">앱 버전</string>
     <string name="mypage_app_version_format">v %1$s</string>
     <string name="mypage_view_mansaeryeok_button">만세력 보기</string>

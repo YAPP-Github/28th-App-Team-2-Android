@@ -47,7 +47,6 @@ fun OnboardingRoute(
         ) {
             // 권한을 허락하지 않더라도 앱 진입
             permissionHandled = true
-            onFinish()
         }
 
     viewModel.collectSideEffect { sideEffect ->
@@ -127,6 +126,7 @@ fun OnboardingRoute(
         OnboardingStep.COMPLETE -> {
             if (permissionHandled) {
                 CompleteScreen(
+                    onFinish = onFinish,
                     modifier = modifier,
                 )
             }

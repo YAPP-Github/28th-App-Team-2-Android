@@ -22,4 +22,6 @@ class FakeAuthRepository : AuthRepository {
     }
 
     override suspend fun refresh(refreshToken: String): Result<AuthToken> = error("not used")
+
+    override suspend fun logout(): Result<Unit> = error("not used")
 }

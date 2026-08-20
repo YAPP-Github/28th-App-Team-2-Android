@@ -2,20 +2,21 @@ package com.kikidan.mypage.setting.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import com.kikidan.domain.model.onboarding.OnboardingTerm
 
 @Composable
 fun AppSettingRoute(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    onPrivacyPolicyClick: () -> Unit = {},
-    onTermsOfServiceClick: () -> Unit = {},
     onWithdrawalClick: () -> Unit = {},
 ) {
+    val uriHandler = LocalUriHandler.current
     AppSettingScreen(
         modifier = modifier,
         onBackClick = onNavigateBack,
-        onPrivacyPolicyClick = onPrivacyPolicyClick,
-        onTermsOfServiceClick = onTermsOfServiceClick,
+        onPrivacyPolicyClick = { uriHandler.openUri(OnboardingTerm.PRIVACY.link) },
+        onTermsOfServiceClick = { uriHandler.openUri(OnboardingTerm.SERVICE.link) },
         onWithdrawalClick = onWithdrawalClick,
     )
 }
