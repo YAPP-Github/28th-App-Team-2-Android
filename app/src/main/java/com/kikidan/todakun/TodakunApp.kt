@@ -145,6 +145,7 @@ fun TodakunApp(
                             onFinish = { navigator.resetTo(TodakunRoute.Home) },
                             onNavigateTerm = { navigator.goBack() },
                             onboardingToken = OnboardingToken(route.onboardingToken),
+                            snackbarHostState = snackbarHostState,
                         )
                     }
 

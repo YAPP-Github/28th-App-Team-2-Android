@@ -314,6 +314,8 @@
     <string name="onboarding_next">다음</string>
     <string name="onboarding_start">시작하기</string>
     <string name="onboarding_confirm">확인</string>
+    <string name="onboarding_signup_error">회원가입에 실패했어요. 잠시 후 다시 시도해주세요</string>
+    <string name="onboarding_invalid_input_error">입력한 정보를 다시 확인해주세요.</string>
 
     <!-- 약관 동의 -->
     <string name="onboarding_terms_progress_label">약관 동의</string>

@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.wheelpicker.BirthDateState
 import com.kikidan.designsystem.component.wheelpicker.BirthDateWheelPicker
 import com.kikidan.designsystem.component.wheelpicker.SajuBirthTimeWheelPicker
@@ -34,6 +37,7 @@ fun OnboardingRoute(
     onFinish: () -> Unit,
     onNavigateTerm: () -> Unit,
     onboardingToken: OnboardingToken,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
@@ -48,6 +52,8 @@ fun OnboardingRoute(
             // 권한을 허락하지 않더라도 앱 진입
             permissionHandled = true
         }
+    val signupErrorMessage = stringResource(R.string.onboarding_signup_error)
+    val invalidInputErrorMessage = stringResource(R.string.onboarding_invalid_input_error)
 
     viewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
@@ -67,7 +73,13 @@ fun OnboardingRoute(
                 }
             }
 
-            else -> { /* TODO 에러 처리 스낵바 또는 다이얼로그 */ }
+            OnboardingSideEffect.InvalidInput -> {
+                snackbarHostState.showSnackbar(invalidInputErrorMessage)
+            }
+
+            is OnboardingSideEffect.Failure -> {
+                snackbarHostState.showSnackbar(signupErrorMessage)
+            }
         }
     }
 
