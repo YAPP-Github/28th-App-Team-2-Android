@@ -45,7 +45,8 @@ android {
             manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
             manifestPlaceholders["APP_LINK_HOST"] = appLinkHost
 
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
