@@ -13,6 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,6 +39,10 @@ internal fun LoginScreen(
     modifier: Modifier = Modifier,
 ) {
     val loginEnabled = state is LoginState.Idle || state is LoginState.Failure
+    var loadingProvider by remember { mutableStateOf<SocialLoginProvider?>(null) }
+    LaunchedEffect(state) {
+        if (state !is LoginState.Loading) loadingProvider = null
+    }
     Box(
         modifier =
             modifier
@@ -77,8 +86,12 @@ internal fun LoginScreen(
             SocialLoginProvider.entries.forEach { provider ->
                 SocialLoginButton(
                     enabled = loginEnabled,
+                    isLoading = state is LoginState.Loading && loadingProvider == provider,
                     provider = provider,
-                    onClick = { onProviderClick(provider) },
+                    onClick = {
+                        loadingProvider = provider
+                        onProviderClick(provider)
+                    },
                 )
             }
         }

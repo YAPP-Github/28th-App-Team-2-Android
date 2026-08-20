@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -58,6 +59,7 @@ internal fun SocialLoginButton(
     provider: SocialLoginProvider,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
 ) {
     Box(
         modifier =
@@ -74,20 +76,28 @@ internal fun SocialLoginButton(
                 ),
         contentAlignment = Alignment.Center,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Image(
-                painter = painterResource(id = provider.iconRes),
-                contentDescription = null,
+        if (isLoading) {
+            CircularProgressIndicator(
                 modifier = Modifier.size(20.dp),
-            )
-            Text(
-                text = stringResource(id = provider.labelRes),
-                style = TodakunTypography.body2Medium,
                 color = provider.contentColor,
+                strokeWidth = 2.dp,
             )
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Image(
+                    painter = painterResource(id = provider.iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                )
+                Text(
+                    text = stringResource(id = provider.labelRes),
+                    style = TodakunTypography.body2Medium,
+                    color = provider.contentColor,
+                )
+            }
         }
     }
 }
