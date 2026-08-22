@@ -23,9 +23,9 @@ internal fun HttpClientConfig<*>.installTodakunDefaults(
         json(json)
     }
     install(HttpTimeout) {
-        requestTimeoutMillis = 15_000
-        connectTimeoutMillis = 10_000
-        socketTimeoutMillis = 15_000
+        requestTimeoutMillis = 100_000
+        connectTimeoutMillis = 100_000
+        socketTimeoutMillis = 100_000
     }
     install(DefaultRequest) {
         url(baseUrl)
