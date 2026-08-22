@@ -46,6 +46,11 @@ class OnboardingViewModel
                 }
             }
 
+        fun clickComplete() =
+            intent {
+                postSideEffect(OnboardingSideEffect.PermissionRequest)
+            }
+
         fun confirmComplete(onboardingToken: OnboardingToken) =
             intent {
                 if (state.isSubmitting) return@intent
@@ -54,15 +59,14 @@ class OnboardingViewModel
                     postSideEffect(OnboardingSideEffect.InvalidInput)
                     return@intent
                 }
-                reduce { state.copy(isSubmitting = true) }
+                reduce { state.copy(isSubmitting = true, step = OnboardingStep.COMPLETE) }
                 signUpUseCase(
                     signupSubmission = signupSubmission,
                     onboardingToken = onboardingToken,
                 ).onSuccess {
-                    reduce { state.copy(isSubmitting = false, step = OnboardingStep.COMPLETE) }
-                    postSideEffect(OnboardingSideEffect.PermissionRequest)
-                }.onFailure { e ->
                     reduce { state.copy(isSubmitting = false) }
+                }.onFailure { e ->
+                    reduce { state.copy(isSubmitting = false, step = OnboardingStep.EXTRA_QUESTION) }
                     postSideEffect(OnboardingSideEffect.Failure(e))
                 }
             }

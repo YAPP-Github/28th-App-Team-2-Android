@@ -31,13 +31,16 @@ import kotlinx.coroutines.delay
 
 @Composable
 internal fun CompleteScreen(
+    isLoading: Boolean,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val currentOnFinish by rememberUpdatedState(onFinish)
-    LaunchedEffect(Unit) {
-        delay(3000)
-        currentOnFinish()
+    LaunchedEffect(isLoading) {
+        if (!isLoading) {
+            delay(3000L)
+            currentOnFinish()
+        }
     }
     Box(
         modifier =
@@ -83,6 +86,7 @@ internal fun CompleteScreen(
 private fun CompleteScreenPreview() {
     TodakunTheme {
         CompleteScreen(
+            isLoading = false,
             onFinish = {},
         )
     }

@@ -134,7 +134,17 @@ class OnboardingViewModelTest {
         }
 
     @Test
-    fun `마지막 스텝에서 다음을 누르면 완료 화면으로 전환된다`() =
+    fun `완료 단계에서 다음을 누르면 권한 요청 사이드이펙트가 먼저 전달된다`() =
+        runTest {
+            val initial = OnboardingState(step = OnboardingStep.EXTRA_QUESTION)
+            viewModel().test(this, initialState = initial) {
+                containerHost.clickComplete()
+                expectSideEffect(OnboardingSideEffect.PermissionRequest)
+            }
+        }
+
+    @Test
+    fun `가입 요청을 시작하면 응답을 기다리는 동안 완료 화면으로 전환된다`() =
         runTest {
             val initial =
                 OnboardingState(
@@ -149,9 +159,8 @@ class OnboardingViewModelTest {
                 )
             viewModel().test(this, initialState = initial) {
                 containerHost.confirmComplete(onboardingToken)
-                expectState { copy(isSubmitting = true) }
+                expectState { copy(isSubmitting = true, step = OnboardingStep.COMPLETE) }
                 expectState { copy(isSubmitting = false, step = OnboardingStep.COMPLETE) }
-                expectSideEffect(OnboardingSideEffect.PermissionRequest)
             }
         }
 
@@ -195,8 +204,8 @@ class OnboardingViewModelTest {
                 )
             viewModel().test(this, initialState = initial) {
                 containerHost.confirmComplete(onboardingToken)
-                expectState { copy(isSubmitting = true) }
-                expectState { copy(isSubmitting = false) }
+                expectState { copy(isSubmitting = true, step = OnboardingStep.COMPLETE) }
+                expectState { copy(isSubmitting = false, step = OnboardingStep.EXTRA_QUESTION) }
                 expectSideEffect(OnboardingSideEffect.Failure(error))
             }
         }
