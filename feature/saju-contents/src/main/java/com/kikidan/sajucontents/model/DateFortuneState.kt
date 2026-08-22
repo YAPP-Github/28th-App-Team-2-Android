@@ -12,9 +12,17 @@ data class DateFortuneState(
     val selectedGender: Gender? = null,
     val selectedDates: ImmutableList<LocalDate> = persistentListOf(),
     val isSheetVisible: Boolean = false,
-    val isLoading: Boolean = false,
+    val submitState: DateFortuneSubmitState? = null,
 ) {
     // selectedGender는 서버로 보내지 않는 값이라 필수 조건에서 제외한다(B-2 회귀 방지).
     val canSubmit: Boolean
-        get() = selectedPurpose != null && selectedDates.isNotEmpty() && !isLoading
+        get() = selectedPurpose != null && selectedDates.isNotEmpty() && submitState !is DateFortuneSubmitState.Loading
+}
+
+sealed interface DateFortuneSubmitState {
+    data object Loading : DateFortuneSubmitState
+
+    data object Success : DateFortuneSubmitState
+
+    data object Failure : DateFortuneSubmitState
 }

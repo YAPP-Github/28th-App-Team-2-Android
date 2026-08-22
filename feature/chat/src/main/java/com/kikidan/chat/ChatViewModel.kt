@@ -2,6 +2,7 @@ package com.kikidan.chat
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.kikidan.chat.model.ChatEntryState
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
@@ -50,7 +51,7 @@ class ChatViewModel
             skipSplash: Boolean = false,
         ) = intent {
             savedStateHandle[KEY_CONVERSATION_ID] = conversationId
-            reduce { state.copy(conversationId = conversationId, isLoading = true) }
+            reduce { state.copy(conversationId = conversationId, entryState = ChatEntryState.Loading) }
             val startedAt = System.currentTimeMillis()
 
             getChatEntry()
@@ -77,7 +78,7 @@ class ChatViewModel
                     delay(MIN_LOADING_DURATION_MILLIS - elapsed)
                 }
             }
-            reduce { state.copy(isLoading = false) }
+            reduce { state.copy(entryState = ChatEntryState.Success) }
         }
 
         fun onInputChange(value: String) =

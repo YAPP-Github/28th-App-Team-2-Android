@@ -2,6 +2,7 @@ package com.kikidan.sajucontents
 
 import androidx.lifecycle.ViewModel
 import com.kikidan.domain.usecase.GetDayFortuneUseCase
+import com.kikidan.sajucontents.model.DateFortuneResultLoadState
 import com.kikidan.sajucontents.model.DateFortuneResultSideEffect
 import com.kikidan.sajucontents.model.DateFortuneResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,26 +27,27 @@ class DateFortuneResultViewModel
 
         fun loadResults(ids: List<String>) =
             intent {
-                reduce { state.copy(isLoading = true) }
+                reduce { state.copy(resultState = DateFortuneResultLoadState.Loading) }
 
                 // 탭 순서(선택한 날짜 순서)를 유지하기 위해 병렬 조회 후 요청한 id 순서 그대로 매핑한다.
                 val results = coroutineScope { ids.map { id -> async { getDayFortune(id) } }.awaitAll() }
                 val failure = results.firstOrNull { it.isFailure }
                 if (failure != null) {
-                    reduce { state.copy(isLoading = false) }
+                    reduce { state.copy(resultState = DateFortuneResultLoadState.Failure) }
                     postSideEffect(DateFortuneResultSideEffect.ShowError)
                     return@intent
                 }
 
                 reduce {
                     state.copy(
-                        isLoading = false,
-                        results =
-                            results
-                                .map { it.getOrThrow() }
-                                .sortedByDescending { it.score }
-                                .take(3)
-                                .toPersistentList(),
+                        resultState =
+                            DateFortuneResultLoadState.Success(
+                                results
+                                    .map { it.getOrThrow() }
+                                    .sortedByDescending { it.score }
+                                    .take(3)
+                                    .toPersistentList(),
+                            ),
                         selectedResultIndex = 0,
                     )
                 }

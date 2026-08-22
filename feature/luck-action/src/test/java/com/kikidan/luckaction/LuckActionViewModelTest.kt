@@ -266,6 +266,7 @@ class LuckActionViewModelTest {
 
             vm.test(this, initialState = initial) {
                 containerHost.toggleAction("1")
+                awaitState() // isRefreshing = true
                 val s = awaitState() as LuckActionUiState.Success
                 assertTrue(s.actions[0].achieved)
                 assertEquals(FortuneCategory.LOVE, s.completionOverlayCategory)

@@ -39,6 +39,7 @@ import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunBadge
 import com.kikidan.designsystem.component.TodakunBadgeType
 import com.kikidan.designsystem.component.TodakunPopover
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.TodakunSnackbar
 import com.kikidan.designsystem.component.header.TodakunSubHeader
 import com.kikidan.designsystem.theme.TodakunColor
@@ -91,7 +92,7 @@ fun PartnerSajuManagementScreen(
 
             when (uiState) {
                 is PartnerSajuManagementUiState.Loading -> {
-                    Box(modifier = Modifier.weight(1f).fillMaxSize())
+                    TodakunProgressIndicator(modifier = Modifier.weight(1f))
                 }
 
                 is PartnerSajuManagementUiState.Fail -> {
@@ -118,6 +119,18 @@ fun PartnerSajuManagementScreen(
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 24.dp),
             )
+        }
+
+        when (uiState) {
+            is PartnerSajuManagementUiState.Success -> {
+                if (uiState.isDeleting) {
+                    TodakunProgressIndicator()
+                }
+            }
+
+            is PartnerSajuManagementUiState.Loading, is PartnerSajuManagementUiState.Fail -> {
+                Unit
+            }
         }
     }
 }

@@ -39,6 +39,7 @@ import com.kikidan.designsystem.theme.TodakunTypography
 @Composable
 fun AppSettingWithdrawalNoticeScreen(
     modifier: Modifier = Modifier,
+    isWithdrawing: Boolean = false,
     onBackClick: () -> Unit = {},
     onWithdrawConfirm: () -> Unit = {},
 ) {
@@ -118,7 +119,8 @@ fun AppSettingWithdrawalNoticeScreen(
             text = stringResource(R.string.app_setting_withdrawal_confirm_button),
             onClick = { showConfirmDialog = true },
             size = TodakunButtonSize.Large,
-            enabled = agreed,
+            enabled = agreed && !isWithdrawing,
+            isLoading = isWithdrawing,
             modifier =
                 Modifier
                     .fillMaxWidth()

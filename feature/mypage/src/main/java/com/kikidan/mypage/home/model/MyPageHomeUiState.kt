@@ -5,6 +5,7 @@ sealed interface MyPageHomeUiState {
 
     data class Success(
         val model: MyPageHomeUiModel,
+        val isLoggingOut: Boolean = false,
     ) : MyPageHomeUiState
 
     data class Fail(

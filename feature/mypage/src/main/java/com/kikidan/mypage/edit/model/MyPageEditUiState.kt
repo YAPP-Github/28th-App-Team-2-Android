@@ -5,6 +5,7 @@ sealed interface MyPageEditUiState {
 
     data class Success(
         val model: MyPageEditUiModel,
+        val isSaving: Boolean = false,
     ) : MyPageEditUiState
 
     data class Fail(

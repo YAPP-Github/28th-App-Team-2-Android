@@ -5,6 +5,7 @@ import com.kikidan.domain.model.fortune.FortuneCategoryStar
 import com.kikidan.domain.model.fortune.YearFortune
 import com.kikidan.domain.usecase.GetYearFortuneUseCase
 import com.kikidan.sajucontents.fake.FakeYearFortuneRepository
+import com.kikidan.sajucontents.model.YearFortuneResultLoadState
 import com.kikidan.sajucontents.model.YearFortuneResultSideEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,8 +56,8 @@ class YearFortuneResultViewModelTest {
 
             viewModel.test(this) {
                 viewModel.load("id-1")
-                expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false, fortuneResult = fortune) }
+                expectState { copy(resultState = YearFortuneResultLoadState.Loading) }
+                expectState { copy(resultState = YearFortuneResultLoadState.Success(fortune)) }
             }
 
             assertEquals("id-1", fakeRepository.lastId)
@@ -70,8 +71,8 @@ class YearFortuneResultViewModelTest {
 
             viewModel.test(this) {
                 viewModel.load("id-1")
-                expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false) }
+                expectState { copy(resultState = YearFortuneResultLoadState.Loading) }
+                expectState { copy(resultState = YearFortuneResultLoadState.Failure) }
                 expectSideEffect(YearFortuneResultSideEffect.ShowError)
             }
         }

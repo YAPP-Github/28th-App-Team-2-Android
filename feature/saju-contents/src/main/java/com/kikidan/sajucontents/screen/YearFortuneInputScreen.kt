@@ -27,6 +27,7 @@ import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
 import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.model.YearFortuneState
+import com.kikidan.sajucontents.model.YearFortuneSubmitState
 
 @Composable
 internal fun YearFortuneInputScreen(
@@ -93,7 +94,8 @@ internal fun YearFortuneInputScreen(
                 text = stringResource(id = R.string.year_fortune_cta),
                 onClick = onSubmit,
                 size = TodakunButtonSize.Large,
-                enabled = !state.isLoading,
+                enabled = state.submitState !is YearFortuneSubmitState.Loading,
+                isLoading = state.submitState is YearFortuneSubmitState.Loading,
                 modifier = Modifier.fillMaxWidth(),
             )
         }

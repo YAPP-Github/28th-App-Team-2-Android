@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.button.PrimaryButton
 import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.component.header.TodakunSubHeader
@@ -56,6 +57,9 @@ import com.kikidan.domain.model.user.User
 import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.component.CompatibilitySajuPillars
 import com.kikidan.sajucontents.model.CompatibilityInputState
+import com.kikidan.sajucontents.model.CreateCompatibilityState
+import com.kikidan.sajucontents.model.MyInfoLoadState
+import com.kikidan.sajucontents.model.PartnerListState
 import com.kikidan.sajucontents.model.PartnerPickerState
 import kotlinx.collections.immutable.ImmutableList
 import java.time.LocalDate
@@ -147,11 +151,17 @@ internal fun CompatibilityInputScreen(
                 PrimaryButton(
                     text = stringResource(R.string.compatibility_check_cta),
                     onClick = onCheckCompatibilityClick,
-                    enabled = state.selectedPartner != null && !state.isCreating,
+                    enabled = state.selectedPartner != null && state.createState !is CreateCompatibilityState.Loading,
+                    isLoading = state.createState is CreateCompatibilityState.Loading,
                     size = TodakunButtonSize.Large,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
+        }
+
+        when (state.myInfoState) {
+            is MyInfoLoadState.Loading -> TodakunProgressIndicator()
+            null, is MyInfoLoadState.Success, is MyInfoLoadState.Failure -> Unit
         }
     }
     val selectedIndex = state.partnerPicker.partners.indexOf(state.selectedPartner)
@@ -283,20 +293,26 @@ private fun PartnerPickerSheet(
         if (!isOnceSelected) onSelectPartner(pickerState.partners[selectedIndex].linkId)
         onDismissRequest()
     }) {
-        if (!pickerState.isLoading) {
-            TodakunWheelPicker(
-                title = stringResource(R.string.compatibility_partner_picker_title),
-                onSaveClick = onAddNewPartner,
-                saveButtonLabel = stringResource(R.string.compatibility_partner_picker_add),
-                columns = listOf(WheelPickerColumnState(items = items, selectedIndex = selectedIndex)),
-                onWheelPickerColumnSelect = { _, selectedIndex ->
-                    onSelectPartner(pickerState.partners[selectedIndex].linkId)
-                    isOnceSelected = true
-                },
-                directInputEnabled = false,
-            )
-        } else {
-            Spacer(modifier = Modifier.height(200.dp))
+        when (pickerState.partnersState) {
+            is PartnerListState.Loading -> {
+                Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                    TodakunProgressIndicator()
+                }
+            }
+
+            is PartnerListState.Success, is PartnerListState.Failure -> {
+                TodakunWheelPicker(
+                    title = stringResource(R.string.compatibility_partner_picker_title),
+                    onSaveClick = onAddNewPartner,
+                    saveButtonLabel = stringResource(R.string.compatibility_partner_picker_add),
+                    columns = listOf(WheelPickerColumnState(items = items, selectedIndex = selectedIndex)),
+                    onWheelPickerColumnSelect = { _, selectedIndex ->
+                        onSelectPartner(pickerState.partners[selectedIndex].linkId)
+                        isOnceSelected = true
+                    },
+                    directInputEnabled = false,
+                )
+            }
         }
     }
 }
@@ -349,6 +365,7 @@ private fun CompatibilityInputScreenPreview() {
         CompatibilityInputScreen(
             state =
                 CompatibilityInputState(
+                    myInfoState = MyInfoLoadState.Success,
                     myUser =
                         User(
                             id = "me",

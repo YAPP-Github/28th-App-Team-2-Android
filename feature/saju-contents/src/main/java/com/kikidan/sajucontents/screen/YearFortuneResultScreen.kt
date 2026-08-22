@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.component.TodakunChip2
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.button.PrimaryButton
 import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.theme.TodakunColor
@@ -45,6 +46,7 @@ import com.kikidan.sajucontents.BuildConfig
 import com.kikidan.sajucontents.R
 import com.kikidan.sajucontents.component.FortuneScoreCard
 import com.kikidan.sajucontents.component.FortuneShareDialog
+import com.kikidan.sajucontents.model.YearFortuneResultLoadState
 import com.kikidan.sajucontents.model.YearFortuneResultState
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -93,6 +95,11 @@ internal fun YearFortuneResultScreen(
             onAskTodakClick = onAskTodakClick,
             hazeState = hazeState,
         )
+
+        when (state.resultState) {
+            is YearFortuneResultLoadState.Loading -> TodakunProgressIndicator()
+            null, is YearFortuneResultLoadState.Success, is YearFortuneResultLoadState.Failure -> Unit
+        }
 
         if (state.isShareDialogVisible && fortune != null) {
             FortuneShareDialog(
@@ -288,7 +295,7 @@ private fun YearFortuneResultScreenPreview() {
         )
     TodakunTheme {
         YearFortuneResultScreen(
-            state = YearFortuneResultState(fortuneResult = sample),
+            state = YearFortuneResultState(resultState = YearFortuneResultLoadState.Success(sample)),
             onBackClick = {},
             onShareClick = {},
             onShareDismiss = {},

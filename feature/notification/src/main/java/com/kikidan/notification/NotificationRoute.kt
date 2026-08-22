@@ -34,7 +34,7 @@ fun NotificationRoute(
     }
 
     NotificationScreen(
-        notifications = state.notifications,
+        state = state,
         onBackClick = onBackClick,
         onNotificationClick = viewModel::onNotificationClick,
         modifier = modifier,

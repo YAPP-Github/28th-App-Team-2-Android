@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.TodakunToggle
 import com.kikidan.designsystem.component.header.TodakunSubHeader
 import com.kikidan.designsystem.component.wheelpicker.TimeWheelPicker
@@ -67,7 +68,7 @@ fun NotificationSettingScreen(
 
         when (uiState) {
             is NotificationSettingUiState.Loading -> {
-                Box(modifier = Modifier.weight(1f).fillMaxSize())
+                TodakunProgressIndicator(modifier = Modifier.weight(1f))
             }
 
             is NotificationSettingUiState.Fail -> {

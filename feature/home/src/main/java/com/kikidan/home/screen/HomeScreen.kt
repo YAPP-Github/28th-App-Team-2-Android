@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
@@ -117,6 +118,11 @@ internal fun HomeScreen(
                 detail = state.detail,
                 onDismissRequest = onDetailDismiss,
             )
+        }
+
+        when (state) {
+            is HomeState.Loading -> TodakunProgressIndicator()
+            is HomeState.Success, HomeState.Failure -> Unit
         }
     }
 }

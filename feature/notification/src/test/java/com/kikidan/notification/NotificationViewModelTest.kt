@@ -47,8 +47,7 @@ class NotificationViewModelTest {
 
             vm.test(this) {
                 containerHost.load()
-                val success = awaitState()
-                assertFalse(success.isLoading)
+                val success = awaitState() as NotificationState.Success
                 assertEquals(1, success.notifications.size)
                 assertEquals("n-1", success.notifications[0].id)
                 assertFalse(success.notifications[0].isRead)
@@ -67,7 +66,7 @@ class NotificationViewModelTest {
             vm.test(this) {
                 containerHost.load()
                 val failure = awaitState()
-                assertFalse(failure.isLoading)
+                assertEquals(NotificationState.Failure, failure)
                 val se = awaitSideEffect()
                 assertTrue(se is NotificationSideEffect.Error)
             }
@@ -79,18 +78,16 @@ class NotificationViewModelTest {
             val fakeNotificationRepository = FakeNotificationRepository()
             val vm = viewModel(fakeNotificationRepository)
             val initial =
-                NotificationState(
-                    isLoading = false,
-                    notifications =
-                        persistentListOf(
-                            NotificationUiModel("n-1", NotificationType.FORTUNE, "제목1", "30분 전", false),
-                            NotificationUiModel("n-2", NotificationType.LUCKY_ACTION, "제목2", "3시간 전", false),
-                        ),
+                NotificationState.Success(
+                    persistentListOf(
+                        NotificationUiModel("n-1", NotificationType.FORTUNE, "제목1", "30분 전", false),
+                        NotificationUiModel("n-2", NotificationType.LUCKY_ACTION, "제목2", "3시간 전", false),
+                    ),
                 )
 
             vm.test(this, initialState = initial) {
                 containerHost.onNotificationClick("n-1")
-                val settled = awaitState()
+                val settled = awaitState() as NotificationState.Success
                 assertEquals("n-1", fakeNotificationRepository.lastMarkedAsReadId)
                 assertTrue(settled.notifications.first { it.id == "n-1" }.isRead)
                 assertFalse(settled.notifications.first { it.id == "n-2" }.isRead)
