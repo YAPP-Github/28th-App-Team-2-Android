@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kikidan.chat.model.HistorySideEffect
-import com.kikidan.chat.model.toUiModel
 import com.kikidan.chat.screen.HistoryScreen
 import com.kikidan.designsystem.R
 import org.orbitmvi.orbit.compose.collectAsState
@@ -35,7 +34,7 @@ fun HistoryRoute(
     }
 
     HistoryScreen(
-        conversations = state.conversations.map { it.toUiModel() },
+        state = state,
         onBackClick = onBackClick,
         onConversationClick = onNavigateToChat,
         onDeleteClick = viewModel::onDeleteClick,

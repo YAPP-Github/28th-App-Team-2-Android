@@ -2,6 +2,7 @@ package com.kikidan.sajucontents
 
 import androidx.lifecycle.ViewModel
 import com.kikidan.domain.usecase.GetYearFortuneUseCase
+import com.kikidan.sajucontents.model.YearFortuneResultLoadState
 import com.kikidan.sajucontents.model.YearFortuneResultSideEffect
 import com.kikidan.sajucontents.model.YearFortuneResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,15 +25,15 @@ class YearFortuneResultViewModel
 
         fun load(id: String) =
             intent {
-                if (state.isLoading) return@intent
-                reduce { state.copy(isLoading = true) }
+                if (state.resultState is YearFortuneResultLoadState.Loading) return@intent
+                reduce { state.copy(resultState = YearFortuneResultLoadState.Loading) }
 
                 getYearFortune(id).fold(
                     onSuccess = { result ->
-                        reduce { state.copy(isLoading = false, fortuneResult = result) }
+                        reduce { state.copy(resultState = YearFortuneResultLoadState.Success(result)) }
                     },
                     onFailure = {
-                        reduce { state.copy(isLoading = false) }
+                        reduce { state.copy(resultState = YearFortuneResultLoadState.Failure) }
                         postSideEffect(YearFortuneResultSideEffect.ShowError)
                     },
                 )

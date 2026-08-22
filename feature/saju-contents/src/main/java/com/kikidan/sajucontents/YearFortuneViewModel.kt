@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.kikidan.domain.usecase.CreateYearFortuneUseCase
 import com.kikidan.sajucontents.model.YearFortuneSideEffect
 import com.kikidan.sajucontents.model.YearFortuneState
+import com.kikidan.sajucontents.model.YearFortuneSubmitState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -27,17 +28,17 @@ class YearFortuneViewModel
 
         fun onSubmit() =
             intent {
-                if (state.isLoading) return@intent
+                if (state.submitState is YearFortuneSubmitState.Loading) return@intent
                 val year = state.selectedYear
-                reduce { state.copy(isLoading = true) }
+                reduce { state.copy(submitState = YearFortuneSubmitState.Loading) }
 
                 createYearFortune(year).fold(
                     onSuccess = { result ->
-                        reduce { state.copy(isLoading = false) }
+                        reduce { state.copy(submitState = YearFortuneSubmitState.Success) }
                         postSideEffect(YearFortuneSideEffect.NavigateToResult(result.id))
                     },
                     onFailure = {
-                        reduce { state.copy(isLoading = false) }
+                        reduce { state.copy(submitState = YearFortuneSubmitState.Failure) }
                         postSideEffect(YearFortuneSideEffect.ShowError)
                     },
                 )

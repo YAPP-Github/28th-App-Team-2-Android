@@ -1,6 +1,7 @@
 package com.kikidan.chat
 
 import androidx.lifecycle.SavedStateHandle
+import com.kikidan.chat.model.ChatEntryState
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
@@ -20,7 +21,6 @@ import com.kikidan.domain.usecase.GetConversationDetailUseCase
 import com.kikidan.domain.usecase.SendChatMessageUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -38,16 +38,16 @@ class ChatViewModelTest {
 
             vm.test(this) {
                 containerHost.load(null)
-                // 첫 reduce: copy(conversationId=null, isLoading=true) → 초기 상태와 동일, 미방출
+                // 첫 reduce: copy(conversationId=null, entryState=Loading) → 초기 상태와 동일, 미방출
                 // getChatEntry 성공 → copy(greeting, suggestions, quota) 변경
                 val s1 = awaitState()
                 assertEquals(defaultEntry.greeting, s1.greeting)
                 assertEquals(defaultEntry.suggestions, s1.suggestions)
                 assertEquals(defaultEntry.quota, s1.quota)
-                assertTrue(s1.isLoading)
-                // 최종 reduce: isLoading=false
+                assertTrue(s1.entryState is ChatEntryState.Loading)
+                // 최종 reduce: entryState=Success
                 val s2 = awaitState()
-                assertFalse(s2.isLoading)
+                assertEquals(ChatEntryState.Success, s2.entryState)
                 assertNull(s2.conversationId)
             }
         }
@@ -64,7 +64,7 @@ class ChatViewModelTest {
                 val se = awaitSideEffect()
                 assertTrue(se is ChatSideEffect.Error)
                 val s = awaitState()
-                assertFalse(s.isLoading)
+                assertEquals(ChatEntryState.Success, s.entryState)
             }
         }
 
@@ -88,9 +88,9 @@ class ChatViewModelTest {
                 awaitState()
                 // 3: getConversationDetail 성공 → messages
                 awaitState()
-                // 4: isLoading=false
+                // 4: entryState=Success
                 val s4 = awaitState()
-                assertFalse(s4.isLoading)
+                assertEquals(ChatEntryState.Success, s4.entryState)
                 assertEquals("c-1", s4.conversationId)
                 assertEquals(msgs, s4.messages)
             }
@@ -486,6 +486,25 @@ class ChatViewModelTest {
         }
 
     @Test
+    fun `이미 Success 상태에서 같은 conversationId로 load 재호출 시 entryState가 Loading으로 되돌아가지 않는다`() =
+        runTest {
+            // 뒤로가기로 같은 화면(nav entry)에 재진입하면 LaunchedEffect(Unit)가 다시 실행되어
+            // load()가 재호출되는 상황을 재현한다. 이미 로드된 상태라면 스플래시가 재노출되면 안 된다.
+            val fakeRepo = FakeChatRepository().apply { chatEntryResult = Result.success(defaultEntry) }
+            val vm = viewModel(fakeRepo)
+
+            vm.test(this) {
+                containerHost.load(null)
+                awaitState() // entry 로드
+                val loaded = awaitState() // entryState=Success
+                assertEquals(ChatEntryState.Success, loaded.entryState)
+
+                containerHost.load(null)
+                expectNoItems()
+            }
+        }
+
+    @Test
     fun `startNewConversation 호출 시 conversationId = null, messages 비워짐, suggestions 유지`() =
         runTest {
             val msgs = listOf(message("m1", "hi"))
@@ -501,7 +520,7 @@ class ChatViewModelTest {
                 awaitState() // conversationId 설정
                 awaitState() // entry 로드
                 awaitState() // messages 로드
-                val afterLoad = awaitState() // isLoading=false
+                val afterLoad = awaitState() // entryState=Success
                 assertEquals("c-1", afterLoad.conversationId)
                 assertEquals(msgs, afterLoad.messages)
                 assertEquals(defaultEntry.suggestions, afterLoad.suggestions)

@@ -2,6 +2,7 @@ package com.kikidan.chat
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.kikidan.chat.model.ChatEntryState
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.model.ChatState
 import com.kikidan.chat.model.StreamingChatState
@@ -44,13 +45,14 @@ class ChatViewModel
                 ),
             )
 
-        /** 화면 진입 시 1회. conversationId가 있으면 과거 대화를 먼저 채운다. */
         fun load(
             conversationId: String?,
             skipSplash: Boolean = false,
         ) = intent {
+            if (state.entryState == ChatEntryState.Success && state.conversationId == conversationId) return@intent
+
             savedStateHandle[KEY_CONVERSATION_ID] = conversationId
-            reduce { state.copy(conversationId = conversationId, isLoading = true) }
+            reduce { state.copy(conversationId = conversationId, entryState = ChatEntryState.Loading) }
             val startedAt = System.currentTimeMillis()
 
             getChatEntry()
@@ -77,7 +79,7 @@ class ChatViewModel
                     delay(MIN_LOADING_DURATION_MILLIS - elapsed)
                 }
             }
-            reduce { state.copy(isLoading = false) }
+            reduce { state.copy(entryState = ChatEntryState.Success) }
         }
 
         fun onInputChange(value: String) =

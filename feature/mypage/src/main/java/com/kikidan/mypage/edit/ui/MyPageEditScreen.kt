@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunCheckbox
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.TodakunSelectBox
 import com.kikidan.designsystem.component.TodakunSelectField
 import com.kikidan.designsystem.component.button.PrimaryButton
@@ -78,7 +79,7 @@ fun MyPageEditScreen(
 
         when (uiState) {
             is MyPageEditUiState.Loading -> {
-                Box(modifier = Modifier.weight(1f).fillMaxSize())
+                TodakunProgressIndicator(modifier = Modifier.weight(1f))
             }
 
             is MyPageEditUiState.Fail -> {
@@ -88,6 +89,7 @@ fun MyPageEditScreen(
             is MyPageEditUiState.Success -> {
                 MyPageEditContent(
                     model = uiState.model,
+                    isSaving = uiState.isSaving,
                     onGenderSelect = onGenderSelect,
                     onDateTypeSelect = onDateTypeSelect,
                     onBirthDateChange = onBirthDateChange,
@@ -104,6 +106,7 @@ fun MyPageEditScreen(
 @Composable
 private fun MyPageEditContent(
     model: MyPageEditUiModel,
+    isSaving: Boolean,
     onGenderSelect: (Gender) -> Unit,
     onDateTypeSelect: (DateType) -> Unit,
     onBirthDateChange: (LocalDate) -> Unit,
@@ -228,6 +231,7 @@ private fun MyPageEditContent(
             text = stringResource(R.string.mypage_edit_save_button),
             onClick = onSaveClick,
             size = TodakunButtonSize.Large,
+            isLoading = isSaving,
             modifier =
                 Modifier
                     .fillMaxWidth()

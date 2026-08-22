@@ -38,10 +38,17 @@ class PartnerSajuManagementViewModel
         fun deletePartner(linkId: String) =
             intent {
                 val currentState = state as? PartnerSajuManagementUiState.Success ?: return@intent
-                deletePartnerSajuUseCase(linkId).onSuccess {
-                    val updated = currentState.model.partners.filterNot { it.linkId == linkId }
-                    reduce { currentState.copy(model = currentState.model.copy(partners = updated)) }
-                }
+                if (currentState.isDeleting) return@intent
+                reduce { currentState.copy(isDeleting = true) }
+                deletePartnerSajuUseCase(linkId)
+                    .onSuccess {
+                        val updated = currentState.model.partners.filterNot { it.linkId == linkId }
+                        reduce {
+                            currentState.copy(isDeleting = false, model = currentState.model.copy(partners = updated))
+                        }
+                    }.onFailure {
+                        reduce { currentState.copy(isDeleting = false) }
+                    }
             }
 
         fun addPartner() =

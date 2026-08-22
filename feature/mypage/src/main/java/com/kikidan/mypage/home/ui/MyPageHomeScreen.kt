@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunDivider
 import com.kikidan.designsystem.component.TodakunDividerType
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
@@ -54,32 +54,46 @@ fun MyPageHomeScreen(
     onViewMansaeryeokClick: () -> Unit = {},
     onMenuItemClick: (MyPageMenuType) -> Unit = {},
 ) {
-    Column(
+    Box(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(TodakunColor.white)
                 .systemBarsPadding(),
     ) {
-        MyPageHomeHeader(modifier = Modifier.fillMaxWidth())
+        Column(modifier = Modifier.fillMaxSize()) {
+            MyPageHomeHeader(modifier = Modifier.fillMaxWidth())
+
+            when (uiState) {
+                is MyPageHomeUiState.Loading -> {
+                    MyPageHomeLoading(modifier = Modifier.weight(1f))
+                }
+
+                is MyPageHomeUiState.Fail -> {
+                    MyPageHomeError(modifier = Modifier.weight(1f))
+                }
+
+                is MyPageHomeUiState.Success -> {
+                    MyPageHomeContent(
+                        model = uiState.model,
+                        onEditClick = onEditClick,
+                        onViewMansaeryeokClick = onViewMansaeryeokClick,
+                        onMenuItemClick = onMenuItemClick,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+        }
 
         when (uiState) {
-            is MyPageHomeUiState.Loading -> {
-                MyPageHomeLoading(modifier = Modifier.weight(1f))
-            }
-
-            is MyPageHomeUiState.Fail -> {
-                MyPageHomeError(modifier = Modifier.weight(1f))
-            }
-
             is MyPageHomeUiState.Success -> {
-                MyPageHomeContent(
-                    model = uiState.model,
-                    onEditClick = onEditClick,
-                    onViewMansaeryeokClick = onViewMansaeryeokClick,
-                    onMenuItemClick = onMenuItemClick,
-                    modifier = Modifier.weight(1f),
-                )
+                if (uiState.isLoggingOut) {
+                    TodakunProgressIndicator()
+                }
+            }
+
+            is MyPageHomeUiState.Loading, is MyPageHomeUiState.Fail -> {
+                Unit
             }
         }
     }
@@ -87,9 +101,7 @@ fun MyPageHomeScreen(
 
 @Composable
 private fun MyPageHomeLoading(modifier: Modifier = Modifier) {
-    // 로딩 요구사항 없음
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    }
+    TodakunProgressIndicator(modifier = modifier)
 }
 
 @Composable

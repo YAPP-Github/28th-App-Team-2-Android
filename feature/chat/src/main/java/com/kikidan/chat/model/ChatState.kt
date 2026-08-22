@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 data class ChatState(
     val conversationId: String? = null,
-    val isLoading: Boolean = true,
+    val entryState: ChatEntryState = ChatEntryState.Loading,
     val greeting: String = "",
     val suggestions: PersistentList<ChatSuggestion> = persistentListOf(),
     val quota: ChatQuota? = null,
@@ -16,6 +16,14 @@ data class ChatState(
     val input: String = "",
     val streamingChatState: StreamingChatState = StreamingChatState.Idle,
 )
+
+sealed interface ChatEntryState {
+    data object Loading : ChatEntryState
+
+    data object Success : ChatEntryState
+
+    data object Failure : ChatEntryState
+}
 
 sealed interface StreamingChatState {
     data object Idle : StreamingChatState

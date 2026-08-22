@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.button.PrimaryButton
 import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.theme.TodakunColor
@@ -69,7 +70,9 @@ internal fun FortuneDetailBottomSheet(
             )
             when (detail) {
                 is DetailSheetUiState.Loading -> {
-                    Unit
+                    Box(modifier = Modifier.fillMaxWidth().height(240.dp)) {
+                        TodakunProgressIndicator()
+                    }
                 }
 
                 is DetailSheetUiState.Success -> {

@@ -7,6 +7,7 @@ import com.kikidan.domain.usecase.CreateDayFortunesUseCase
 import com.kikidan.domain.usecase.DateFortuneDefaults
 import com.kikidan.sajucontents.model.DateFortuneSideEffect
 import com.kikidan.sajucontents.model.DateFortuneState
+import com.kikidan.sajucontents.model.DateFortuneSubmitState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -80,17 +81,17 @@ class DateFortuneViewModel
             intent {
                 val purpose = state.selectedPurpose ?: return@intent
                 val dates = state.selectedDates
-                if (dates.isEmpty() || state.isLoading) return@intent
+                if (dates.isEmpty() || state.submitState is DateFortuneSubmitState.Loading) return@intent
 
-                reduce { state.copy(isLoading = true) }
+                reduce { state.copy(submitState = DateFortuneSubmitState.Loading) }
 
                 createDayFortunes(purpose, dates).fold(
                     onSuccess = { results ->
-                        reduce { state.copy(isLoading = false) }
+                        reduce { state.copy(submitState = DateFortuneSubmitState.Success) }
                         postSideEffect(DateFortuneSideEffect.NavigateToResult(results.map { it.id }))
                     },
                     onFailure = {
-                        reduce { state.copy(isLoading = false) }
+                        reduce { state.copy(submitState = DateFortuneSubmitState.Failure) }
                         postSideEffect(DateFortuneSideEffect.ShowError)
                     },
                 )

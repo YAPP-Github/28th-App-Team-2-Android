@@ -3,6 +3,7 @@ package com.kikidan.sajucontents
 import com.kikidan.domain.usecase.saju.RegisterPartnerSajuUseCase
 import com.kikidan.sajucontents.fake.FakePartnerSajuRepository
 import com.kikidan.sajucontents.model.CompatibilityPartnerFormSideEffect
+import com.kikidan.sajucontents.model.SavePartnerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -70,8 +71,16 @@ class CompatibilityPartnerFormViewModelTest {
                 expectState { copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30)) }
 
                 viewModel.save()
-                expectState { copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30), isSaving = true) }
-                expectState { copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30), isSaving = false) }
+                expectState {
+                    copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30), saveState = SavePartnerState.Loading)
+                }
+                expectState {
+                    copy(
+                        name = "토실이",
+                        birthDate = LocalDate.of(2001, 5, 30),
+                        saveState = SavePartnerState.Success,
+                    )
+                }
                 expectSideEffect(CompatibilityPartnerFormSideEffect.NavigateBack)
             }
             org.junit.Assert.assertEquals("토실이", fakeRepository.lastRegisterInput?.name)
@@ -90,8 +99,16 @@ class CompatibilityPartnerFormViewModelTest {
                 expectState { copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30)) }
 
                 viewModel.save()
-                expectState { copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30), isSaving = true) }
-                expectState { copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30), isSaving = false) }
+                expectState {
+                    copy(name = "토실이", birthDate = LocalDate.of(2001, 5, 30), saveState = SavePartnerState.Loading)
+                }
+                expectState {
+                    copy(
+                        name = "토실이",
+                        birthDate = LocalDate.of(2001, 5, 30),
+                        saveState = SavePartnerState.Failure,
+                    )
+                }
                 expectSideEffect(CompatibilityPartnerFormSideEffect.ShowSaveError)
             }
         }

@@ -53,10 +53,13 @@ class LuckActionViewModel
         fun toggleAction(id: String) =
             intent {
                 val current = state as? LuckActionUiState.Success ?: return@intent
+                if (current.isRefreshing) return@intent
+                reduce { current.copy(isRefreshing = true) }
                 toggleLuckAction(id)
                     .onSuccess { updated ->
                         reduce {
                             current.copy(
+                                isRefreshing = false,
                                 actions =
                                     current.actions
                                         .map { if (it.id == id) it.copy(achieved = updated.achieved) else it }
@@ -65,7 +68,10 @@ class LuckActionViewModel
                                     if (updated.achieved) updated.category else current.completionOverlayCategory,
                             )
                         }
-                    }.onFailure { postSideEffect(LuckActionSideEffect.Error(it)) }
+                    }.onFailure {
+                        reduce { current.copy(isRefreshing = false) }
+                        postSideEffect(LuckActionSideEffect.Error(it))
+                    }
             }
 
         fun dismissCompleteOverlay() =

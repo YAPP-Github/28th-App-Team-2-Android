@@ -13,10 +13,20 @@ data class CompatibilityPartnerFormState(
     val birthDate: LocalDate? = null,
     val birthTime: BirthTime = BirthTime.UNKNOWN,
     val relationshipTypeCode: String = CompatibilityRelationshipType.LOVER.code,
-    val isSaving: Boolean = false,
+    val saveState: SavePartnerState? = null,
 ) {
     val isSaveEnabled: Boolean
-        get() = name.isNotBlank() && nameErrorMessageRes == null && birthDate != null && !isSaving
+        get() =
+            name.isNotBlank() && nameErrorMessageRes == null && birthDate != null &&
+                saveState !is SavePartnerState.Loading
+}
+
+sealed interface SavePartnerState {
+    data object Loading : SavePartnerState
+
+    data object Success : SavePartnerState
+
+    data object Failure : SavePartnerState
 }
 
 sealed interface CompatibilityPartnerFormSideEffect {

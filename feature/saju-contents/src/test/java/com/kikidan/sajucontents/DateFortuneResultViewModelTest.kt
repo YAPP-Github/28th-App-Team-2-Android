@@ -4,6 +4,7 @@ import com.kikidan.domain.model.dayfortune.DayFortune
 import com.kikidan.domain.model.dayfortune.DayFortunePurpose
 import com.kikidan.domain.usecase.GetDayFortuneUseCase
 import com.kikidan.sajucontents.fake.FakeDayFortuneRepository
+import com.kikidan.sajucontents.model.DateFortuneResultLoadState
 import com.kikidan.sajucontents.model.DateFortuneResultSideEffect
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -60,11 +61,13 @@ class DateFortuneResultViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadResults(listOf("id-1", "id-2"))
-                expectState { copy(isLoading = true) }
+                expectState { copy(resultState = DateFortuneResultLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
-                        results = persistentListOf(fortune("id-2", score = 95), fortune("id-1", score = 70)),
+                        resultState =
+                            DateFortuneResultLoadState.Success(
+                                persistentListOf(fortune("id-2", score = 95), fortune("id-1", score = 70)),
+                            ),
                         selectedResultIndex = 0,
                     )
                 }
@@ -83,15 +86,16 @@ class DateFortuneResultViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadResults(ids)
-                expectState { copy(isLoading = true) }
+                expectState { copy(resultState = DateFortuneResultLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
-                        results =
-                            persistentListOf(
-                                fortune("id-2", score = 95),
-                                fortune("id-4", score = 80),
-                                fortune("id-1", score = 70),
+                        resultState =
+                            DateFortuneResultLoadState.Success(
+                                persistentListOf(
+                                    fortune("id-2", score = 95),
+                                    fortune("id-4", score = 80),
+                                    fortune("id-1", score = 70),
+                                ),
                             ),
                         selectedResultIndex = 0,
                     )
@@ -110,15 +114,16 @@ class DateFortuneResultViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadResults(ids)
-                expectState { copy(isLoading = true) }
+                expectState { copy(resultState = DateFortuneResultLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
-                        results =
-                            persistentListOf(
-                                fortune("id-1", score = 80),
-                                fortune("id-2", score = 80),
-                                fortune("id-3", score = 80),
+                        resultState =
+                            DateFortuneResultLoadState.Success(
+                                persistentListOf(
+                                    fortune("id-1", score = 80),
+                                    fortune("id-2", score = 80),
+                                    fortune("id-3", score = 80),
+                                ),
                             ),
                         selectedResultIndex = 0,
                     )
@@ -135,8 +140,8 @@ class DateFortuneResultViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadResults(listOf("id-1", "id-2"))
-                expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false) }
+                expectState { copy(resultState = DateFortuneResultLoadState.Loading) }
+                expectState { copy(resultState = DateFortuneResultLoadState.Failure) }
                 expectSideEffect(DateFortuneResultSideEffect.ShowError)
             }
         }

@@ -17,6 +17,14 @@ enum class OnboardingSheet {
     BIRTH_TIME,
 }
 
+sealed interface OnboardingSubmitState {
+    data object Loading : OnboardingSubmitState
+
+    data object Success : OnboardingSubmitState
+
+    data object Failure : OnboardingSubmitState
+}
+
 @Immutable
 data class OnboardingState(
     val step: OnboardingStep = OnboardingStep.NAME,
@@ -28,7 +36,7 @@ data class OnboardingState(
     val lifeStage: Job? = null,
     val relationshipStatus: RelationshipStatus? = null,
     val sheet: OnboardingSheet? = null,
-    val isSubmitting: Boolean = false,
+    val submitState: OnboardingSubmitState? = null,
 ) {
     val isUnderAge: Boolean = birthDate?.isUnderAge() ?: false
 

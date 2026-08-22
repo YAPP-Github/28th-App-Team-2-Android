@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunChip2
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.TodakunTooltip
 import com.kikidan.designsystem.component.button.PrimaryButton
 import com.kikidan.designsystem.component.button.TodakunButtonSize
@@ -56,6 +57,7 @@ import com.kikidan.sajucontents.BuildConfig
 import com.kikidan.sajucontents.component.FortuneScoreCard
 import com.kikidan.sajucontents.component.FortuneShareDialog
 import com.kikidan.sajucontents.component.ResultDateTabRow
+import com.kikidan.sajucontents.model.DateFortuneResultLoadState
 import com.kikidan.sajucontents.model.DateFortuneResultState
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -101,28 +103,40 @@ internal fun DateFortuneResultScreen(
                     .hazeSource(state = hazeState),
         )
 
-        if (selectedFortune == null) return@Box
+        when (state.resultState) {
+            null, is DateFortuneResultLoadState.Loading -> {
+                TodakunProgressIndicator()
+            }
 
-        DateFortuneResultContent(
-            onBackClick = onBackClick,
-            onExportClick = onExportClick,
-            onShareClick = onShareClick,
-            onTabSelect = onTabSelect,
-            onAskTodakClick = onAskTodakClick,
-            state = state,
-            selectedFortune = selectedFortune,
-            hazeState = hazeState,
-        )
+            is DateFortuneResultLoadState.Failure -> {
+                Unit
+            }
 
-        if (state.isShareDialogVisible) {
-            FortuneShareDialog(
-                fortuneTitle = selectedFortune.title,
-                fortuneId = selectedFortune.id,
-                shareUrl = shareUrlFor(selectedFortune.id),
-                onKakaoShareFail = onKakaoShareFail,
-                onUrlCopy = onUrlCopy,
-                onDismiss = onShareDismiss,
-            )
+            is DateFortuneResultLoadState.Success -> {
+                if (selectedFortune != null) {
+                    DateFortuneResultContent(
+                        onBackClick = onBackClick,
+                        onExportClick = onExportClick,
+                        onShareClick = onShareClick,
+                        onTabSelect = onTabSelect,
+                        onAskTodakClick = onAskTodakClick,
+                        state = state,
+                        selectedFortune = selectedFortune,
+                        hazeState = hazeState,
+                    )
+
+                    if (state.isShareDialogVisible) {
+                        FortuneShareDialog(
+                            fortuneTitle = selectedFortune.title,
+                            fortuneId = selectedFortune.id,
+                            shareUrl = shareUrlFor(selectedFortune.id),
+                            onKakaoShareFail = onKakaoShareFail,
+                            onUrlCopy = onUrlCopy,
+                            onDismiss = onShareDismiss,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -354,8 +368,7 @@ private fun DateFortuneResultScreenPreview() {
         DateFortuneResultScreen(
             state =
                 DateFortuneResultState(
-                    isLoading = false,
-                    results = persistentListOf(sampleFortune),
+                    resultState = DateFortuneResultLoadState.Success(persistentListOf(sampleFortune)),
                     selectedResultIndex = 0,
                 ),
             onBackClick = {},
