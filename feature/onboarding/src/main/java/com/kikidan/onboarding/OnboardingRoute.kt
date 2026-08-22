@@ -133,7 +133,7 @@ fun OnboardingRoute(
 
         OnboardingStep.COMPLETE -> {
             CompleteScreen(
-                isLoading = state.isSubmitting,
+                isLoading = state.submitState is OnboardingSubmitState.Loading,
                 onFinish = onFinish,
                 modifier = modifier,
             )

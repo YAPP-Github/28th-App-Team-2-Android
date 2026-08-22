@@ -14,7 +14,6 @@ import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingState
 import com.kikidan.onboarding.model.OnboardingStep
 import com.kikidan.onboarding.model.OnboardingSubmitState
-import com.kikidan.onboarding.model.OnboardingSubmitState
 import com.kikidan.onboarding.model.toDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.ContainerHost
