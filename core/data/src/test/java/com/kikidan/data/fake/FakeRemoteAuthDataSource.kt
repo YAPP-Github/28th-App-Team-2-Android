@@ -1,0 +1,46 @@
+package com.kikidan.data.fake
+
+import com.kikidan.data.datasource.RemoteAuthDataSource
+import com.kikidan.domain.model.auth.AuthToken
+import com.kikidan.domain.model.auth.LoginResult
+import com.kikidan.domain.model.auth.OAuthCredential
+import com.kikidan.domain.model.auth.OnboardingToken
+import com.kikidan.domain.model.auth.SignupSubmission
+import com.kikidan.domain.model.user.User
+
+class FakeRemoteAuthDataSource : RemoteAuthDataSource {
+    var loginResult: LoginResult =
+        LoginResult(AuthToken("access", "refresh"), OnboardingToken("onboarding"), newMember = false)
+    var throwOnLogin: Throwable? = null
+    var signupResult: AuthToken = AuthToken("signup-access", "signup-refresh")
+    var throwOnSignup: Throwable? = null
+
+    var refreshResult: AuthToken = AuthToken("new-access", "new-refresh")
+    var throwOnRefresh: Throwable? = null
+
+    var throwOnLogout: Throwable? = null
+    var logoutCalled = false
+
+    override suspend fun postLogin(oauthCredential: OAuthCredential): LoginResult {
+        throwOnLogin?.let { throw it }
+        return loginResult
+    }
+
+    override suspend fun postSignup(
+        signupSubmission: SignupSubmission,
+        onboardingToken: OnboardingToken,
+    ): AuthToken {
+        throwOnSignup?.let { throw it }
+        return signupResult
+    }
+
+    override suspend fun postLogout() {
+        logoutCalled = true
+        throwOnLogout?.let { throw it }
+    }
+
+    override suspend fun postRefresh(refreshToken: String): AuthToken {
+        throwOnRefresh?.let { throw it }
+        return refreshResult
+    }
+}

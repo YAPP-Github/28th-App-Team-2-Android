@@ -17,10 +17,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
 }
 
 dependencies {
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(projects.core.designsystem)
+    api(libs.androidx.navigation3.runtime)
+
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit)

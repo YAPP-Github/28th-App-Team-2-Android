@@ -1,4 +1,3 @@
 package com.kikidan.domain
 
-class MyClass {
-}
+class MyClass

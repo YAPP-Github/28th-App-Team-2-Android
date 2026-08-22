@@ -1,17 +1,14 @@
 package com.kikidan.todakun
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.kikidan.todakun.ui.theme.TodakunTheme
+import com.kikidan.designsystem.theme.TodakunTheme
+import com.kikidan.domain.model.notification.PushNotificationEvent
+import com.kikidan.navigation.TodakunRoute
+import com.kikidan.navigation.parseDeepLink
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,29 +18,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodakunTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                TodakunApp(deepLinkRoute = handleDeepLinkIntent(intent))
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TodakunTheme {
-        Greeting("Android")
+    /** FCM 백그라운드 알림의 PendingIntent extra를 우선 확인하고, 없으면 외부 공유 링크(intent.data)를 확인한다. */
+    private fun handleDeepLinkIntent(intent: Intent?): TodakunRoute? {
+        val deepLink = intent?.extras?.getString(PushNotificationEvent.DEEP_LINK_KEY)
+        return deepLink?.let { parseDeepLink(it) }
     }
 }
