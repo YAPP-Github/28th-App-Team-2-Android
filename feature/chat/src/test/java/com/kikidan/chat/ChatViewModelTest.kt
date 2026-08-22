@@ -486,6 +486,25 @@ class ChatViewModelTest {
         }
 
     @Test
+    fun `이미 Success 상태에서 같은 conversationId로 load 재호출 시 entryState가 Loading으로 되돌아가지 않는다`() =
+        runTest {
+            // 뒤로가기로 같은 화면(nav entry)에 재진입하면 LaunchedEffect(Unit)가 다시 실행되어
+            // load()가 재호출되는 상황을 재현한다. 이미 로드된 상태라면 스플래시가 재노출되면 안 된다.
+            val fakeRepo = FakeChatRepository().apply { chatEntryResult = Result.success(defaultEntry) }
+            val vm = viewModel(fakeRepo)
+
+            vm.test(this) {
+                containerHost.load(null)
+                awaitState() // entry 로드
+                val loaded = awaitState() // entryState=Success
+                assertEquals(ChatEntryState.Success, loaded.entryState)
+
+                containerHost.load(null)
+                expectNoItems()
+            }
+        }
+
+    @Test
     fun `startNewConversation 호출 시 conversationId = null, messages 비워짐, suggestions 유지`() =
         runTest {
             val msgs = listOf(message("m1", "hi"))
