@@ -68,7 +68,12 @@ class OnboardingViewModel
                     reduce { state.copy(submitState = OnboardingSubmitState.Success) }
                     postSideEffect(OnboardingSideEffect.PermissionRequest)
                 }.onFailure { e ->
-                    reduce { state.copy(submitState = OnboardingSubmitState.Failure, step = OnboardingStep.EXTRA_QUESTION) }
+                    reduce {
+                        state.copy(
+                            submitState = OnboardingSubmitState.Failure,
+                            step = OnboardingStep.EXTRA_QUESTION,
+                        )
+                    }
                     postSideEffect(OnboardingSideEffect.Failure(e))
                 }
             }
