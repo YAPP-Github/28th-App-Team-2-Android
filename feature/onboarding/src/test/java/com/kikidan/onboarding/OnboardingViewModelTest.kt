@@ -14,6 +14,7 @@ import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingState
 import com.kikidan.onboarding.model.OnboardingStep
+import com.kikidan.onboarding.model.OnboardingSubmitState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -159,8 +160,9 @@ class OnboardingViewModelTest {
                 )
             viewModel().test(this, initialState = initial) {
                 containerHost.confirmComplete(onboardingToken)
-                expectState { copy(isSubmitting = true, step = OnboardingStep.COMPLETE) }
-                expectState { copy(isSubmitting = false, step = OnboardingStep.COMPLETE) }
+                expectState { copy(submitState = OnboardingSubmitState.Loading, step = OnboardingStep.COMPLETE) }
+                expectState { copy(submitState = OnboardingSubmitState.Success, step = OnboardingStep.COMPLETE) }
+                expectSideEffect(OnboardingSideEffect.PermissionRequest)
             }
         }
 
@@ -177,7 +179,7 @@ class OnboardingViewModelTest {
                     birthTime = BirthTime.JA,
                     lifeStage = Job.STUDENT,
                     relationshipStatus = RelationshipStatus.SOLO,
-                    isSubmitting = true,
+                    submitState = OnboardingSubmitState.Loading,
                 )
             viewModel().test(this, initialState = initial) {
                 containerHost.confirmComplete(onboardingToken)
@@ -204,8 +206,8 @@ class OnboardingViewModelTest {
                 )
             viewModel().test(this, initialState = initial) {
                 containerHost.confirmComplete(onboardingToken)
-                expectState { copy(isSubmitting = true, step = OnboardingStep.COMPLETE) }
-                expectState { copy(isSubmitting = false, step = OnboardingStep.EXTRA_QUESTION) }
+                expectState { copy(submitState = OnboardingSubmitState.Loading, step = OnboardingStep.COMPLETE) }
+                expectState { copy(submitState = OnboardingSubmitState.Failure, step = OnboardingStep.EXTRA_QUESTION) }
                 expectSideEffect(OnboardingSideEffect.Failure(error))
             }
         }
