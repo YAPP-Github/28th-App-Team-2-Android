@@ -2,6 +2,7 @@ package com.kikidan.chat
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,6 +35,11 @@ fun ChatRoute(
 
     LaunchedEffect(Unit) { viewModel.load(conversationId, skipSplash) }
 
+    DisposableEffect(Unit) {
+        viewModel.enterScreen()
+        onDispose { viewModel.leaveScreen() }
+    }
+
     viewModel.collectSideEffect { effect ->
         when (effect) {
             is ChatSideEffect.ShowStreamingErrorMessage -> snackbarHostState.showSnackbar(effect.message)
@@ -50,9 +56,9 @@ fun ChatRoute(
         else -> {
             ChatScreen(
                 state = state,
-                onInputChange = viewModel::onInputChange,
-                onSendClick = viewModel::onSendClick,
-                onSuggestionClick = viewModel::onSuggestionClick,
+                onInputChange = viewModel::changeInput,
+                onSendClick = viewModel::sendMessage,
+                onSuggestionClick = viewModel::selectSuggestion,
                 onNewConversationClick = viewModel::startNewConversation,
                 onCloseClick = onCloseClick,
                 onHistoryClick = onNavigateToHistory,

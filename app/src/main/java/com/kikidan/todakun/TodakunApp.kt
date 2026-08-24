@@ -176,10 +176,15 @@ fun TodakunApp(
                     entry<TodakunRoute.ChatHistory> {
                         HistoryRoute(
                             onBackClick = { navigator.goBack() },
+                            // 이전 Chat 엔트리(스트리밍 중일 수 있음)가 백스택에 쌓이지 않도록 리셋 후 이동한다.
                             onNavigateToChat = { conversationId ->
+                                navigator.resetTo(TodakunRoute.Home)
                                 navigator.push(TodakunRoute.Chat(conversationId))
                             },
-                            onNewChatClick = { navigator.push(TodakunRoute.Chat(skipSplash = true)) },
+                            onNewChatClick = {
+                                navigator.resetTo(TodakunRoute.Home)
+                                navigator.push(TodakunRoute.Chat(skipSplash = true))
+                            },
                             snackbarHostState = snackbarHostState,
                         )
                     }

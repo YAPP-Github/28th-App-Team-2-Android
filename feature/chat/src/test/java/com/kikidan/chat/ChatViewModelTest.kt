@@ -16,9 +16,15 @@ import com.kikidan.domain.model.chat.ChatSuggestion
 import com.kikidan.domain.model.chat.Conversation
 import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
+import com.kikidan.domain.model.notification.NotificationType
+import com.kikidan.domain.model.notification.PushNotificationEvent
+import com.kikidan.domain.notification.PushNotificationEventFlow
 import com.kikidan.domain.usecase.GetChatEntryUseCase
 import com.kikidan.domain.usecase.GetConversationDetailUseCase
 import com.kikidan.domain.usecase.SendChatMessageUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -28,6 +34,7 @@ import org.junit.Test
 import org.orbitmvi.orbit.test.test
 import java.time.Instant
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("ktlint:standard:max-line-length")
 class ChatViewModelTest {
     @Test
@@ -110,9 +117,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("안녕")
+                containerHost.changeInput("안녕")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 // 첫 상태: THINKING + user msg Completed
                 val s1 = awaitState()
                 assertEquals(StreamingChatState.Thinking, s1.streamingChatState)
@@ -125,7 +132,7 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `onSuggestionClick 호출 시 실제 전송 없이 질문과 카테고리 고정 답변이 즉시 추가된다`() =
+    fun `selectSuggestion 호출 시 실제 전송 없이 질문과 카테고리 고정 답변이 즉시 추가된다`() =
         runTest {
             val fakeRepo = FakeChatRepository()
             val vm = viewModel(fakeRepo)
@@ -138,7 +145,7 @@ class ChatViewModelTest {
                 )
 
             vm.test(this) {
-                containerHost.onSuggestionClick(suggestion, "고정 답변")
+                containerHost.selectSuggestion(suggestion, "고정 답변")
                 val s = awaitState()
                 assertEquals(2, s.messages.size)
                 assertEquals(MessageRole.USER, s.messages[0].role)
@@ -167,9 +174,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("질문")
+                containerHost.changeInput("질문")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 val typingStates = mutableListOf<ChatState>()
                 var s = awaitState()
                 while (s.streamingChatState != StreamingChatState.Idle) {
@@ -205,9 +212,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("질문")
+                containerHost.changeInput("질문")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 var s = awaitState()
                 while (s.streamingChatState != StreamingChatState.Idle) s = awaitState()
                 assertEquals(StreamingChatState.Idle, s.streamingChatState)
@@ -233,9 +240,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("첫 번째")
+                containerHost.changeInput("첫 번째")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 var s = awaitState()
                 while (s.streamingChatState != StreamingChatState.Idle) s = awaitState()
                 assertEquals("c-from-server", s.conversationId)
@@ -246,9 +253,9 @@ class ChatViewModelTest {
                         Result.success(ChatStreamEvent.Done("a2")),
                     )
 
-                containerHost.onInputChange("두 번째")
+                containerHost.changeInput("두 번째")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 s = awaitState()
                 while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
 
@@ -271,9 +278,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("안녕")
+                containerHost.changeInput("안녕")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 val s1 = awaitState()
                 assertEquals(MessageStatus.GENERATING, s1.messages.first().status)
                 // S2: Start 수신 → id가 real-user-id로 교체, COMPLETED
@@ -298,9 +305,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("안녕")
+                containerHost.changeInput("안녕")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 // S1: THINKING/PENDING
                 awaitState()
                 // S2: Start 수신 → quota 즉시 반영
@@ -328,9 +335,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("안녕")
+                containerHost.changeInput("안녕")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 var s = awaitState()
                 while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
                 val assistant = s.messages.last()
@@ -351,9 +358,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("안녕")
+                containerHost.changeInput("안녕")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 var s = awaitState()
                 while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
                 val assistant = s.messages.find { it.role == MessageRole.ASSISTANT }
@@ -377,9 +384,9 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("안녕")
+                containerHost.changeInput("안녕")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 awaitState() // S1: THINKING/PENDING
                 awaitState() // S2: Start 수신 후 THINKING/COMPLETED
                 // catch 블록: reduce(IDLE) → SE 순서
@@ -403,17 +410,17 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("첫 번째")
+                containerHost.changeInput("첫 번째")
                 awaitState() // input 반영
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 // 첫 상태: THINKING (phase != IDLE)
                 val s1 = awaitState()
                 assertTrue("THINKING 상태여야 함", s1.streamingChatState != StreamingChatState.Idle)
 
                 // 스트리밍 중 두 번째 send → phase != IDLE이므로 send() 가드에서 즉시 return
-                containerHost.onInputChange("두 번째")
+                containerHost.changeInput("두 번째")
                 var s = awaitState() // input 반영 (가드와 무관하게 항상 반영됨)
-                containerHost.onSendClick()
+                containerHost.sendMessage()
 
                 // 나머지 상태 소비
                 while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
@@ -424,7 +431,7 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `스트리밍 중 onSendClick 호출은 무시되고 input은 유지된다`() =
+    fun `스트리밍 중 sendMessage 호출은 무시되고 input은 유지된다`() =
         runTest {
             val fakeRepo =
                 FakeChatRepository().apply {
@@ -433,21 +440,21 @@ class ChatViewModelTest {
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("첫 메시지")
+                containerHost.changeInput("첫 메시지")
                 awaitState()
 
-                containerHost.onSendClick()
+                containerHost.sendMessage()
                 var s = awaitState()
                 assertTrue("THINKING 상태여야 함", s.streamingChatState != StreamingChatState.Idle)
                 // send() 진입 시 input이 비워진다
                 assertEquals("", s.input)
 
                 // 스트리밍 중 입력한 값은 send() 가드가 즉시 return하므로 지워지지 않고 남아야 한다
-                containerHost.onInputChange("스트리밍 중 입력")
+                containerHost.changeInput("스트리밍 중 입력")
                 s = awaitState()
                 assertEquals("스트리밍 중 입력", s.input)
 
-                containerHost.onSendClick()
+                containerHost.sendMessage()
 
                 while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
                 assertEquals(1, fakeRepo.sendCallCount)
@@ -456,30 +463,30 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `공백만 입력한 상태에서 onSendClick 호출 시 전송되지 않는다`() =
+    fun `공백만 입력한 상태에서 sendMessage 호출 시 전송되지 않는다`() =
         runTest {
             val fakeRepo = FakeChatRepository()
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("   ")
+                containerHost.changeInput("   ")
                 val s1 = awaitState()
                 assertEquals("   ", s1.input)
 
-                containerHost.onSendClick()
+                containerHost.sendMessage()
 
                 assertEquals(0, fakeRepo.sendCallCount)
             }
         }
 
     @Test
-    fun `onInputChange에 501자 입력 시 input length가 500으로 제한된다`() =
+    fun `changeInput에 501자 입력 시 input length가 500으로 제한된다`() =
         runTest {
             val fakeRepo = FakeChatRepository()
             val vm = viewModel(fakeRepo)
 
             vm.test(this) {
-                containerHost.onInputChange("a".repeat(501))
+                containerHost.changeInput("a".repeat(501))
                 val s = awaitState()
                 assertEquals(500, s.input.length)
             }
@@ -532,6 +539,69 @@ class ChatViewModelTest {
                 assertEquals(StreamingChatState.Idle, afterNew.streamingChatState)
                 assertEquals(defaultEntry.suggestions, afterNew.suggestions)
             }
+        }
+
+    @Test
+    fun `화면이 보이지 않는 상태에서 스트리밍 완료 시 PushNotificationEventFlow로 AI_COMPLETE 이벤트가 방출된다`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
+                            Result.success(ChatStreamEvent.Delta("답변 내용")),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = viewModel(fakeRepo)
+            val received = mutableListOf<PushNotificationEvent>()
+            val collectJob = launch { PushNotificationEventFlow.events.collect { received.add(it) } }
+
+            vm.test(this) {
+                containerHost.leaveScreen()
+                containerHost.changeInput("질문")
+                awaitState()
+                containerHost.sendMessage()
+                var s = awaitState()
+                while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
+            }
+            advanceUntilIdle()
+            collectJob.cancel()
+
+            assertEquals(1, received.size)
+            val event = received.first()
+            assertEquals(NotificationType.AI_COMPLETE, event.type)
+            assertEquals("todakun://chat/conversations/c1", event.deepLink)
+        }
+
+    @Test
+    fun `화면이 보이는 상태에서는 스트리밍이 완료돼도 PushNotificationEventFlow에 이벤트가 방출되지 않는다`() =
+        runTest {
+            val fakeRepo =
+                FakeChatRepository().apply {
+                    streamEvents =
+                        listOf(
+                            Result.success(ChatStreamEvent.Start("c1", "u1", "a1", defaultEntry.quota)),
+                            Result.success(ChatStreamEvent.Delta("답변 내용")),
+                            Result.success(ChatStreamEvent.Done("a1")),
+                        )
+                }
+            val vm = viewModel(fakeRepo)
+            val received = mutableListOf<PushNotificationEvent>()
+            val collectJob = launch { PushNotificationEventFlow.events.collect { received.add(it) } }
+
+            vm.test(this) {
+                containerHost.enterScreen()
+                containerHost.changeInput("질문")
+                awaitState()
+                containerHost.sendMessage()
+                var s = awaitState()
+                while (s.streamingChatState !is StreamingChatState.Idle) s = awaitState()
+            }
+            advanceUntilIdle()
+            collectJob.cancel()
+
+            assertTrue(received.isEmpty())
         }
 
     private fun viewModel(
