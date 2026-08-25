@@ -12,6 +12,9 @@ import com.kikidan.domain.model.chat.ChatStreamEvent
 import com.kikidan.domain.model.chat.ChatSuggestion
 import com.kikidan.domain.model.chat.MessageRole
 import com.kikidan.domain.model.chat.MessageStatus
+import com.kikidan.domain.model.notification.NotificationType
+import com.kikidan.domain.model.notification.PushNotificationEvent
+import com.kikidan.domain.notification.PushNotificationEventFlow
 import com.kikidan.domain.usecase.GetChatEntryUseCase
 import com.kikidan.domain.usecase.GetConversationDetailUseCase
 import com.kikidan.domain.usecase.SendChatMessageUseCase
@@ -37,6 +40,10 @@ class ChatViewModel
         private val savedStateHandle: SavedStateHandle,
     ) : ViewModel(),
         ContainerHost<ChatState, ChatSideEffect> {
+        // 화면이 컴포지션에 없을 때(예: 히스토리로 이동) 스트리밍이 끝나면 인앱 알림을 띄우기 위한 가시성 플래그.
+        // ChatRoute의 DisposableEffect가 갱신한다.
+        private var isChatScreenVisible = true
+
         override val container =
             container<ChatState, ChatSideEffect>(
                 ChatState(
@@ -82,17 +89,25 @@ class ChatViewModel
             reduce { state.copy(entryState = ChatEntryState.Success) }
         }
 
-        fun onInputChange(value: String) =
+        fun changeInput(value: String) =
             intent {
                 val trimmedToLimit = value.take(SendChatMessageUseCase.MAX_CONTENT_LENGTH)
                 savedStateHandle[KEY_INPUT] = trimmedToLimit
                 reduce { state.copy(input = trimmedToLimit) }
             }
 
-        fun onSendClick() = intent { send(state.input) }
+        fun sendMessage() = intent { send(state.input) }
+
+        fun enterScreen() {
+            isChatScreenVisible = true
+        }
+
+        fun leaveScreen() {
+            isChatScreenVisible = false
+        }
 
         // 카테고리 선택용 chip이므로 실제 AI 호출 없이 질문/카테고리별 고정 답변을 즉시 보여준다.
-        fun onSuggestionClick(
+        fun selectSuggestion(
             suggestion: ChatSuggestion,
             answer: String,
         ) = intent {
@@ -230,19 +245,21 @@ class ChatViewModel
             assistantMessageId: String?,
             pendingAction: ChatAction?,
         ) {
+            var addedMessage: ChatMessage? = null
             reduce {
                 val currentStreamingState = state.streamingChatState
                 state.copy(
                     conversationId = streamConversationId,
                     messages =
                         if (currentStreamingState is StreamingChatState.Typing) {
-                            state.messages.adding(
+                            val message =
                                 assistantMessage(
                                     id = assistantMessageId,
                                     content = currentStreamingState.streamingText,
                                     action = pendingAction,
-                                ),
-                            )
+                                )
+                            addedMessage = message
+                            state.messages.adding(message)
                         } else {
                             state.messages
                         },
@@ -250,12 +267,28 @@ class ChatViewModel
                 )
             }
             savedStateHandle[KEY_CONVERSATION_ID] = streamConversationId
+
+            val message = addedMessage
+            if (!isChatScreenVisible && message != null && streamConversationId != null) {
+                PushNotificationEventFlow.emit(
+                    PushNotificationEvent(
+                        notificationId = message.id,
+                        type = NotificationType.AI_COMPLETE,
+                        title = AI_COMPLETE_NOTIFICATION_TITLE,
+                        body = message.content.take(NOTIFICATION_BODY_MAX_LENGTH),
+                        deepLink = "$DEEP_LINK_CHAT_CONVERSATION_PREFIX$streamConversationId",
+                    ),
+                )
+            }
         }
 
         companion object {
             private const val KEY_CONVERSATION_ID = "conversationId"
             private const val KEY_INPUT = "input"
             private const val MIN_LOADING_DURATION_MILLIS = 1_500L
+            private const val AI_COMPLETE_NOTIFICATION_TITLE = "토닥이"
+            private const val NOTIFICATION_BODY_MAX_LENGTH = 100
+            private const val DEEP_LINK_CHAT_CONVERSATION_PREFIX = "todakun://chat/conversations/"
         }
     }
 
