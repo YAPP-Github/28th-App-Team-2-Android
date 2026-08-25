@@ -39,6 +39,15 @@
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
 
+-keep,allowobfuscation,allowshrinking interface retrofit2.Call
+-keep,allowobfuscation,allowshrinking class retrofit2.Response
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+
+# @GET 등 붙은 인터페이스 메서드 시그니처 보존
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+
 -dontwarn org.slf4j.**
 -dontwarn org.bouncycastle.jsse.**
 -dontwarn org.conscrypt.**
