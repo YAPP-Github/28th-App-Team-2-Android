@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -24,5 +25,12 @@ object NetworkModule {
         HttpClient(OkHttp) {
             installTodakunDefaults(TodakunJson, BuildConfig.BASE_URL)
             installBearerAuth(localTokenDataSource, remoteAuthDataSource)
+            engine {
+                config {
+                    connectTimeout(100, TimeUnit.SECONDS)
+                    readTimeout(100, TimeUnit.SECONDS)
+                    writeTimeout(100, TimeUnit.SECONDS)
+                }
+            }
         }
 }
