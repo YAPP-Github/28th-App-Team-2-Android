@@ -5,6 +5,7 @@ sealed interface PartnerSajuManagementUiState {
 
     data class Success(
         val model: PartnerSajuManagementUiModel,
+        val isDeleting: Boolean = false,
     ) : PartnerSajuManagementUiState
 
     data class Fail(

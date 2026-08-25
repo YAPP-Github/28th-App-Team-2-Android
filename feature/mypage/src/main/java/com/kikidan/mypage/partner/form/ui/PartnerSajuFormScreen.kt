@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
 import com.kikidan.designsystem.component.TodakunCheckbox
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.TodakunSelectBox
 import com.kikidan.designsystem.component.TodakunSelectField
 import com.kikidan.designsystem.component.TodakunTextField
@@ -79,7 +80,7 @@ fun PartnerSajuFormScreen(
 
         when (uiState) {
             is PartnerSajuFormUiState.Loading -> {
-                Box(modifier = Modifier.weight(1f).fillMaxSize())
+                TodakunProgressIndicator(modifier = Modifier.weight(1f))
             }
 
             is PartnerSajuFormUiState.Fail -> {
@@ -89,6 +90,7 @@ fun PartnerSajuFormScreen(
             is PartnerSajuFormUiState.Success -> {
                 PartnerSajuFormContent(
                     model = uiState.model,
+                    isSaving = uiState.isSaving,
                     onNameChange = onNameChange,
                     onGenderSelect = onGenderSelect,
                     onDateTypeSelect = onDateTypeSelect,
@@ -106,6 +108,7 @@ fun PartnerSajuFormScreen(
 @Composable
 private fun PartnerSajuFormContent(
     model: PartnerSajuFormUiModel,
+    isSaving: Boolean,
     onNameChange: (String) -> Unit,
     onGenderSelect: (Gender) -> Unit,
     onDateTypeSelect: (DateType) -> Unit,
@@ -255,6 +258,7 @@ private fun PartnerSajuFormContent(
                 text = stringResource(R.string.partner_saju_form_save_button),
                 onClick = onSaveClick,
                 size = TodakunButtonSize.Large,
+                isLoading = isSaving,
                 modifier =
                     Modifier
                         .align(Alignment.BottomCenter)

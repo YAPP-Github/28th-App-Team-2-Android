@@ -21,6 +21,9 @@ import com.kikidan.sajucontents.fake.FakePartnerSajuRepository
 import com.kikidan.sajucontents.fake.FakeSajuRepository
 import com.kikidan.sajucontents.fake.FakeUserRepository
 import com.kikidan.sajucontents.model.CompatibilityEntrySideEffect
+import com.kikidan.sajucontents.model.CreateCompatibilityState
+import com.kikidan.sajucontents.model.MyInfoLoadState
+import com.kikidan.sajucontents.model.PartnerListState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -81,13 +84,14 @@ class CompatibilityInputViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadMyInfo()
-                expectState { copy(isLoading = true) }
+                expectState { copy(myInfoState = MyInfoLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
+                        myInfoState = MyInfoLoadState.Success,
                         myUser = fakeUserRepository.result.getOrThrow(),
                         myPillars = persistentListOf(),
-                        partnerPicker = partnerPicker.copy(isLoading = false, partners = persistentListOf()),
+                        partnerPicker =
+                            partnerPicker.copy(partnersState = PartnerListState.Success(persistentListOf())),
                     )
                 }
             }
@@ -101,16 +105,15 @@ class CompatibilityInputViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadMyInfo()
-                expectState { copy(isLoading = true) }
+                expectState { copy(myInfoState = MyInfoLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
+                        myInfoState = MyInfoLoadState.Success,
                         myUser = fakeUserRepository.result.getOrThrow(),
                         myPillars = persistentListOf(),
                         partnerPicker =
                             partnerPicker.copy(
-                                isLoading = false,
-                                partners = persistentListOf(*partners.toTypedArray()),
+                                partnersState = PartnerListState.Success(persistentListOf(*partners.toTypedArray())),
                             ),
                     )
                 }
@@ -132,16 +135,15 @@ class CompatibilityInputViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadMyInfo()
-                expectState { copy(isLoading = true) }
+                expectState { copy(myInfoState = MyInfoLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
+                        myInfoState = MyInfoLoadState.Success,
                         myUser = fakeUserRepository.result.getOrThrow(),
                         myPillars = persistentListOf(),
                         partnerPicker =
                             partnerPicker.copy(
-                                isLoading = false,
-                                partners = persistentListOf(*partners.toTypedArray()),
+                                partnersState = PartnerListState.Success(persistentListOf(*partners.toTypedArray())),
                             ),
                     )
                 }
@@ -167,13 +169,14 @@ class CompatibilityInputViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadMyInfo()
-                expectState { copy(isLoading = true) }
+                expectState { copy(myInfoState = MyInfoLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
+                        myInfoState = MyInfoLoadState.Success,
                         myUser = fakeUserRepository.result.getOrThrow(),
                         myPillars = persistentListOf(),
-                        partnerPicker = partnerPicker.copy(isLoading = false, partners = persistentListOf()),
+                        partnerPicker =
+                            partnerPicker.copy(partnersState = PartnerListState.Success(persistentListOf())),
                     )
                 }
 
@@ -202,13 +205,14 @@ class CompatibilityInputViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadMyInfo()
-                expectState { copy(isLoading = true) }
+                expectState { copy(myInfoState = MyInfoLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
+                        myInfoState = MyInfoLoadState.Success,
                         myUser = fakeUserRepository.result.getOrThrow(),
                         myPillars = persistentListOf(),
-                        partnerPicker = partnerPicker.copy(isLoading = false, partners = persistentListOf()),
+                        partnerPicker =
+                            partnerPicker.copy(partnersState = PartnerListState.Success(persistentListOf())),
                     )
                 }
 
@@ -222,8 +226,8 @@ class CompatibilityInputViewModelTest {
                 }
 
                 viewModel.checkCompatibility()
-                expectState { copy(isCreating = true) }
-                expectState { copy(isCreating = false) }
+                expectState { copy(createState = CreateCompatibilityState.Loading) }
+                expectState { copy(createState = CreateCompatibilityState.Success) }
                 expectSideEffect(CompatibilityEntrySideEffect.NavigateToResult("compat-1", "partner-1"))
             }
             assertEquals("partner-1", fakeCompatibilityRepository.lastPartnerLinkId)
@@ -250,13 +254,14 @@ class CompatibilityInputViewModelTest {
 
             viewModel.test(this) {
                 viewModel.loadMyInfo()
-                expectState { copy(isLoading = true) }
+                expectState { copy(myInfoState = MyInfoLoadState.Loading) }
                 expectState {
                     copy(
-                        isLoading = false,
+                        myInfoState = MyInfoLoadState.Success,
                         myUser = fakeUserRepository.result.getOrThrow(),
                         myPillars = persistentListOf(),
-                        partnerPicker = partnerPicker.copy(isLoading = false, partners = persistentListOf()),
+                        partnerPicker =
+                            partnerPicker.copy(partnersState = PartnerListState.Success(persistentListOf())),
                     )
                 }
 
@@ -270,8 +275,8 @@ class CompatibilityInputViewModelTest {
                 }
 
                 viewModel.checkCompatibility()
-                expectState { copy(isCreating = true) }
-                expectState { copy(isCreating = false) }
+                expectState { copy(createState = CreateCompatibilityState.Loading) }
+                expectState { copy(createState = CreateCompatibilityState.Failure) }
                 expectSideEffect(CompatibilityEntrySideEffect.ShowCreateError)
             }
         }

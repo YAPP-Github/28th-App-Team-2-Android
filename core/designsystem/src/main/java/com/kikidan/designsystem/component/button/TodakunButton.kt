@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Text
@@ -64,6 +65,7 @@ fun PrimaryButton(
     size: TodakunButtonSize,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     painter: Painter? = null,
     contentDescription: String? = null,
     iconPosition: TodakunButtonIconPosition = TodakunButtonIconPosition.Start,
@@ -75,6 +77,7 @@ fun PrimaryButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
+        isLoading = isLoading,
         painter = painter,
         contentDescription = contentDescription,
         size = size,
@@ -116,12 +119,14 @@ private fun TodakunButton(
     enabled: Boolean,
     size: TodakunButtonSize,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     painter: Painter? = null,
     contentDescription: String? = null,
     iconPosition: TodakunButtonIconPosition = TodakunButtonIconPosition.Start,
 ) {
+    val isEnabled = enabled && !isLoading
     val textStyle =
-        if (enabled) TodakunTypography.body2SemiBold else TodakunTypography.body2Medium
+        if (isEnabled) TodakunTypography.body2SemiBold else TodakunTypography.body2Medium
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -135,7 +140,7 @@ private fun TodakunButton(
         Button(
             modifier = modifier.height(size.height),
             onClick = onClick,
-            enabled = enabled,
+            enabled = isEnabled,
             shape = RoundedCornerShape(12.dp),
             colors =
                 ButtonDefaults.buttonColors(
@@ -146,27 +151,35 @@ private fun TodakunButton(
                 ),
             interactionSource = interactionSource,
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(size.iconSpacing, Alignment.CenterHorizontally),
-            ) {
-                if (painter != null && iconPosition == TodakunButtonIconPosition.Start) {
-                    Icon(
-                        painter = painter,
-                        contentDescription = contentDescription,
-                        modifier = Modifier.size(size.iconSize),
-                    )
-                }
-                Text(
-                    text = text,
-                    style = textStyle,
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(size.iconSize),
+                    color = TodakunColor.gray400,
+                    strokeWidth = 2.dp,
                 )
-                if (painter != null && iconPosition == TodakunButtonIconPosition.End) {
-                    Icon(
-                        painter = painter,
-                        contentDescription = contentDescription,
-                        modifier = Modifier.size(size.iconSize),
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(size.iconSpacing, Alignment.CenterHorizontally),
+                ) {
+                    if (painter != null && iconPosition == TodakunButtonIconPosition.Start) {
+                        Icon(
+                            painter = painter,
+                            contentDescription = contentDescription,
+                            modifier = Modifier.size(size.iconSize),
+                        )
+                    }
+                    Text(
+                        text = text,
+                        style = textStyle,
                     )
+                    if (painter != null && iconPosition == TodakunButtonIconPosition.End) {
+                        Icon(
+                            painter = painter,
+                            contentDescription = contentDescription,
+                            modifier = Modifier.size(size.iconSize),
+                        )
+                    }
                 }
             }
         }

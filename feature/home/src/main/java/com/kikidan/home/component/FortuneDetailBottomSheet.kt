@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.button.PrimaryButton
 import com.kikidan.designsystem.component.button.TodakunButtonSize
 import com.kikidan.designsystem.theme.TodakunColor
@@ -44,6 +45,7 @@ import com.kikidan.home.util.categoryLabel
 internal fun FortuneDetailBottomSheet(
     detail: DetailSheetUiState,
     onDismissRequest: () -> Unit,
+    onAskTodakClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val screenHeight =
@@ -69,7 +71,9 @@ internal fun FortuneDetailBottomSheet(
             )
             when (detail) {
                 is DetailSheetUiState.Loading -> {
-                    Unit
+                    Box(modifier = Modifier.fillMaxWidth().height(240.dp)) {
+                        TodakunProgressIndicator()
+                    }
                 }
 
                 is DetailSheetUiState.Success -> {
@@ -105,9 +109,7 @@ internal fun FortuneDetailBottomSheet(
                         PrimaryButton(
                             modifier = Modifier.fillMaxWidth(),
                             text = stringResource(R.string.home_detail_sheet_cta),
-                            onClick = {
-                                // TODO(#38): 챗봇 연결 미구현, 머지 후 연결
-                            },
+                            onClick = onAskTodakClick,
                             size = TodakunButtonSize.Large,
                         )
                     }
@@ -208,6 +210,7 @@ private fun FortuneDetailBottomSheetSuccessPreview() {
                     content = "오늘은 감정 표현이 풍부해지는 날이에요. 주변 사람들과의 교류가 활발해지고, 새로운 인연이 생길 수도 있어요.",
                 ),
             onDismissRequest = {},
+            onAskTodakClick = {},
         )
     }
 }

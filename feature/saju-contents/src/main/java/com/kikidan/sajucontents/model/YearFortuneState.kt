@@ -10,5 +10,13 @@ data class YearFortuneState(
     val years: ImmutableList<Int> = DEFAULT_YEARS,
     val selectedYear: Int = Year.now().value,
     val currentYear: Int = Year.now().value,
-    val isLoading: Boolean = false,
+    val submitState: YearFortuneSubmitState? = null,
 )
+
+sealed interface YearFortuneSubmitState {
+    data object Loading : YearFortuneSubmitState
+
+    data object Success : YearFortuneSubmitState
+
+    data object Failure : YearFortuneSubmitState
+}

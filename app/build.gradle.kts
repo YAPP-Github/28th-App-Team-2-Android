@@ -24,7 +24,7 @@ android {
         applicationId = "com.kikidan.todakun"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -45,7 +45,8 @@ android {
             manifestPlaceholders["KAKAO_APP_KEY"] = kakaoKey
             manifestPlaceholders["APP_LINK_HOST"] = appLinkHost
 
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

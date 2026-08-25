@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.header.TodakunSubHeader
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
@@ -80,7 +81,7 @@ fun MansaeryeokDetailScreen(
 
         when (uiState) {
             is MansaeryeokDetailUiState.Loading -> {
-                Box(modifier = Modifier.weight(1f).fillMaxSize())
+                TodakunProgressIndicator(modifier = Modifier.weight(1f))
             }
 
             is MansaeryeokDetailUiState.Fail -> {

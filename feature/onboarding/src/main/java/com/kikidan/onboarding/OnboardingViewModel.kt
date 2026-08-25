@@ -13,6 +13,7 @@ import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingState
 import com.kikidan.onboarding.model.OnboardingStep
+import com.kikidan.onboarding.model.OnboardingSubmitState
 import com.kikidan.onboarding.model.toDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.ContainerHost
@@ -46,23 +47,33 @@ class OnboardingViewModel
                 }
             }
 
+        fun clickComplete() =
+            intent {
+                postSideEffect(OnboardingSideEffect.PermissionRequest)
+            }
+
         fun confirmComplete(onboardingToken: OnboardingToken) =
             intent {
-                if (state.isSubmitting) return@intent
+                if (state.submitState is OnboardingSubmitState.Loading) return@intent
                 val signupSubmission = state.toDomain()
                 if (signupSubmission == null) {
                     postSideEffect(OnboardingSideEffect.InvalidInput)
                     return@intent
                 }
-                reduce { state.copy(isSubmitting = true) }
+                reduce { state.copy(submitState = OnboardingSubmitState.Loading, step = OnboardingStep.COMPLETE) }
                 signUpUseCase(
                     signupSubmission = signupSubmission,
                     onboardingToken = onboardingToken,
                 ).onSuccess {
-                    reduce { state.copy(isSubmitting = false, step = OnboardingStep.COMPLETE) }
+                    reduce { state.copy(submitState = OnboardingSubmitState.Success) }
                     postSideEffect(OnboardingSideEffect.PermissionRequest)
                 }.onFailure { e ->
-                    reduce { state.copy(isSubmitting = false) }
+                    reduce {
+                        state.copy(
+                            submitState = OnboardingSubmitState.Failure,
+                            step = OnboardingStep.EXTRA_QUESTION,
+                        )
+                    }
                     postSideEffect(OnboardingSideEffect.Failure(e))
                 }
             }

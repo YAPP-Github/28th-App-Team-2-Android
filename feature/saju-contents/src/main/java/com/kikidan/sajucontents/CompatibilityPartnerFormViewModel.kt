@@ -9,6 +9,7 @@ import com.kikidan.domain.model.user.Gender
 import com.kikidan.domain.usecase.saju.RegisterPartnerSajuUseCase
 import com.kikidan.sajucontents.model.CompatibilityPartnerFormSideEffect
 import com.kikidan.sajucontents.model.CompatibilityPartnerFormState
+import com.kikidan.sajucontents.model.SavePartnerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -49,7 +50,7 @@ class CompatibilityPartnerFormViewModel
             intent {
                 val birthDate = state.birthDate ?: return@intent
                 if (!state.isSaveEnabled) return@intent
-                reduce { state.copy(isSaving = true) }
+                reduce { state.copy(saveState = SavePartnerState.Loading) }
 
                 val input =
                     PartnerSajuInput(
@@ -60,10 +61,10 @@ class CompatibilityPartnerFormViewModel
                     )
                 registerPartnerSajuUseCase(input)
                     .onSuccess {
-                        reduce { state.copy(isSaving = false) }
+                        reduce { state.copy(saveState = SavePartnerState.Success) }
                         postSideEffect(CompatibilityPartnerFormSideEffect.NavigateBack)
                     }.onFailure {
-                        reduce { state.copy(isSaving = false) }
+                        reduce { state.copy(saveState = SavePartnerState.Failure) }
                         postSideEffect(CompatibilityPartnerFormSideEffect.ShowSaveError)
                     }
             }

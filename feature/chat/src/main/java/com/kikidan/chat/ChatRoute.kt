@@ -2,12 +2,14 @@ package com.kikidan.chat
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kikidan.chat.model.ChatEntryState
 import com.kikidan.chat.model.ChatSideEffect
 import com.kikidan.chat.screen.ChatScreen
 import com.kikidan.chat.screen.ChatSplashScreen
@@ -33,6 +35,11 @@ fun ChatRoute(
 
     LaunchedEffect(Unit) { viewModel.load(conversationId, skipSplash) }
 
+    DisposableEffect(Unit) {
+        viewModel.enterScreen()
+        onDispose { viewModel.leaveScreen() }
+    }
+
     viewModel.collectSideEffect { effect ->
         when (effect) {
             is ChatSideEffect.ShowStreamingErrorMessage -> snackbarHostState.showSnackbar(effect.message)
@@ -40,23 +47,28 @@ fun ChatRoute(
         }
     }
 
-    if (state.isLoading && conversationId == null && !skipSplash) {
-        ChatSplashScreen()
-    } else {
-        ChatScreen(
-            state = state,
-            onInputChange = viewModel::onInputChange,
-            onSendClick = viewModel::onSendClick,
-            onSuggestionClick = viewModel::onSuggestionClick,
-            onNewConversationClick = viewModel::startNewConversation,
-            onCloseClick = onCloseClick,
-            onHistoryClick = onNavigateToHistory,
-            onCalendarLaunchFail = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(calendarErrorMessage)
-                }
-            },
-            modifier = modifier,
-        )
+    val showSplash = state.entryState is ChatEntryState.Loading && conversationId == null && !skipSplash
+    when {
+        showSplash -> {
+            ChatSplashScreen()
+        }
+
+        else -> {
+            ChatScreen(
+                state = state,
+                onInputChange = viewModel::changeInput,
+                onSendClick = viewModel::sendMessage,
+                onSuggestionClick = viewModel::selectSuggestion,
+                onNewConversationClick = viewModel::startNewConversation,
+                onCloseClick = onCloseClick,
+                onHistoryClick = onNavigateToHistory,
+                onCalendarLaunchFail = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(calendarErrorMessage)
+                    }
+                },
+                modifier = modifier,
+            )
+        }
     }
 }

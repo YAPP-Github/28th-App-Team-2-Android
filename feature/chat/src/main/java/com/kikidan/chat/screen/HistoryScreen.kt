@@ -35,17 +35,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.kikidan.chat.model.HistoryConversationUiModel
+import com.kikidan.chat.model.HistoryState
+import com.kikidan.chat.model.toUiModel
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.component.chat.TodakunChatHistoryItem
 import com.kikidan.designsystem.component.header.TodakunSubHeader
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
+import com.kikidan.domain.model.chat.ConversationSummary
+import kotlinx.collections.immutable.persistentListOf
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 @Composable
 internal fun HistoryScreen(
-    conversations: List<HistoryConversationUiModel>,
+    state: HistoryState,
     onBackClick: () -> Unit,
     onConversationClick: (String) -> Unit,
     onDeleteClick: (String) -> Unit,
@@ -69,24 +75,32 @@ internal fun HistoryScreen(
                 onBackClick = onBackClick,
             )
 
-            if (conversations.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.chat_history_empty),
-                        style = TodakunTypography.body2Regular,
-                        color = TodakunColor.gray500,
-                    )
+            when (state) {
+                is HistoryState.Loading, HistoryState.Failure -> {
+                    Box(modifier = Modifier.fillMaxSize())
                 }
-            } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(conversations, key = { it.id }) { conversation ->
-                        TodakunChatHistoryItem(
-                            title = conversation.title,
-                            relativeTime = conversation.relativeTime,
-                            isUnread = conversation.isUnread,
-                            onClick = { onConversationClick(conversation.id) },
-                            onDeleteClick = { onDeleteClick(conversation.id) },
-                        )
+
+                is HistoryState.Success -> {
+                    if (state.conversations.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = stringResource(R.string.chat_history_empty),
+                                style = TodakunTypography.body2Regular,
+                                color = TodakunColor.gray500,
+                            )
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(state.conversations.map { it.toUiModel() }, key = { it.id }) { conversation ->
+                                TodakunChatHistoryItem(
+                                    title = conversation.title,
+                                    relativeTime = conversation.relativeTime,
+                                    isUnread = conversation.isUnread,
+                                    onClick = { onConversationClick(conversation.id) },
+                                    onDeleteClick = { onDeleteClick(conversation.id) },
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -101,6 +115,11 @@ internal fun HistoryScreen(
                     .align(Alignment.BottomEnd)
                     .padding(end = 20.dp, bottom = 60.dp),
         )
+
+        when (state) {
+            is HistoryState.Loading -> TodakunProgressIndicator()
+            is HistoryState.Success, HistoryState.Failure -> Unit
+        }
     }
 }
 
@@ -160,10 +179,25 @@ private fun NewChatButton(
 }
 
 private val previewConversations =
-    listOf(
-        HistoryConversationUiModel(id = "1", title = "오늘 나의 행운의 숫자는?", relativeTime = "30분 전", isUnread = true),
-        HistoryConversationUiModel(id = "2", title = "이직할까 말까?", relativeTime = "3시간 전", isUnread = false),
-        HistoryConversationUiModel(id = "3", title = "이번 달 큰 지출 해도 괜찮을까", relativeTime = "1일 전", isUnread = false),
+    persistentListOf(
+        ConversationSummary(
+            id = "1",
+            title = "오늘 나의 행운의 숫자는?",
+            lastMessageAt = Instant.now().minus(30, ChronoUnit.MINUTES),
+            unread = true,
+        ),
+        ConversationSummary(
+            id = "2",
+            title = "이직할까 말까?",
+            lastMessageAt = Instant.now().minus(3, ChronoUnit.HOURS),
+            unread = false,
+        ),
+        ConversationSummary(
+            id = "3",
+            title = "이번 달 큰 지출 해도 괜찮을까",
+            lastMessageAt = Instant.now().minus(1, ChronoUnit.DAYS),
+            unread = false,
+        ),
     )
 
 @Preview(showBackground = true, name = "목록")
@@ -171,7 +205,7 @@ private val previewConversations =
 private fun HistoryScreenListPreview() {
     TodakunTheme {
         HistoryScreen(
-            conversations = previewConversations,
+            state = HistoryState.Success(previewConversations),
             onBackClick = {},
             onConversationClick = {},
             onDeleteClick = {},
@@ -185,7 +219,7 @@ private fun HistoryScreenListPreview() {
 private fun HistoryScreenEmptyPreview() {
     TodakunTheme {
         HistoryScreen(
-            conversations = emptyList(),
+            state = HistoryState.Success(persistentListOf()),
             onBackClick = {},
             onConversationClick = {},
             onDeleteClick = {},

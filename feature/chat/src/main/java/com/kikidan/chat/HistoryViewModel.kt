@@ -19,30 +19,28 @@ class HistoryViewModel
         private val deleteConversation: DeleteConversationUseCase,
     ) : ViewModel(),
         ContainerHost<HistoryState, HistorySideEffect> {
-        override val container = container<HistoryState, HistorySideEffect>(HistoryState())
+        override val container = container<HistoryState, HistorySideEffect>(HistoryState.Loading)
 
         fun load() =
             intent {
-                reduce { state.copy(isLoading = true) }
+                reduce { HistoryState.Loading }
                 getConversations()
                     .onSuccess { conversations ->
-                        reduce { state.copy(conversations = conversations.toPersistentList(), isLoading = false) }
+                        reduce { HistoryState.Success(conversations.toPersistentList()) }
                     }.onFailure {
-                        reduce { state.copy(isLoading = false) }
+                        reduce { HistoryState.Failure }
                         postSideEffect(HistorySideEffect.Error(it))
                     }
             }
 
         fun onDeleteClick(conversationId: String) =
             intent {
+                val current = state as? HistoryState.Success ?: return@intent
                 deleteConversation(conversationId)
                     .onSuccess {
                         reduce {
-                            state.copy(
-                                conversations =
-                                    state.conversations
-                                        .filterNot { it.id == conversationId }
-                                        .toPersistentList(),
+                            HistoryState.Success(
+                                current.conversations.filterNot { it.id == conversationId }.toPersistentList(),
                             )
                         }
                     }.onFailure { postSideEffect(HistorySideEffect.Error(it)) }

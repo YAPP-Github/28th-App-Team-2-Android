@@ -21,39 +21,36 @@ class NotificationViewModel
         private val markNotificationAsRead: MarkNotificationAsReadUseCase,
     ) : ViewModel(),
         ContainerHost<NotificationState, NotificationSideEffect> {
-        override val container = container<NotificationState, NotificationSideEffect>(NotificationState())
+        override val container = container<NotificationState, NotificationSideEffect>(NotificationState.Loading)
 
         // 화면 표시용 NotificationUiModel에는 deepLink가 없어 클릭 시 원본 목록에서 조회한다.
         private var notifications: List<Notification> = emptyList()
 
         fun load() =
             intent {
-                reduce { state.copy(isLoading = true) }
+                reduce { NotificationState.Loading }
                 getNotifications()
                     .onSuccess { summary ->
                         notifications = summary.notifications
                         reduce {
-                            state.copy(
-                                isLoading = false,
-                                notifications = summary.notifications.map { it.toUiModel() }.toPersistentList(),
-                            )
+                            NotificationState.Success(summary.notifications.map { it.toUiModel() }.toPersistentList())
                         }
                     }.onFailure {
-                        reduce { state.copy(isLoading = false) }
+                        reduce { NotificationState.Failure }
                         postSideEffect(NotificationSideEffect.Error(it))
                     }
             }
 
         fun onNotificationClick(notificationId: String) =
             intent {
+                val current = (state as? NotificationState.Success)?.notifications ?: return@intent
                 markNotificationAsRead(notificationId)
                     .onSuccess {
                         reduce {
-                            state.copy(
-                                notifications =
-                                    state.notifications
-                                        .map { if (it.id == notificationId) it.copy(isRead = true) else it }
-                                        .toPersistentList(),
+                            NotificationState.Success(
+                                current
+                                    .map { if (it.id == notificationId) it.copy(isRead = true) else it }
+                                    .toPersistentList(),
                             )
                         }
                         notifications

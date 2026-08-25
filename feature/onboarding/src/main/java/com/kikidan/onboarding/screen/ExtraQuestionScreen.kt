@@ -35,6 +35,7 @@ internal fun ExtraQuestionScreen(
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isSubmitting: Boolean = false,
 ) {
     OnboardingLayout(
         progress = OnboardingStep.EXTRA_QUESTION.progress,
@@ -44,6 +45,7 @@ internal fun ExtraQuestionScreen(
             },
         ctaText = stringResource(id = R.string.onboarding_start),
         ctaEnabled = canProceed,
+        ctaLoading = isSubmitting,
         onCtaClick = onNextClick,
         onBackClick = onBackClick,
         modifier = modifier,

@@ -8,6 +8,7 @@ import com.kikidan.domain.usecase.DateFortuneDefaults
 import com.kikidan.sajucontents.fake.FakeDayFortuneRepository
 import com.kikidan.sajucontents.model.DateFortuneSideEffect
 import com.kikidan.sajucontents.model.DateFortuneState
+import com.kikidan.sajucontents.model.DateFortuneSubmitState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
@@ -125,8 +126,8 @@ class DateFortuneViewModelTest {
 
             viewModel.test(this, initialState = initial) {
                 viewModel.submit()
-                expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false) }
+                expectState { copy(submitState = DateFortuneSubmitState.Loading) }
+                expectState { copy(submitState = DateFortuneSubmitState.Success) }
                 expectSideEffect(DateFortuneSideEffect.NavigateToResult(emptyList()))
             }
 
@@ -160,8 +161,8 @@ class DateFortuneViewModelTest {
 
             viewModel.test(this, initialState = initial) {
                 viewModel.submit()
-                expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false) }
+                expectState { copy(submitState = DateFortuneSubmitState.Loading) }
+                expectState { copy(submitState = DateFortuneSubmitState.Success) }
                 expectSideEffect(DateFortuneSideEffect.NavigateToResult(listOf("id-1")))
             }
         }
@@ -180,8 +181,8 @@ class DateFortuneViewModelTest {
 
             viewModel.test(this, initialState = initial) {
                 viewModel.submit()
-                expectState { copy(isLoading = true) }
-                expectState { copy(isLoading = false) }
+                expectState { copy(submitState = DateFortuneSubmitState.Loading) }
+                expectState { copy(submitState = DateFortuneSubmitState.Failure) }
                 expectSideEffect(DateFortuneSideEffect.ShowError)
             }
         }

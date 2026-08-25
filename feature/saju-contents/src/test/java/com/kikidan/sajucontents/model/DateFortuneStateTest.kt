@@ -29,7 +29,7 @@ class DateFortuneStateTest {
             DateFortuneState(
                 selectedPurpose = DayFortunePurpose.TRAVEL,
                 selectedDates = persistentListOf(LocalDate.now()),
-                isLoading = true,
+                submitState = DateFortuneSubmitState.Loading,
             )
 
         assertFalse(state.canSubmit)

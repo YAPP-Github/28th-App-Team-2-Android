@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,6 +23,7 @@ import com.kikidan.domain.model.user.BirthTime
 import com.kikidan.onboarding.model.OnboardingSheet
 import com.kikidan.onboarding.model.OnboardingSideEffect
 import com.kikidan.onboarding.model.OnboardingStep
+import com.kikidan.onboarding.model.OnboardingSubmitState
 import com.kikidan.onboarding.screen.BirthInfoScreen
 import com.kikidan.onboarding.screen.CompleteScreen
 import com.kikidan.onboarding.screen.ExtraQuestionScreen
@@ -42,15 +42,12 @@ fun OnboardingRoute(
     viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.collectAsState()
-    var permissionHandled by rememberSaveable {
-        mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
-    }
     val permissionLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),
         ) {
-            // 권한을 허락하지 않더라도 앱 진입
-            permissionHandled = true
+            // 권한을 허락하지 않더라도 회원가입 진행
+            viewModel.confirmComplete(onboardingToken)
         }
     val signupErrorMessage = stringResource(R.string.onboarding_signup_error)
     val invalidInputErrorMessage = stringResource(R.string.onboarding_invalid_input_error)
@@ -69,7 +66,7 @@ fun OnboardingRoute(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 } else {
-                    onFinish()
+                    viewModel.confirmComplete(onboardingToken)
                 }
             }
 
@@ -125,23 +122,21 @@ fun OnboardingRoute(
                 lifeStage = state.lifeStage,
                 relationshipStatus = state.relationshipStatus,
                 canProceed = state.canProceed,
+                isSubmitting = state.submitState is OnboardingSubmitState.Loading,
                 onLifeStageSelect = viewModel::selectLifeStage,
                 onRelationshipStatusSelect = viewModel::selectRelationshipStatus,
-                onNextClick = {
-                    viewModel.confirmComplete(onboardingToken)
-                },
+                onNextClick = viewModel::clickComplete,
                 onBackClick = viewModel::clickBack,
                 modifier = modifier,
             )
         }
 
         OnboardingStep.COMPLETE -> {
-            if (permissionHandled) {
-                CompleteScreen(
-                    onFinish = onFinish,
-                    modifier = modifier,
-                )
-            }
+            CompleteScreen(
+                isLoading = state.submitState is OnboardingSubmitState.Loading,
+                onFinish = onFinish,
+                modifier = modifier,
+            )
         }
     }
 

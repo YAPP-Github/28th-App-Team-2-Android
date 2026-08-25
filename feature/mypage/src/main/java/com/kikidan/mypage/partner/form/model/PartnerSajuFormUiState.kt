@@ -5,6 +5,7 @@ sealed interface PartnerSajuFormUiState {
 
     data class Success(
         val model: PartnerSajuFormUiModel,
+        val isSaving: Boolean = false,
     ) : PartnerSajuFormUiState
 
     data class Fail(

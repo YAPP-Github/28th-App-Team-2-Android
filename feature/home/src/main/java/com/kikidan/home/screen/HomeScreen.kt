@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kikidan.designsystem.R
+import com.kikidan.designsystem.component.TodakunProgressIndicator
 import com.kikidan.designsystem.theme.TodakunColor
 import com.kikidan.designsystem.theme.TodakunTheme
 import com.kikidan.designsystem.theme.TodakunTypography
@@ -63,6 +64,7 @@ internal fun HomeScreen(
     onNavigateToCompatibility: () -> Unit,
     onNavigateToDateFortune: () -> Unit,
     onNavigateToYearFortune: () -> Unit,
+    onNavigateToChat: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backdrop = rememberLayerBackdrop()
@@ -116,7 +118,13 @@ internal fun HomeScreen(
             FortuneDetailBottomSheet(
                 detail = state.detail,
                 onDismissRequest = onDetailDismiss,
+                onAskTodakClick = onNavigateToChat,
             )
+        }
+
+        when (state) {
+            is HomeState.Loading -> TodakunProgressIndicator()
+            is HomeState.Success, HomeState.Failure -> Unit
         }
     }
 }
@@ -287,6 +295,7 @@ private fun HomeScreenSuccessPreview() {
             onNavigateToCompatibility = {},
             onNavigateToDateFortune = {},
             onNavigateToYearFortune = {},
+            onNavigateToChat = {},
         )
     }
 }
