@@ -160,6 +160,7 @@ fun TodakunApp(
                             onNavigateToCompatibility = { navigator.push(TodakunRoute.CompatibilityInput) },
                             onNavigateToDateFortune = { navigator.push(TodakunRoute.DateFortuneInput) },
                             onNavigateToYearFortune = { navigator.push(TodakunRoute.YearFortuneInput) },
+                            onNavigateToChat = { navigator.push(TodakunRoute.Chat()) },
                         )
                     }
 

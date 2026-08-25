@@ -64,6 +64,7 @@ internal fun HomeScreen(
     onNavigateToCompatibility: () -> Unit,
     onNavigateToDateFortune: () -> Unit,
     onNavigateToYearFortune: () -> Unit,
+    onNavigateToChat: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val backdrop = rememberLayerBackdrop()
@@ -117,6 +118,7 @@ internal fun HomeScreen(
             FortuneDetailBottomSheet(
                 detail = state.detail,
                 onDismissRequest = onDetailDismiss,
+                onAskTodakClick = onNavigateToChat,
             )
         }
 
@@ -293,6 +295,7 @@ private fun HomeScreenSuccessPreview() {
             onNavigateToCompatibility = {},
             onNavigateToDateFortune = {},
             onNavigateToYearFortune = {},
+            onNavigateToChat = {},
         )
     }
 }

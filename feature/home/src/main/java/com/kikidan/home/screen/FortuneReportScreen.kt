@@ -193,6 +193,7 @@ internal fun FortuneReportScreen(
             FortuneDetailBottomSheet(
                 detail = state.detail,
                 onDismissRequest = onDetailDismiss,
+                onAskTodakClick = onNavigateToChat,
             )
         }
 

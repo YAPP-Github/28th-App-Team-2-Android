@@ -22,6 +22,7 @@ fun HomeRoute(
     onNavigateToCompatibility: () -> Unit,
     onNavigateToDateFortune: () -> Unit,
     onNavigateToYearFortune: () -> Unit,
+    onNavigateToChat: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -46,6 +47,11 @@ fun HomeRoute(
         onNavigateToCompatibility = onNavigateToCompatibility,
         onNavigateToDateFortune = onNavigateToDateFortune,
         onNavigateToYearFortune = onNavigateToYearFortune,
+        onNavigateToChat = {
+            // 바텀시트를 띄운 채로 채팅에 진입하면, 채팅에서 뒤로가기 시 백스택 복귀와 함께 바텀시트가 다시 열린다.
+            viewModel.closeDetail()
+            onNavigateToChat()
+        },
         modifier = modifier,
     )
 }
